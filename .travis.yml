@@ -1,0 +1,9 @@
+language: rust
+rust:
+  - 1.0.0
+  - beta
+  - nightly
+script:
+  - cargo build --verbose
+  - cargo test --verbose
+  - cargo doc

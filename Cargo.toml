@@ -1,0 +1,20 @@
+[package]
+name = "memchr"
+version = "0.1.0"  #:version
+authors = ["Andrew Gallant <jamslam@gmail.com>"]
+description = "Safe interface to memchr."
+documentation = "http://burntsushi.net/rustdoc/memchr/"
+homepage = "https://github.com/BurntSushi/rust-memchr"
+repository = "https://github.com/BurntSushi/rust-memchr"
+readme = "README.md"
+keywords = ["memchr", "char", "scan", "strchr", "string"]
+license = "Unlicense/MIT"
+
+[lib]
+name = "memchr"
+
+[dependencies]
+libc = "0.1.*"
+
+[dev-dependencies]
+quickcheck = "0.2.*"
