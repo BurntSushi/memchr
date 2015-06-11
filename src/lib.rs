@@ -16,8 +16,9 @@ use libc::types::os::arch::c95::{c_int, size_t};
 /// Returns the index corresponding to the first occurrence of `needle` in
 /// `haystack`, or `None` if one is not found.
 ///
-/// memchr reduces to super-optimized machine code at around 24x the speed
-/// of `haystack.iter().position(|&b| b == needle)`.
+/// memchr reduces to super-optimized machine code at around an order of
+/// magnitude faster than `haystack.iter().position(|&b| b == needle)`.
+/// (See benchmarks.)
 ///
 /// # Example
 ///

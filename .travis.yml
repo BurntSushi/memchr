@@ -6,4 +6,5 @@ rust:
 script:
   - cargo build --verbose
   - cargo test --verbose
+  - cargo bench --verbose
   - cargo doc
