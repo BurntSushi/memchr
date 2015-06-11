@@ -6,5 +6,7 @@ rust:
 script:
   - cargo build --verbose
   - cargo test --verbose
-  - cargo bench --verbose
   - cargo doc
+  - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
+      cargo bench --verbose;
+    fi
