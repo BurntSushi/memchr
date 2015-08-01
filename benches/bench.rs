@@ -24,3 +24,21 @@ fn libc_memchr(b: &mut test::Bencher) {
         assert!(memchr::memchr(needle, &haystack).is_none());
     });
 }
+
+#[bench]
+fn iterator_reversed(b: &mut test::Bencher) {
+    let haystack = bench_data();
+    let needle = b'a';
+    b.iter(|| {
+        assert!(haystack.iter().rposition(|&b| b == needle).is_none());
+    });
+}
+
+#[bench]
+fn libc_memrchr(b: &mut test::Bencher) {
+    let haystack = bench_data();
+    let needle = b'a';
+    b.iter(|| {
+        assert!(memchr::memchr(needle, &haystack).is_none());
+    });
+}
