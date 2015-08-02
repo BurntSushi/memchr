@@ -60,21 +60,33 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 /// assert_eq!(memrchr(b'o', haystack), Some(17));
 /// ```
 pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
-    // GNU's memrchr() will - unlike memchr() - error if haystack is empty.
-    if haystack.is_empty() {return None}
-    let p = unsafe {
-        ffi::memrchr(
-            haystack.as_ptr() as *const c_void,
-            needle as c_int,
-            haystack.len() as size_t)
-    };
-    if p.is_null() {
-        None
-    } else {
-        Some(p as usize - (haystack.as_ptr() as usize))
+    
+    #[cfg(target_os = "linux")]
+    fn memrchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
+        // GNU's memrchr() will - unlike memchr() - error if haystack is empty.
+        if haystack.is_empty() {return None}
+        let p = unsafe {
+            ffi::memrchr(
+                haystack.as_ptr() as *const c_void,
+                needle as c_int,
+                haystack.len() as size_t)
+        };
+        if p.is_null() {
+            None
+        } else {
+            Some(p as usize - (haystack.as_ptr() as usize))
+        }
     }
+
+    #[cfg(not(target_os = "linux"))]
+    fn memrchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
+        haystack.iter().rposition(|&b| b == needle)
+    }
+
+    memrchr_specific(needle, haystack)
 }
 
+#[cfg(target_os = "linux")]
 mod ffi {
     use libc::types::common::c95::c_void;
     use libc::types::os::arch::c95::{c_int, size_t};
