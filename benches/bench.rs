@@ -39,6 +39,6 @@ fn libc_memrchr(b: &mut test::Bencher) {
     let haystack = bench_data();
     let needle = b'a';
     b.iter(|| {
-        assert!(memchr::memchr(needle, &haystack).is_none());
+        assert!(memchr::memrchr(needle, &haystack).is_none());
     });
 }
