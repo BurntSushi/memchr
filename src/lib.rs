@@ -172,13 +172,13 @@ mod fallback {
 
         while offset >= 2 * USIZE_BYTES {
             unsafe {
-                let mut u = *(ptr.offset(offset as isize - 2 * USIZE_BYTES as isize) as *const usize);
-                let mut v = *(ptr.offset(offset as isize - USIZE_BYTES as isize) as *const usize);
+                let u = *(ptr.offset(offset as isize - 2 * USIZE_BYTES as isize) as *const usize);
+                let v = *(ptr.offset(offset as isize - USIZE_BYTES as isize) as *const usize);
 
                 // break if there is a matching byte
-                u ^= repeated_x;
-                v ^= repeated_x;
-                if contains_zero_byte(u) || contains_zero_byte(v) {
+                let zu = contains_zero_byte(u ^ repeated_x);
+                let zv = contains_zero_byte(v ^ repeated_x);
+                if zu || zv {
                     break;
                 }
             }
