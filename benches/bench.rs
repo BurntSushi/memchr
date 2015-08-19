@@ -14,6 +14,7 @@ fn iterator(b: &mut test::Bencher) {
     b.iter(|| {
         assert!(haystack.iter().position(|&b| b == needle).is_none());
     });
+    b.bytes = haystack.len() as u64;
 }
 
 #[bench]
@@ -23,6 +24,7 @@ fn libc_memchr(b: &mut test::Bencher) {
     b.iter(|| {
         assert!(memchr::memchr(needle, &haystack).is_none());
     });
+    b.bytes = haystack.len() as u64;
 }
 
 #[bench]
@@ -32,6 +34,7 @@ fn iterator_reversed(b: &mut test::Bencher) {
     b.iter(|| {
         assert!(haystack.iter().rposition(|&b| b == needle).is_none());
     });
+    b.bytes = haystack.len() as u64;
 }
 
 #[bench]
@@ -41,4 +44,5 @@ fn libc_memrchr(b: &mut test::Bencher) {
     b.iter(|| {
         assert!(memchr::memrchr(needle, &haystack).is_none());
     });
+    b.bytes = haystack.len() as u64;
 }
