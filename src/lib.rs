@@ -297,16 +297,44 @@ mod tests {
     }
 
     #[test]
-    fn qc_correct_reversed() {
-        fn prop(a: Vec<u8>) -> bool {
+    fn qc_correct_memchr() {
+        fn prop(v: Vec<u8>, offset: u8) -> bool {
+            // test all pointer alignments
+            let uoffset = (offset & 0xF) as usize;
+            let data = if uoffset <= v.len() {
+                &v[uoffset..]
+            } else {
+                &v[..]
+            };
             for byte in 0..256u32 {
                 let byte = byte as u8;
-                if memrchr(byte, &a) != a.iter().rposition(|elt| *elt == byte) {
+                if memchr(byte, &data) != data.iter().position(|elt| *elt == byte) {
                     return false;
                 }
             }
             true
         }
-        quickcheck::quickcheck(prop as fn(Vec<u8>) -> bool);
+        quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
+    }
+
+    #[test]
+    fn qc_correct_memrchr() {
+        fn prop(v: Vec<u8>, offset: u8) -> bool {
+            // test all pointer alignments
+            let uoffset = (offset & 0xF) as usize;
+            let data = if uoffset <= v.len() {
+                &v[uoffset..]
+            } else {
+                &v[..]
+            };
+            for byte in 0..256u32 {
+                let byte = byte as u8;
+                if memrchr(byte, &data) != data.iter().rposition(|elt| *elt == byte) {
+                    return false;
+                }
+            }
+            true
+        }
+        quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
     }
 }
