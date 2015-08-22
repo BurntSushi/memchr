@@ -152,23 +152,19 @@ mod fallback {
         let ptr = text.as_ptr();
 
         // search to an aligned boundary
-        let endptr = unsafe { ptr.offset(text.len() as isize) };
-        let align = (endptr as usize) & (USIZE_BYTES - 1);
-        let tail;
-        if align > 0 {
-            tail = cmp::min(USIZE_BYTES - align, len);
-            for (index, &byte) in text[len - tail..].iter().enumerate().rev() {
-                if byte == x {
-                    return Some(len - tail + index);
-                }
+        let end_align = (ptr as usize + len) & (USIZE_BYTES - 1);
+        let mut offset;
+        if end_align > 0 {
+            offset = len - cmp::min(USIZE_BYTES - end_align, len);
+            if let Some(index) = text[offset..].iter().rposition(|elt| *elt == x) {
+                return Some(offset + index);
             }
         } else {
-            tail = 0;
+            offset = len;
         }
 
         // search the body of the text
         let repeated_x = repeat_byte(x);
-        let mut offset = len - tail;
 
         while offset >= 2 * USIZE_BYTES {
             unsafe {
@@ -185,13 +181,8 @@ mod fallback {
             offset -= 2 * USIZE_BYTES;
         }
 
-        // find a zero after the point the body loop stopped
-        for (index, &byte) in text[..offset].iter().enumerate().rev() {
-            if byte == x {
-                return Some(index);
-            }
-        }
-        None
+        // find the byte after the point the body loop stopped
+        text[..offset].iter().rposition(|elt| *elt == x)
     }
 }
 
