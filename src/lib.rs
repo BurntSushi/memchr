@@ -4,10 +4,10 @@ to the corresponding functions in `libc`.
 */
 
 #![deny(missing_docs)]
+#![allow(unused_imports)]
 
 extern crate libc;
 
-use libc::funcs::c95::string;
 use libc::c_void;
 use libc::{c_int, size_t};
 
@@ -31,17 +31,35 @@ use libc::{c_int, size_t};
 /// assert_eq!(memchr(b'k', haystack), Some(8));
 /// ```
 pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
-    let p = unsafe {
-        string::memchr(
-            haystack.as_ptr() as *const c_void,
-            needle as c_int,
-            haystack.len() as size_t)
-    };
-    if p.is_null() {
-        None
-    } else {
-        Some(p as usize - (haystack.as_ptr() as usize))
+    // libc memchr
+    #[cfg(any(not(target_os = "windows"),
+              not(any(target_pointer_width = "32",
+                      target_pointer_width = "64"))))]
+    fn memchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
+        use libc::memchr as libc_memchr;
+
+        let p = unsafe {
+            libc_memchr(
+                haystack.as_ptr() as *const c_void,
+                needle as c_int,
+                haystack.len() as size_t)
+        };
+        if p.is_null() {
+            None
+        } else {
+            Some(p as usize - (haystack.as_ptr() as usize))
+        }
     }
+
+    // use fallback on windows, since it's faster
+    #[cfg(all(target_os = "windows",
+              any(target_pointer_width = "32",
+                  target_pointer_width = "64")))]
+    fn memchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
+        fallback::memchr(needle, haystack)
+    }
+
+    memchr_specific(needle, haystack)
 }
 
 /// A safe interface to `memrchr`.
@@ -95,7 +113,8 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     memrchr_specific(needle, haystack)
 }
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(all(not(target_os = "linux"),
+          any(target_pointer_width = "32", target_pointer_width = "64")))]
 mod fallback {
     use std::cmp;
 
@@ -140,6 +159,53 @@ mod fallback {
         rep
     }
 
+    /// Return the first index matching the byte `a` in `text`.
+    pub fn memchr(x: u8, text: &[u8]) -> Option<usize> {
+        // Scan for a single byte value by reading two `usize` words at a time.
+        //
+        // Split `text` in three parts
+        // - unaligned inital part, before the first word aligned address in text
+        // - body, scan by 2 words at a time
+        // - the last remaining part, < 2 word size
+        let len = text.len();
+        let ptr = text.as_ptr();
+
+        // search up to an aligned boundary
+        let align = (ptr as usize) & (USIZE_BYTES - 1);
+        let mut offset;
+        if align > 0 {
+            offset = cmp::min(USIZE_BYTES - align, len);
+            if let Some(index) = text[..offset].iter().position(|elt| *elt == x) {
+                return Some(index);
+            }
+        } else {
+            offset = 0;
+        }
+
+        // search the body of the text
+        let repeated_x = repeat_byte(x);
+
+        if len >= 2 * USIZE_BYTES {
+            while offset <= len - 2 * USIZE_BYTES {
+                unsafe {
+                    let u = *(ptr.offset(offset as isize) as *const usize);
+                    let v = *(ptr.offset((offset + USIZE_BYTES) as isize) as *const usize);
+
+                    // break if there is a matching byte
+                    let zu = contains_zero_byte(u ^ repeated_x);
+                    let zv = contains_zero_byte(v ^ repeated_x);
+                    if zu || zv {
+                        break;
+                    }
+                }
+                offset += USIZE_BYTES * 2;
+            }
+        }
+
+        // find the byte after the point the body loop stopped
+        text[offset..].iter().position(|elt| *elt == x).map(|i| offset + i)
+    }
+
     /// Return the last index matching the byte `a` in `text`.
     pub fn memrchr(x: u8, text: &[u8]) -> Option<usize> {
         // Scan for a single byte value by reading two `usize` words at a time.
@@ -152,23 +218,19 @@ mod fallback {
         let ptr = text.as_ptr();
 
         // search to an aligned boundary
-        let endptr = unsafe { ptr.offset(text.len() as isize) };
-        let align = (endptr as usize) & (USIZE_BYTES - 1);
-        let tail;
-        if align > 0 {
-            tail = cmp::min(USIZE_BYTES - align, len);
-            for (index, &byte) in text[len - tail..].iter().enumerate().rev() {
-                if byte == x {
-                    return Some(len - tail + index);
-                }
+        let end_align = (ptr as usize + len) & (USIZE_BYTES - 1);
+        let mut offset;
+        if end_align > 0 {
+            offset = len - cmp::min(USIZE_BYTES - end_align, len);
+            if let Some(index) = text[offset..].iter().rposition(|elt| *elt == x) {
+                return Some(offset + index);
             }
         } else {
-            tail = 0;
+            offset = len;
         }
 
         // search the body of the text
         let repeated_x = repeat_byte(x);
-        let mut offset = len - tail;
 
         while offset >= 2 * USIZE_BYTES {
             unsafe {
@@ -185,13 +247,8 @@ mod fallback {
             offset -= 2 * USIZE_BYTES;
         }
 
-        // find a zero after the point the body loop stopped
-        for (index, &byte) in text[..offset].iter().enumerate().rev() {
-            if byte == x {
-                return Some(index);
-            }
-        }
-        None
+        // find the byte before the point the body loop stopped
+        text[..offset].iter().rposition(|elt| *elt == x)
     }
 }
 
@@ -297,16 +354,44 @@ mod tests {
     }
 
     #[test]
-    fn qc_correct_reversed() {
-        fn prop(a: Vec<u8>) -> bool {
+    fn qc_correct_memchr() {
+        fn prop(v: Vec<u8>, offset: u8) -> bool {
+            // test all pointer alignments
+            let uoffset = (offset & 0xF) as usize;
+            let data = if uoffset <= v.len() {
+                &v[uoffset..]
+            } else {
+                &v[..]
+            };
             for byte in 0..256u32 {
                 let byte = byte as u8;
-                if memrchr(byte, &a) != a.iter().rposition(|elt| *elt == byte) {
+                if memchr(byte, &data) != data.iter().position(|elt| *elt == byte) {
                     return false;
                 }
             }
             true
         }
-        quickcheck::quickcheck(prop as fn(Vec<u8>) -> bool);
+        quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
+    }
+
+    #[test]
+    fn qc_correct_memrchr() {
+        fn prop(v: Vec<u8>, offset: u8) -> bool {
+            // test all pointer alignments
+            let uoffset = (offset & 0xF) as usize;
+            let data = if uoffset <= v.len() {
+                &v[uoffset..]
+            } else {
+                &v[..]
+            };
+            for byte in 0..256u32 {
+                let byte = byte as u8;
+                if memrchr(byte, &data) != data.iter().rposition(|elt| *elt == byte) {
+                    return false;
+                }
+            }
+            true
+        }
+        quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
     }
 }

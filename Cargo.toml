@@ -1,7 +1,7 @@
 [package]
 name = "memchr"
 version = "0.1.5"  #:version
-authors = ["Andrew Gallant <jamslam@gmail.com>"]
+authors = ["Andrew Gallant <jamslam@gmail.com>", "bluss"]
 description = "Safe interface to memchr."
 documentation = "http://burntsushi.net/rustdoc/memchr/"
 homepage = "https://github.com/BurntSushi/rust-memchr"
