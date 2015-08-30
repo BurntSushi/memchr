@@ -14,7 +14,7 @@ license = "Unlicense/MIT"
 name = "memchr"
 
 [dependencies]
-libc = "0.1.*"
+libc = "0.1"
 
 [dev-dependencies]
-quickcheck = "0.2.*"
+quickcheck = "0.2"
