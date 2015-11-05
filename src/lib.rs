@@ -78,7 +78,7 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 /// assert_eq!(memrchr(b'o', haystack), Some(17));
 /// ```
 pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
-    
+
     #[cfg(target_os = "linux")]
     fn memrchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
         // GNU's memrchr() will - unlike memchr() - error if haystack is empty.
@@ -113,6 +113,7 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     memrchr_specific(needle, haystack)
 }
 
+#[allow(dead_code)]
 #[cfg(all(not(target_os = "linux"),
           any(target_pointer_width = "32", target_pointer_width = "64")))]
 mod fallback {
