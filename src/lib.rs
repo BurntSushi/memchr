@@ -84,7 +84,7 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
         // GNU's memrchr() will - unlike memchr() - error if haystack is empty.
         if haystack.is_empty() {return None}
         let p = unsafe {
-            ffi::memrchr(
+            libc::memrchr(
                 haystack.as_ptr() as *const c_void,
                 needle as c_int,
                 haystack.len() as size_t)
@@ -250,15 +250,6 @@ mod fallback {
 
         // find the byte before the point the body loop stopped
         text[..offset].iter().rposition(|elt| *elt == x)
-    }
-}
-
-#[cfg(target_os = "linux")]
-mod ffi {
-    use libc::c_void;
-    use libc::{c_int, size_t};
-    extern {
-        pub fn memrchr(cx: *const c_void, c: c_int, n: size_t) -> *mut c_void;
     }
 }
 
