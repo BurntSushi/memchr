@@ -113,6 +113,83 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     memrchr_specific(needle, haystack)
 }
 
+/// Like `memchr`, but searches for two bytes instead of one.
+pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
+    use std::cmp;
+
+    const LO_U64: u64 = 0x0101010101010101;
+    const HI_U64: u64 = 0x8080808080808080;
+
+    // use truncation
+    const LO_USIZE: usize = LO_U64 as usize;
+    const HI_USIZE: usize = HI_U64 as usize;
+
+    #[cfg(target_pointer_width = "32")]
+    const USIZE_BYTES: usize = 4;
+    #[cfg(target_pointer_width = "64")]
+    const USIZE_BYTES: usize = 8;
+
+    /// Return `true` if `x` contains any zero byte.
+    ///
+    /// From *Matters Computational*, J. Arndt
+    ///
+    /// "The idea is to subtract one from each of the bytes and then look for
+    /// bytes where the borrow propagated all the way to the most significant
+    /// bit."
+    #[inline]
+    fn contains_zero_byte(x: usize) -> bool {
+        x.wrapping_sub(LO_USIZE) & !x & HI_USIZE != 0
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    #[inline]
+    fn repeat_byte(b: u8) -> usize {
+        let mut rep = (b as usize) << 8 | b as usize;
+        rep = rep << 16 | rep;
+        rep
+    }
+
+    #[cfg(target_pointer_width = "64")]
+    #[inline]
+    fn repeat_byte(b: u8) -> usize {
+        let mut rep = (b as usize) << 8 | b as usize;
+        rep = rep << 16 | rep;
+        rep = rep << 32 | rep;
+        rep
+    }
+
+    fn slow(b1: u8, b2: u8, haystack: &[u8]) -> Option<usize> {
+        haystack.iter().position(|&b| b == b1 || b == b2)
+    }
+
+    let len = haystack.len();
+    let ptr = haystack.as_ptr();
+    let align = (ptr as usize) & (USIZE_BYTES - 1);
+    let mut i = 0;
+    if align > 0 {
+        i = cmp::min(USIZE_BYTES - align, len);
+        if let Some(found) = slow(needle1, needle2, &haystack[..i]) {
+            return Some(found);
+        }
+    }
+    let repeated_b1 = repeat_byte(needle1);
+    let repeated_b2 = repeat_byte(needle2);
+    if len >= USIZE_BYTES {
+        while i <= len - USIZE_BYTES {
+            unsafe {
+                let u = *(ptr.offset(i as isize) as *const usize);
+                let found_ub1 = contains_zero_byte(u ^ repeated_b1);
+                let found_ub2 = contains_zero_byte(u ^ repeated_b2);
+                if found_ub1 || found_ub2 {
+                    break;
+                }
+            }
+            i += USIZE_BYTES;
+        }
+    }
+    slow(needle1, needle2, &haystack[i..]).map(|pos| i + pos)
+}
+
 #[allow(dead_code)]
 #[cfg(all(not(target_os = "linux"),
           any(target_pointer_width = "32", target_pointer_width = "64")))]
@@ -257,7 +334,7 @@ mod fallback {
 mod tests {
     extern crate quickcheck;
 
-    use super::{memchr, memrchr};
+    use super::{memchr, memrchr, memchr2};
 
     #[test]
     fn matches_one() {
@@ -343,6 +420,83 @@ mod tests {
             memrchr(needle, &haystack); true
         }
         quickcheck::quickcheck(prop as fn(u8, Vec<u8>) -> bool);
+    }
+
+    #[test]
+    fn memchr2_matches_one() {
+        assert_eq!(Some(0), memchr2(b'a', b'b', b"a"));
+        assert_eq!(Some(0), memchr2(b'a', b'b', b"b"));
+        assert_eq!(Some(0), memchr2(b'b', b'a', b"a"));
+        assert_eq!(Some(0), memchr2(b'b', b'a', b"b"));
+    }
+
+    #[test]
+    fn memchr2_matches_begin() {
+        assert_eq!(Some(0), memchr2(b'a', b'b', b"aaaa"));
+        assert_eq!(Some(0), memchr2(b'a', b'b', b"bbbb"));
+    }
+
+    #[test]
+    fn memchr2_matches_end() {
+        assert_eq!(Some(4), memchr2(b'z', b'y', b"aaaaz"));
+        assert_eq!(Some(4), memchr2(b'z', b'y', b"aaaay"));
+    }
+
+    #[test]
+    fn memchr2_matches_nul() {
+        assert_eq!(Some(4), memchr2(b'\x00', b'z', b"aaaa\x00"));
+        assert_eq!(Some(4), memchr2(b'z', b'\x00', b"aaaa\x00"));
+    }
+
+    #[test]
+    fn memchr2_matches_past_nul() {
+        assert_eq!(Some(5), memchr2(b'z', b'y', b"aaaa\x00z"));
+        assert_eq!(Some(5), memchr2(b'y', b'z', b"aaaa\x00z"));
+    }
+
+    #[test]
+    fn memchr2_no_match_empty() {
+        assert_eq!(None, memchr2(b'a', b'b', b""));
+        assert_eq!(None, memchr2(b'b', b'a', b""));
+    }
+
+    #[test]
+    fn memchr2_no_match() {
+        assert_eq!(None, memchr2(b'a', b'b', b"xyz"));
+    }
+
+    #[test]
+    fn qc_never_fail_memchr2() {
+        fn prop(needle1: u8, needle2: u8, haystack: Vec<u8>) -> bool {
+            memchr2(needle1, needle2, &haystack); true
+        }
+        quickcheck::quickcheck(prop as fn(u8, u8, Vec<u8>) -> bool);
+    }
+
+    #[test]
+    fn qc_correct_memchr2() {
+        fn prop(v: Vec<u8>, offset: u8) -> bool {
+            // test all pointer alignments
+            let uoffset = (offset & 0xF) as usize;
+            let data = if uoffset <= v.len() {
+                &v[uoffset..]
+            } else {
+                &v[..]
+            };
+            for b1 in 0..256u32 {
+                for b2 in 0..256u32 {
+                    let (b1, b2) = (b1 as u8, b2 as u8);
+                    let expected =
+                        data.iter().position(|&b| b == b1 || b == b2);
+                    let got = memchr2(b1, b2, &data);
+                    if expected != got {
+                        return false;
+                    }
+                }
+            }
+            true
+        }
+        quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
     }
 
     #[test]
