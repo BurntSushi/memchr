@@ -68,3 +68,26 @@ fn optimized_memchr2(b: &mut test::Bencher) {
     });
     b.bytes = haystack.len() as u64;
 }
+
+#[bench]
+fn iterator_memchr3(b: &mut test::Bencher) {
+    let haystack = bench_data();
+    let (needle1, needle2, needle3) = (b'a', b'b', b'c');
+    b.iter(|| {
+        assert!(haystack.iter().position(|&b| {
+            b == needle1 || b == needle2 || b == needle3
+        }).is_none());
+    });
+    b.bytes = haystack.len() as u64;
+}
+
+#[bench]
+fn optimized_memchr3(b: &mut test::Bencher) {
+    let haystack = bench_data();
+    let (needle1, needle2, needle3) = (b'a', b'b', b'c');
+    b.iter(|| {
+        assert!(memchr::memchr3(
+            needle1, needle2, needle3, &haystack).is_none());
+    });
+    b.bytes = haystack.len() as u64;
+}
