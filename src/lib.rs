@@ -240,7 +240,7 @@ mod fallback {
     use std::cmp;
     use super::{
         LO_U64, HI_U64, LO_USIZE, HI_USIZE, USIZE_BYTES,
-        contains_zero_bytes, repeat_byte,
+        contains_zero_byte, repeat_byte,
     };
 
     /// Return the first index matching the byte `a` in `text`.
