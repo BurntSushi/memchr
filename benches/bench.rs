@@ -60,6 +60,30 @@ fn iterator_memchr2(b: &mut test::Bencher) {
 }
 
 #[bench]
+fn manual_memchr2(b: &mut test::Bencher) {
+    fn find_singles(
+        sparse: &[bool],
+        text: &[u8],
+    ) -> Option<(usize, usize)> {
+        for (hi, &b) in text.iter().enumerate() {
+            if sparse[b as usize] {
+                return Some((hi, hi+1));
+            }
+        }
+        None
+    }
+
+    let haystack = bench_data();
+    let mut sparse = vec![false; 256];
+    sparse[b'a' as usize] = true;
+    sparse[b'b' as usize] = true;
+    b.iter(|| {
+        assert!(find_singles(&sparse, &haystack).is_none());
+    });
+    b.bytes = haystack.len() as u64;
+}
+
+#[bench]
 fn optimized_memchr2(b: &mut test::Bencher) {
     let haystack = bench_data();
     let (needle1, needle2) = (b'a', b'b');

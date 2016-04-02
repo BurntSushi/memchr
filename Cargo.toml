@@ -12,6 +12,7 @@ license = "Unlicense/MIT"
 
 [lib]
 name = "memchr"
+bench = false
 
 [dependencies]
 libc = "0.2.4"
