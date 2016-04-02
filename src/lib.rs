@@ -71,11 +71,13 @@ fn repeat_byte(b: u8) -> usize {
 /// let haystack = b"the quick brown fox";
 /// assert_eq!(memchr(b'k', haystack), Some(8));
 /// ```
+#[inline(always)] // reduces constant overhead
 pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     // libc memchr
     #[cfg(any(not(target_os = "windows"),
               not(any(target_pointer_width = "32",
                       target_pointer_width = "64"))))]
+    #[inline(always)] // reduces constant overhead
     fn memchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
         use libc::memchr as libc_memchr;
 
@@ -118,9 +120,11 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 /// let haystack = b"the quick brown fox";
 /// assert_eq!(memrchr(b'o', haystack), Some(17));
 /// ```
+#[inline(always)] // reduces constant overhead
 pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 
     #[cfg(target_os = "linux")]
+    #[inline(always)] // reduces constant overhead
     fn memrchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
         // GNU's memrchr() will - unlike memchr() - error if haystack is empty.
         if haystack.is_empty() {return None}
