@@ -309,7 +309,7 @@ mod fallback {
         let end_align = (ptr as usize + len) & (USIZE_BYTES - 1);
         let mut offset;
         if end_align > 0 {
-            offset = len - cmp::min(USIZE_BYTES - end_align, len);
+            offset = len - cmp::min(end_align, len);
             if let Some(index) = text[offset..].iter().rposition(|elt| *elt == x) {
                 return Some(offset + index);
             }
