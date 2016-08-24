@@ -275,6 +275,7 @@ mod fallback {
 
         if len >= 2 * USIZE_BYTES {
             while offset <= len - 2 * USIZE_BYTES {
+                debug_assert_eq!((ptr as usize + offset) % USIZE_BYTES, 0);
                 unsafe {
                     let u = *(ptr.offset(offset as isize) as *const usize);
                     let v = *(ptr.offset((offset + USIZE_BYTES) as isize) as *const usize);
@@ -321,6 +322,7 @@ mod fallback {
         let repeated_x = repeat_byte(x);
 
         while offset >= 2 * USIZE_BYTES {
+            debug_assert_eq!((ptr as usize + offset) % USIZE_BYTES, 0);
             unsafe {
                 let u = *(ptr.offset(offset as isize - 2 * USIZE_BYTES as isize) as *const usize);
                 let v = *(ptr.offset(offset as isize - USIZE_BYTES as isize) as *const usize);
