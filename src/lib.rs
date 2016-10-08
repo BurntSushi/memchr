@@ -1,7 +1,6 @@
-/*!
-This crate defines two functions, `memchr` and `memrchr`, which expose a safe interface
-to the corresponding functions in `libc`.
-*/
+//! This crate defines two functions, `memchr` and `memrchr`, which expose a safe interface
+//! to the corresponding functions in `libc`.
+//!
 
 #![deny(missing_docs)]
 #![allow(unused_imports)]
@@ -52,6 +51,42 @@ fn repeat_byte(b: u8) -> usize {
     rep
 }
 
+/// An iterator for memchr
+pub struct Memchr<'a> {
+    needle: u8,
+    // The haystack to iterate over
+    haystack: &'a [u8],
+    // The index
+    position: usize,
+}
+
+impl<'a> Memchr<'a> {
+    /// Create a new Memchr that's initalized to zero with a haystack
+    pub fn new(needle: u8, haystack: &[u8]) -> Memchr {
+        Memchr {
+            needle: needle,
+            haystack: haystack,
+            position: 0,
+        }
+    }
+}
+
+impl<'a> Iterator for Memchr<'a> {
+    type Item = usize;
+
+    fn next(&mut self) -> Option<usize> {
+        let search_result = memchr(self.needle, &self.haystack[self.position..]);
+        match search_result {
+            Some(next_position) => {
+                // Move our internal position
+                self.position = self.position + next_position + 1;
+                Some(self.position)
+            }
+            None => None,
+        }
+    }
+}
+
 /// A safe interface to `memchr`.
 ///
 /// Returns the index corresponding to the first occurrence of `needle` in
@@ -82,10 +117,9 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
         use libc::memchr as libc_memchr;
 
         let p = unsafe {
-            libc_memchr(
-                haystack.as_ptr() as *const c_void,
-                needle as c_int,
-                haystack.len() as size_t)
+            libc_memchr(haystack.as_ptr() as *const c_void,
+                        needle as c_int,
+                        haystack.len() as size_t)
         };
         if p.is_null() {
             None
@@ -127,12 +161,13 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     #[inline(always)] // reduces constant overhead
     fn memrchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
         // GNU's memrchr() will - unlike memchr() - error if haystack is empty.
-        if haystack.is_empty() {return None}
+        if haystack.is_empty() {
+            return None;
+        }
         let p = unsafe {
-            libc::memrchr(
-                haystack.as_ptr() as *const c_void,
-                needle as c_int,
-                haystack.len() as size_t)
+            libc::memrchr(haystack.as_ptr() as *const c_void,
+                          needle as c_int,
+                          haystack.len() as size_t)
         };
         if p.is_null() {
             None
@@ -195,12 +230,7 @@ pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
 }
 
 /// Like `memchr`, but searches for three bytes instead of one.
-pub fn memchr3(
-    needle1: u8,
-    needle2: u8,
-    needle3: u8,
-    haystack: &[u8],
-) -> Option<usize> {
+pub fn memchr3(needle1: u8, needle2: u8, needle3: u8, haystack: &[u8]) -> Option<usize> {
     use std::cmp;
 
     fn slow(b1: u8, b2: u8, b3: u8, haystack: &[u8]) -> Option<usize> {
@@ -242,10 +272,7 @@ pub fn memchr3(
           any(target_pointer_width = "32", target_pointer_width = "64")))]
 mod fallback {
     use std::cmp;
-    use super::{
-        LO_U64, HI_U64, LO_USIZE, HI_USIZE, USIZE_BYTES,
-        contains_zero_byte, repeat_byte,
-    };
+    use super::{LO_U64, HI_U64, LO_USIZE, HI_USIZE, USIZE_BYTES, contains_zero_byte, repeat_byte};
 
     /// Return the first index matching the byte `a` in `text`.
     pub fn memchr(x: u8, text: &[u8]) -> Option<usize> {
@@ -344,7 +371,7 @@ mod fallback {
 mod tests {
     extern crate quickcheck;
 
-    use super::{memchr, memrchr, memchr2, memchr3};
+    use super::{memchr, memrchr, memchr2, memchr3, Memchr};
 
     #[test]
     fn matches_one() {
@@ -384,7 +411,8 @@ mod tests {
     #[test]
     fn qc_never_fail() {
         fn prop(needle: u8, haystack: Vec<u8>) -> bool {
-            memchr(needle, &haystack); true
+            memchr(needle, &haystack);
+            true
         }
         quickcheck::quickcheck(prop as fn(u8, Vec<u8>) -> bool);
     }
@@ -427,7 +455,8 @@ mod tests {
     #[test]
     fn qc_never_fail_reversed() {
         fn prop(needle: u8, haystack: Vec<u8>) -> bool {
-            memrchr(needle, &haystack); true
+            memrchr(needle, &haystack);
+            true
         }
         quickcheck::quickcheck(prop as fn(u8, Vec<u8>) -> bool);
     }
@@ -478,7 +507,8 @@ mod tests {
     #[test]
     fn qc_never_fail_memchr2() {
         fn prop(needle1: u8, needle2: u8, haystack: Vec<u8>) -> bool {
-            memchr2(needle1, needle2, &haystack); true
+            memchr2(needle1, needle2, &haystack);
+            true
         }
         quickcheck::quickcheck(prop as fn(u8, u8, Vec<u8>) -> bool);
     }
@@ -531,14 +561,22 @@ mod tests {
     }
 
     #[test]
+    fn memchr_iter() {
+        let haystack = b"aaaabaaaab";
+        let mut memchr_iter = Memchr::new(b'b', haystack);
+        let first = memchr_iter.next();
+        let second = memchr_iter.next();
+        let third = memchr_iter.next();
+        assert_eq!(Some(5), first);
+        assert_eq!(Some(10), second);
+        assert_eq!(None, third);
+    }
+
+    #[test]
     fn qc_never_fail_memchr3() {
-        fn prop(
-            needle1: u8,
-            needle2: u8,
-            needle3: u8,
-            haystack: Vec<u8>,
-        ) -> bool {
-            memchr3(needle1, needle2, needle3, &haystack); true
+        fn prop(needle1: u8, needle2: u8, needle3: u8, haystack: Vec<u8>) -> bool {
+            memchr3(needle1, needle2, needle3, &haystack);
+            true
         }
         quickcheck::quickcheck(prop as fn(u8, u8, u8, Vec<u8>) -> bool);
     }
@@ -598,8 +636,7 @@ mod tests {
             for b1 in 0..256u32 {
                 for b2 in 0..256u32 {
                     let (b1, b2) = (b1 as u8, b2 as u8);
-                    let expected =
-                        data.iter().position(|&b| b == b1 || b == b2);
+                    let expected = data.iter().position(|&b| b == b1 || b == b2);
                     let got = memchr2(b1, b2, &data);
                     if expected != got {
                         return false;
