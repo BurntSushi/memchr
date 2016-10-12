@@ -238,8 +238,8 @@ pub fn memchr3(
 }
 
 #[allow(dead_code)]
-#[cfg(all(not(target_os = "linux"),
-          any(target_pointer_width = "32", target_pointer_width = "64")))]
+#[cfg(any(test, all(not(target_os = "linux"),
+          any(target_pointer_width = "32", target_pointer_width = "64"))))]
 mod fallback {
     use std::cmp;
     use super::{
@@ -275,6 +275,7 @@ mod fallback {
 
         if len >= 2 * USIZE_BYTES {
             while offset <= len - 2 * USIZE_BYTES {
+                debug_assert_eq!((ptr as usize + offset) % USIZE_BYTES, 0);
                 unsafe {
                     let u = *(ptr.offset(offset as isize) as *const usize);
                     let v = *(ptr.offset((offset + USIZE_BYTES) as isize) as *const usize);
@@ -309,7 +310,7 @@ mod fallback {
         let end_align = (ptr as usize + len) & (USIZE_BYTES - 1);
         let mut offset;
         if end_align > 0 {
-            offset = len - cmp::min(USIZE_BYTES - end_align, len);
+            offset = if end_align >= len { 0 } else { len - end_align };
             if let Some(index) = text[offset..].iter().rposition(|elt| *elt == x) {
                 return Some(offset + index);
             }
@@ -321,6 +322,7 @@ mod fallback {
         let repeated_x = repeat_byte(x);
 
         while offset >= 2 * USIZE_BYTES {
+            debug_assert_eq!((ptr as usize + offset) % USIZE_BYTES, 0);
             unsafe {
                 let u = *(ptr.offset(offset as isize - 2 * USIZE_BYTES as isize) as *const usize);
                 let v = *(ptr.offset(offset as isize - USIZE_BYTES as isize) as *const usize);
@@ -344,93 +346,145 @@ mod fallback {
 mod tests {
     extern crate quickcheck;
 
-    use super::{memchr, memrchr, memchr2, memchr3};
+    use super::{memchr2, memchr3};
+    // Use a macro to test both native and fallback impls on all configurations
+    macro_rules! memchr_tests {
+        ($mod_name:ident, $memchr:path, $memrchr:path) => {
+            mod $mod_name {
+            use super::quickcheck;
+            #[test]
+            fn matches_one() {
+                assert_eq!(Some(0), $memchr(b'a', b"a"));
+            }
 
-    #[test]
-    fn matches_one() {
-        assert_eq!(Some(0), memchr(b'a', b"a"));
-    }
+            #[test]
+            fn matches_begin() {
+                assert_eq!(Some(0), $memchr(b'a', b"aaaa"));
+            }
 
-    #[test]
-    fn matches_begin() {
-        assert_eq!(Some(0), memchr(b'a', b"aaaa"));
-    }
+            #[test]
+            fn matches_end() {
+                assert_eq!(Some(4), $memchr(b'z', b"aaaaz"));
+            }
 
-    #[test]
-    fn matches_end() {
-        assert_eq!(Some(4), memchr(b'z', b"aaaaz"));
-    }
+            #[test]
+            fn matches_nul() {
+                assert_eq!(Some(4), $memchr(b'\x00', b"aaaa\x00"));
+            }
 
-    #[test]
-    fn matches_nul() {
-        assert_eq!(Some(4), memchr(b'\x00', b"aaaa\x00"));
-    }
+            #[test]
+            fn matches_past_nul() {
+                assert_eq!(Some(5), $memchr(b'z', b"aaaa\x00z"));
+            }
 
-    #[test]
-    fn matches_past_nul() {
-        assert_eq!(Some(5), memchr(b'z', b"aaaa\x00z"));
-    }
+            #[test]
+            fn no_match_empty() {
+                assert_eq!(None, $memchr(b'a', b""));
+            }
 
-    #[test]
-    fn no_match_empty() {
-        assert_eq!(None, memchr(b'a', b""));
-    }
+            #[test]
+            fn no_match() {
+                assert_eq!(None, $memchr(b'a', b"xyz"));
+            }
 
-    #[test]
-    fn no_match() {
-        assert_eq!(None, memchr(b'a', b"xyz"));
-    }
+            #[test]
+            fn qc_never_fail() {
+                fn prop(needle: u8, haystack: Vec<u8>) -> bool {
+                    $memchr(needle, &haystack); true
+                }
+                quickcheck::quickcheck(prop as fn(u8, Vec<u8>) -> bool);
+            }
 
-    #[test]
-    fn qc_never_fail() {
-        fn prop(needle: u8, haystack: Vec<u8>) -> bool {
-            memchr(needle, &haystack); true
+            #[test]
+            fn matches_one_reversed() {
+                assert_eq!(Some(0), $memrchr(b'a', b"a"));
+            }
+
+            #[test]
+            fn matches_begin_reversed() {
+                assert_eq!(Some(3), $memrchr(b'a', b"aaaa"));
+            }
+
+            #[test]
+            fn matches_end_reversed() {
+                assert_eq!(Some(0), $memrchr(b'z', b"zaaaa"));
+            }
+
+            #[test]
+            fn matches_nul_reversed() {
+                assert_eq!(Some(4), $memrchr(b'\x00', b"aaaa\x00"));
+            }
+
+            #[test]
+            fn matches_past_nul_reversed() {
+                assert_eq!(Some(0), $memrchr(b'z', b"z\x00aaaa"));
+            }
+
+            #[test]
+            fn no_match_empty_reversed() {
+                assert_eq!(None, $memrchr(b'a', b""));
+            }
+
+            #[test]
+            fn no_match_reversed() {
+                assert_eq!(None, $memrchr(b'a', b"xyz"));
+            }
+
+            #[test]
+            fn qc_never_fail_reversed() {
+                fn prop(needle: u8, haystack: Vec<u8>) -> bool {
+                    $memrchr(needle, &haystack); true
+                }
+                quickcheck::quickcheck(prop as fn(u8, Vec<u8>) -> bool);
+            }
+
+            #[test]
+            fn qc_correct_memchr() {
+                fn prop(v: Vec<u8>, offset: u8) -> bool {
+                    // test all pointer alignments
+                    let uoffset = (offset & 0xF) as usize;
+                    let data = if uoffset <= v.len() {
+                        &v[uoffset..]
+                    } else {
+                        &v[..]
+                    };
+                    for byte in 0..256u32 {
+                        let byte = byte as u8;
+                        if $memchr(byte, &data) != data.iter().position(|elt| *elt == byte) {
+                            return false;
+                        }
+                    }
+                    true
+                }
+                quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
+            }
+
+            #[test]
+            fn qc_correct_memrchr() {
+                fn prop(v: Vec<u8>, offset: u8) -> bool {
+                    // test all pointer alignments
+                    let uoffset = (offset & 0xF) as usize;
+                    let data = if uoffset <= v.len() {
+                        &v[uoffset..]
+                    } else {
+                        &v[..]
+                    };
+                    for byte in 0..256u32 {
+                        let byte = byte as u8;
+                        if $memrchr(byte, &data) != data.iter().rposition(|elt| *elt == byte) {
+                            return false;
+                        }
+                    }
+                    true
+                }
+                quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
+            }
+            }
         }
-        quickcheck::quickcheck(prop as fn(u8, Vec<u8>) -> bool);
     }
 
-    #[test]
-    fn matches_one_reversed() {
-        assert_eq!(Some(0), memrchr(b'a', b"a"));
-    }
-
-    #[test]
-    fn matches_begin_reversed() {
-        assert_eq!(Some(3), memrchr(b'a', b"aaaa"));
-    }
-
-    #[test]
-    fn matches_end_reversed() {
-        assert_eq!(Some(0), memrchr(b'z', b"zaaaa"));
-    }
-
-    #[test]
-    fn matches_nul_reversed() {
-        assert_eq!(Some(4), memrchr(b'\x00', b"aaaa\x00"));
-    }
-
-    #[test]
-    fn matches_past_nul_reversed() {
-        assert_eq!(Some(0), memrchr(b'z', b"z\x00aaaa"));
-    }
-
-    #[test]
-    fn no_match_empty_reversed() {
-        assert_eq!(None, memrchr(b'a', b""));
-    }
-
-    #[test]
-    fn no_match_reversed() {
-        assert_eq!(None, memrchr(b'a', b"xyz"));
-    }
-
-    #[test]
-    fn qc_never_fail_reversed() {
-        fn prop(needle: u8, haystack: Vec<u8>) -> bool {
-            memrchr(needle, &haystack); true
-        }
-        quickcheck::quickcheck(prop as fn(u8, Vec<u8>) -> bool);
-    }
+    memchr_tests! { native, ::memchr, ::memrchr }
+    memchr_tests! { fallback, ::fallback::memchr, ::fallback::memrchr }
 
     #[test]
     fn memchr2_matches_one() {
@@ -541,73 +595,5 @@ mod tests {
             memchr3(needle1, needle2, needle3, &haystack); true
         }
         quickcheck::quickcheck(prop as fn(u8, u8, u8, Vec<u8>) -> bool);
-    }
-
-    #[test]
-    fn qc_correct_memchr() {
-        fn prop(v: Vec<u8>, offset: u8) -> bool {
-            // test all pointer alignments
-            let uoffset = (offset & 0xF) as usize;
-            let data = if uoffset <= v.len() {
-                &v[uoffset..]
-            } else {
-                &v[..]
-            };
-            for byte in 0..256u32 {
-                let byte = byte as u8;
-                if memchr(byte, &data) != data.iter().position(|elt| *elt == byte) {
-                    return false;
-                }
-            }
-            true
-        }
-        quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
-    }
-
-    #[test]
-    fn qc_correct_memrchr() {
-        fn prop(v: Vec<u8>, offset: u8) -> bool {
-            // test all pointer alignments
-            let uoffset = (offset & 0xF) as usize;
-            let data = if uoffset <= v.len() {
-                &v[uoffset..]
-            } else {
-                &v[..]
-            };
-            for byte in 0..256u32 {
-                let byte = byte as u8;
-                if memrchr(byte, &data) != data.iter().rposition(|elt| *elt == byte) {
-                    return false;
-                }
-            }
-            true
-        }
-        quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
-    }
-
-    #[test]
-    fn qc_correct_memchr2() {
-        fn prop(v: Vec<u8>, offset: u8) -> bool {
-            // test all pointer alignments
-            let uoffset = (offset & 0xF) as usize;
-            let data = if uoffset <= v.len() {
-                &v[uoffset..]
-            } else {
-                &v[..]
-            };
-            for b1 in 0..256u32 {
-                for b2 in 0..256u32 {
-                    let (b1, b2) = (b1 as u8, b2 as u8);
-                    let expected =
-                        data.iter().position(|&b| b == b1 || b == b2);
-                    let got = memchr2(b1, b2, &data);
-                    if expected != got {
-                        return false;
-                    }
-                }
-            }
-            true
-        }
-        quickcheck::quickcheck(prop as fn(Vec<u8>, u8) -> bool);
     }
 }
