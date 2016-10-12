@@ -1,6 +1,7 @@
-//! This crate defines two functions, `memchr` and `memrchr`, which expose a safe interface
-//! to the corresponding functions in `libc`.
-//!
+/*!
+This crate defines two functions, `memchr` and `memrchr`, which expose a safe interface
+to the corresponding functions in `libc`.
+*/
 
 #![deny(missing_docs)]
 #![allow(unused_imports)]
@@ -58,15 +59,17 @@ pub struct Memchr<'a> {
     haystack: &'a [u8],
     // The index
     position: usize,
+    rposition: usize,
 }
 
 impl<'a> Memchr<'a> {
-    /// Create a new Memchr that's initalized to zero with a haystack
+    /// Creates a new iterator that yields all positions of needle in haystack.
     pub fn new(needle: u8, haystack: &[u8]) -> Memchr {
         Memchr {
             needle: needle,
             haystack: haystack,
             position: 0,
+            rposition: 0,
         }
     }
 }
@@ -75,12 +78,28 @@ impl<'a> Iterator for Memchr<'a> {
     type Item = usize;
 
     fn next(&mut self) -> Option<usize> {
-        let search_result = memchr(self.needle, &self.haystack[self.position..]);
+        let search_result = memchr(self.needle, &self.haystack);
         match search_result {
-            Some(next_position) => {
+            Some(index) => {
                 // Move our internal position
-                self.position = self.position + next_position + 1;
+                self.haystack = self.haystack.split_at(index + 1).1;
+                self.position = self.position + index + 1;
                 Some(self.position)
+            }
+            None => None,
+        }
+    }
+}
+
+impl<'a> DoubleEndedIterator for Memchr<'a> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        let search_result = memrchr(self.needle, &self.haystack);
+        match search_result {
+            Some(index) => {
+                // Move our internal position
+                self.haystack = self.haystack.split_at(index).0;
+                self.rposition = self.position + index + 1;
+                Some(self.rposition)
             }
             None => None,
         }
@@ -193,6 +212,46 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     memrchr_specific(needle, haystack)
 }
 
+/// An iterator for Memchr2
+pub struct Memchr2<'a> {
+    needle1: u8,
+    needle2: u8,
+    // The haystack to iterate over
+    haystack: &'a [u8],
+    // The index
+    position: usize,
+}
+
+impl<'a> Memchr2<'a> {
+    /// Creates a new iterator that yields all positions of needle in haystack.
+    pub fn new(needle1: u8, needle2: u8, haystack: &[u8]) -> Memchr2 {
+        Memchr2 {
+            needle1: needle1,
+            needle2: needle2,
+            haystack: haystack,
+            position: 0,
+        }
+    }
+}
+
+impl<'a> Iterator for Memchr2<'a> {
+    type Item = usize;
+
+    fn next(&mut self) -> Option<usize> {
+        let search_result = memchr2(self.needle1, self.needle2, &self.haystack);
+        match search_result {
+            Some(index) => {
+                // Move our internal position
+                self.haystack = self.haystack.split_at(index + 1).1;
+                self.position = self.position + index + 1;
+                Some(self.position)
+            }
+            None => None,
+        }
+    }
+}
+
+
 /// Like `memchr`, but searches for two bytes instead of one.
 pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
     use std::cmp;
@@ -227,6 +286,47 @@ pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
         }
     }
     slow(needle1, needle2, &haystack[i..]).map(|pos| i + pos)
+}
+
+/// An iterator for Memchr3
+pub struct Memchr3<'a> {
+    needle1: u8,
+    needle2: u8,
+    needle3: u8,
+    // The haystack to iterate over
+    haystack: &'a [u8],
+    // The index
+    position: usize,
+}
+
+impl<'a> Memchr3<'a> {
+    /// Create a new Memchr2 that's initalized to zero with a haystack
+    pub fn new(needle1: u8, needle2: u8, needle3: u8, haystack: &[u8]) -> Memchr3 {
+        Memchr3 {
+            needle1: needle1,
+            needle2: needle2,
+            needle3: needle3,
+            haystack: haystack,
+            position: 0,
+        }
+    }
+}
+
+impl<'a> Iterator for Memchr3<'a> {
+    type Item = usize;
+
+    fn next(&mut self) -> Option<usize> {
+        let search_result = memchr3(self.needle1, self.needle2, self.needle3, &self.haystack);
+        match search_result {
+            Some(index) => {
+                // Move our internal position
+                self.haystack = self.haystack.split_at(index + 1).1;
+                self.position = self.position + index + 1;
+                Some(self.position)
+            }
+            None => None,
+        }
+    }
 }
 
 /// Like `memchr`, but searches for three bytes instead of one.
@@ -371,7 +471,7 @@ mod fallback {
 mod tests {
     extern crate quickcheck;
 
-    use super::{memchr, memrchr, memchr2, memchr3, Memchr};
+    use super::{memchr, memrchr, memchr2, memchr3, Memchr, Memchr2, Memchr3};
 
     #[test]
     fn matches_one() {
@@ -570,6 +670,47 @@ mod tests {
         assert_eq!(Some(5), first);
         assert_eq!(Some(10), second);
         assert_eq!(None, third);
+    }
+
+    #[test]
+    fn memchr2_iter() {
+        let haystack = b"ab";
+        let mut memchr_iter = Memchr2::new(b'a', b'b', haystack);
+        let first = memchr_iter.next();
+        let second = memchr_iter.next();
+        let third = memchr_iter.next();
+        assert_eq!(Some(1), first);
+        assert_eq!(Some(2), second);
+        assert_eq!(None, third);
+    }
+
+    #[test]
+    fn memchr3_iter() {
+        let haystack = b"abc";
+        let mut memchr_iter = Memchr3::new(b'a', b'b', b'c', haystack);
+        let first = memchr_iter.next();
+        let second = memchr_iter.next();
+        let third = memchr_iter.next();
+        let fourth = memchr_iter.next();
+        assert_eq!(Some(1), first);
+        assert_eq!(Some(2), second);
+        assert_eq!(Some(3), third);
+        assert_eq!(None, fourth);
+    }
+
+    #[test]
+    fn memchr_reverse_iter() {
+        let haystack = b"aaaabaaaabaaaab";
+        let mut memchr_iter = Memchr::new(b'b', haystack);
+        let first = memchr_iter.next();
+        let second = memchr_iter.next_back();
+        let third = memchr_iter.next();
+        let fourth = memchr_iter.next_back();
+
+        assert_eq!(Some(5), first);
+        assert_eq!(Some(15), second);
+        assert_eq!(Some(10), third);
+        assert_eq!(None, fourth);
     }
 
     #[test]
