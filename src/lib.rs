@@ -98,8 +98,13 @@ impl<'a> DoubleEndedIterator for Memchr<'a> {
             Some(index) => {
                 // Move our internal position
                 self.haystack = self.haystack.split_at(index).0;
-                self.rposition = self.position + index + 1;
-                Some(self.rposition)
+                if self.rposition > 0{
+                    //memrchr has been used once already.
+                    self.rposition = self.rposition - index;
+                    return Some(self.rposition);
+                }else{
+                    return Some(self.position + index+1);
+                }
             }
             None => None,
         }
@@ -763,6 +768,22 @@ mod tests {
         assert_eq!(Some(15), second);
         assert_eq!(Some(10), third);
         assert_eq!(None, fourth);
+    }
+
+    #[test]
+    fn memrchr_iter(){
+        let haystack = b"aaaabaaaabaaaab";
+        let mut memchr_iter = Memchr::new(b'b', haystack);
+        let first = memchr_iter.next_back();
+        let second = memchr_iter.next_back();
+        let third = memchr_iter.next_back();
+        let fourth = memchr_iter.next_back();
+
+        assert_eq!(Some(15), first);
+        assert_eq!(Some(10), second);
+        assert_eq!(Some(5), third);
+        assert_eq!(None, fourth);
+
     }
 
     #[test]
