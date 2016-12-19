@@ -15,7 +15,7 @@ name = "memchr"
 bench = false
 
 [dependencies]
-libc = "0.2.4"
+libc = "^0.2.4"
 
 [dev-dependencies]
 quickcheck = "0.2"
