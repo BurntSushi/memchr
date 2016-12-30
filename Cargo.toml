@@ -3,7 +3,7 @@ name = "memchr"
 version = "0.1.11"  #:version
 authors = ["Andrew Gallant <jamslam@gmail.com>", "bluss"]
 description = "Safe interface to memchr."
-documentation = "http://burntsushi.net/rustdoc/memchr/"
+documentation = "https://docs.rs/memchr/"
 homepage = "https://github.com/BurntSushi/rust-memchr"
 repository = "https://github.com/BurntSushi/rust-memchr"
 readme = "README.md"
@@ -15,7 +15,7 @@ name = "memchr"
 bench = false
 
 [dependencies]
-libc = "0.2.4"
+libc = "0.2.18"
 
 [dev-dependencies]
-quickcheck = "0.2"
+quickcheck = "0.4.1"

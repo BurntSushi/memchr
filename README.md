@@ -1,6 +1,6 @@
-This crate provides two functions, `memchr` and `memrchr`, which exposes a
-safe interface to the corresponding functions in `libc`. This crate also
-provides fallback implementations when either function is unavailable.
+This crate provides a safe interface `libc`'s `memchr` and `memrchr`.
+This crate also provides fallback implementations when either function is
+unavailable.
 
 [![Build status](https://api.travis-ci.org/BurntSushi/rust-memchr.png)](https://travis-ci.org/BurntSushi/rust-memchr)
 [![Build status](https://ci.appveyor.com/api/projects/status/8i9484t8l4w7uql0/branch/master?svg=true)](https://ci.appveyor.com/project/BurntSushi/rust-memchr/branch/master)
@@ -11,7 +11,7 @@ Dual-licensed under MIT or the [UNLICENSE](http://unlicense.org).
 
 ### Documentation
 
-[http://burntsushi.net/rustdoc/memchr/](http://burntsushi.net/rustdoc/memchr/).
+[https://docs.rs/memchr](https://docs.rs/memchr)
 
 
 ### Performance
