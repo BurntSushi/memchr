@@ -6,10 +6,21 @@ to the corresponding functions in `libc`.
 #![deny(missing_docs)]
 #![allow(unused_imports)]
 
+#![cfg_attr(not(feature = "use_std"), no_std)]
+
+#[cfg(all(test, not(feature = "use_std")))]
+#[macro_use]
+extern crate std;
+
 extern crate libc;
 
 use libc::c_void;
 use libc::{c_int, size_t};
+
+#[cfg(feature = "use_std")]
+use std::cmp;
+#[cfg(not(feature = "use_std"))]
+use core::cmp;
 
 const LO_U64: u64 = 0x0101010101010101;
 const HI_U64: u64 = 0x8080808080808080;
@@ -259,8 +270,6 @@ impl<'a> Iterator for Memchr2<'a> {
 
 /// Like `memchr`, but searches for two bytes instead of one.
 pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
-    use std::cmp;
-
     fn slow(b1: u8, b2: u8, haystack: &[u8]) -> Option<usize> {
         haystack.iter().position(|&b| b == b1 || b == b2)
     }
@@ -336,8 +345,6 @@ impl<'a> Iterator for Memchr3<'a> {
 
 /// Like `memchr`, but searches for three bytes instead of one.
 pub fn memchr3(needle1: u8, needle2: u8, needle3: u8, haystack: &[u8]) -> Option<usize> {
-    use std::cmp;
-
     fn slow(b1: u8, b2: u8, b3: u8, haystack: &[u8]) -> Option<usize> {
         haystack.iter().position(|&b| b == b1 || b == b2 || b == b3)
     }
@@ -376,7 +383,11 @@ pub fn memchr3(needle1: u8, needle2: u8, needle3: u8, haystack: &[u8]) -> Option
 #[cfg(any(test, all(not(target_os = "linux"),
           any(target_pointer_width = "32", target_pointer_width = "64"))))]
 mod fallback {
+    #[cfg(feature = "use_std")]
     use std::cmp;
+    #[cfg(not(feature = "use_std"))]
+    use core::cmp;
+
     use super::{LO_U64, HI_U64, LO_USIZE, HI_USIZE, USIZE_BYTES, contains_zero_byte, repeat_byte};
 
     /// Return the first index matching the byte `a` in `text`.
@@ -477,12 +488,14 @@ mod fallback {
 #[cfg(test)]
 mod tests {
     extern crate quickcheck;
+    use std::prelude::v1::*;
 
     use super::{memchr, memrchr, memchr2, memchr3, Memchr, Memchr2, Memchr3};
     // Use a macro to test both native and fallback impls on all configurations
     macro_rules! memchr_tests {
         ($mod_name:ident, $memchr:path, $memrchr:path) => {
             mod $mod_name {
+            use std::prelude::v1::*;
             use super::quickcheck;
             #[test]
             fn matches_one() {

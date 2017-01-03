@@ -5,6 +5,7 @@ rust:
   - beta
   - nightly
 script:
+  - cargo build --verbose --no-default-features
   - cargo build --verbose
   - cargo test --verbose
   - cargo doc

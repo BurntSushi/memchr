@@ -13,6 +13,15 @@ Dual-licensed under MIT or the [UNLICENSE](http://unlicense.org).
 
 [https://docs.rs/memchr](https://docs.rs/memchr)
 
+### no_std
+
+memchr links to the standard library by default, but you can disable the
+`use_std` feature if you want to use it in a `#![no_std]` crate:
+
+```toml
+[dependencies]
+memchr = { version = "1.0", default-features = false }
+```
 
 ### Performance
 
