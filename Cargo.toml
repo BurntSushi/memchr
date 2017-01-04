@@ -23,3 +23,6 @@ libc = { version = "0.2.18", default-features = false }
 
 [dev-dependencies]
 quickcheck = "0.4.1"
+
+[profile.test]
+opt-level = 3
