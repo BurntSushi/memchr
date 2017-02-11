@@ -83,6 +83,30 @@ impl<'a> Memchr<'a> {
             rposition: 0,
         }
     }
+
+    /// Get a reference to the haystack currently being iterated over.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # fn main() {
+    /// # use memchr::Memchr;
+    ///
+    /// let haystack = "Hello, world!\n, How are you\r\n";
+    /// let mut memchr = Memchr::new(b'\n', &haystack.as_bytes());
+    /// while let Some(pos) = memchr.next() {
+    ///     if let Some(&b'\r') = memchr.haystack().get(pos - 1) {
+    ///         println!("Newline pattern is \\r\\n");
+    ///     } else {
+    ///         println!("Newline pattern is \\n");
+    ///     }
+    /// }
+    ///
+    /// # }
+    /// ```
+    pub fn haystack(&self) -> &[u8] {
+        &self.haystack
+    }
 }
 
 impl<'a> Iterator for Memchr<'a> {
@@ -248,6 +272,11 @@ impl<'a> Memchr2<'a> {
             position: 0,
         }
     }
+
+    /// Get a reference to the haystack currently being iterated over.
+    pub fn haystack(&self) -> &[u8] {
+        &self.haystack
+    }
 }
 
 impl<'a> Iterator for Memchr2<'a> {
@@ -323,6 +352,11 @@ impl<'a> Memchr3<'a> {
             haystack: haystack,
             position: 0,
         }
+    }
+
+    /// Get a reference to the haystack currently being iterated over.
+    pub fn haystack(&self) -> &[u8] {
+        &self.haystack
     }
 }
 
