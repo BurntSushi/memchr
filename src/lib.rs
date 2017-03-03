@@ -109,11 +109,11 @@ impl<'a> DoubleEndedIterator for Memchr<'a> {
             Some(index) => {
                 // Move our internal position
                 self.haystack = self.haystack.split_at(index).0;
-                if self.rposition > 0{
+                if self.rposition > 0 {
                     //memrchr has been used once already.
                     self.rposition = self.rposition - index;
                     return Some(self.rposition);
-                }else{
+                } else {
                     return Some(self.position + index+1);
                 }
             }
