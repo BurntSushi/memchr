@@ -112,9 +112,9 @@ impl<'a> DoubleEndedIterator for Memchr<'a> {
                 if self.rposition > 0 {
                     //memrchr has been used once already.
                     self.rposition = self.rposition - index;
-                    return Some(self.rposition);
+                    Some(self.rposition)
                 } else {
-                    return Some(self.position + index+1);
+                    Some(self.position + index+1)
                 }
             }
             None => None,
