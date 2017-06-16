@@ -70,7 +70,6 @@ pub struct Memchr<'a> {
     haystack: &'a [u8],
     // The index
     position: usize,
-    rposition: usize,
 }
 
 impl<'a> Memchr<'a> {
@@ -80,7 +79,6 @@ impl<'a> Memchr<'a> {
             needle: needle,
             haystack: haystack,
             position: 0,
-            rposition: 0,
         }
     }
 }
@@ -109,13 +107,7 @@ impl<'a> DoubleEndedIterator for Memchr<'a> {
             Some(index) => {
                 // Move our internal position
                 self.haystack = self.haystack.split_at(index).0;
-                if self.rposition > 0 {
-                    //memrchr has been used once already.
-                    self.rposition = self.rposition - index;
-                    Some(self.rposition)
-                } else {
-                    Some(self.position + index+1)
-                }
+                Some(self.position + index + 1)
             }
             None => None,
         }
