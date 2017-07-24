@@ -10,6 +10,10 @@ readme = "README.md"
 keywords = ["memchr", "char", "scan", "strchr", "string"]
 license = "Unlicense/MIT"
 
+[badges]
+travis-ci = { repository = "BurntSushi/rust-memchr" }
+appveyor = { repository = "BurntSushi/rust-memchr" }
+
 [lib]
 name = "memchr"
 bench = false
