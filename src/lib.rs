@@ -123,6 +123,10 @@ impl<'a> Iterator for Memchr<'a> {
     fn next(&mut self) -> Option<usize> {
         iter_next!(self, memchr(self.needle, &self.haystack))
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (0, Some(self.haystack.len()))
+    }
 }
 
 impl<'a> DoubleEndedIterator for Memchr<'a> {
@@ -265,6 +269,10 @@ impl<'a> Iterator for Memchr2<'a> {
     fn next(&mut self) -> Option<usize> {
         iter_next!(self, memchr2(self.needle1, self.needle2, &self.haystack))
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (0, Some(self.haystack.len()))
+    }
 }
 
 
@@ -331,6 +339,10 @@ impl<'a> Iterator for Memchr3<'a> {
 
     fn next(&mut self) -> Option<usize> {
         iter_next!(self, memchr3(self.needle1, self.needle2, self.needle3, &self.haystack))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (0, Some(self.haystack.len()))
     }
 }
 
@@ -973,6 +985,22 @@ mod tests {
             let needle3 = 2;
             let answer = positions3(needle1, needle2, needle3, &data);
             answer.eq(Memchr3::new(needle1, needle2, needle3, &data))
+        }
+
+        fn qc_memchr1_iter_size_hint(data: Vec<u8>) -> bool {
+            // test that the size hint is within reasonable bounds
+            let needle = 0;
+            let mut iter = Memchr::new(needle, &data);
+            let real_total = data.iter().filter(|&&elt| elt == needle).count();
+            let mut found = 0;
+
+            while let Some(index) = iter.next() {
+                let (lower, upper) = iter.size_hint();
+                found += 1;
+                assert!(lower <= real_total - found);
+                assert!(upper.unwrap() <= data.len() - index);
+            }
+            true
         }
     }
 }
