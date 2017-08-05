@@ -22,7 +22,7 @@ use_std = ["libc/use_std"]
 libc = { version = "0.2.18", default-features = false }
 
 [dev-dependencies]
-quickcheck = "0.4.1"
+quickcheck = { version = "0.4.1", default-features = false }
 
 [profile.test]
 opt-level = 3
