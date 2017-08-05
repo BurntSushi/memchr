@@ -499,7 +499,7 @@ mod tests {
         ($mod_name:ident, $memchr:path, $memrchr:path) => {
             mod $mod_name {
             use std::prelude::v1::*;
-            use super::quickcheck;
+            use quickcheck;
             #[test]
             fn matches_one() {
                 assert_eq!(Some(0), $memchr(b'a', b"a"));
