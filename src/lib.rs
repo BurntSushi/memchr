@@ -991,13 +991,13 @@ mod tests {
             // test that the size hint is within reasonable bounds
             let needle = 0;
             let mut iter = Memchr::new(needle, &data);
-            let real_total = data.iter().filter(|&&elt| elt == needle).count();
-            let mut found = 0;
+            let mut real_count = data.iter().filter(|&&elt| elt == needle).count();
 
             while let Some(index) = iter.next() {
+                real_count -= 1;
                 let (lower, upper) = iter.size_hint();
-                found += 1;
-                assert!(lower <= real_total - found);
+                assert!(lower <= real_count);
+                assert!(upper.unwrap() >= real_count);
                 assert!(upper.unwrap() <= data.len() - index);
             }
             true
