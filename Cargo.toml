@@ -19,11 +19,11 @@ name = "memchr"
 bench = false
 
 [features]
-default = ["use_std"]
-use_std = ["libc/use_std"]
+default = ["use_std", "libc"]
+use_std = ["libc", "libc/use_std"]
 
 [dependencies]
-libc = { version = "0.2.18", default-features = false }
+libc = { version = "0.2.18", default-features = false, optional = true }
 
 [dev-dependencies]
 quickcheck = "0.4.1"
