@@ -335,7 +335,12 @@ pub struct Memchr3<'a> {
 
 impl<'a> Memchr3<'a> {
     /// Create a new Memchr2 that's initalized to zero with a haystack
-    pub fn new(needle1: u8, needle2: u8, needle3: u8, haystack: &[u8]) -> Memchr3 {
+    pub fn new(
+        needle1: u8,
+        needle2: u8,
+        needle3: u8,
+        haystack: &[u8],
+    ) -> Memchr3 {
         Memchr3 {
             needle1: needle1,
             needle2: needle2,
@@ -350,7 +355,10 @@ impl<'a> Iterator for Memchr3<'a> {
     type Item = usize;
 
     fn next(&mut self) -> Option<usize> {
-        iter_next!(self, memchr3(self.needle1, self.needle2, self.needle3, &self.haystack))
+        iter_next!(
+            self,
+            memchr3(self.needle1, self.needle2, self.needle3, &self.haystack)
+        )
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -359,7 +367,12 @@ impl<'a> Iterator for Memchr3<'a> {
 }
 
 /// Like `memchr`, but searches for three bytes instead of one.
-pub fn memchr3(needle1: u8, needle2: u8, needle3: u8, haystack: &[u8]) -> Option<usize> {
+pub fn memchr3(
+    needle1: u8,
+    needle2: u8,
+    needle3: u8,
+    haystack: &[u8],
+) -> Option<usize> {
     fn slow(b1: u8, b2: u8, b3: u8, haystack: &[u8]) -> Option<usize> {
         haystack.iter().position(|&b| b == b1 || b == b2 || b == b3)
     }
@@ -403,14 +416,17 @@ mod fallback {
     #[cfg(not(feature = "use_std"))]
     use core::cmp;
 
-    use super::{LO_U64, HI_U64, LO_USIZE, HI_USIZE, USIZE_BYTES, contains_zero_byte, repeat_byte};
+    use super::{
+        LO_U64, HI_U64, LO_USIZE, HI_USIZE, USIZE_BYTES,
+        contains_zero_byte, repeat_byte,
+    };
 
     /// Return the first index matching the byte `a` in `text`.
     pub fn memchr(x: u8, text: &[u8]) -> Option<usize> {
         // Scan for a single byte value by reading two `usize` words at a time.
         //
         // Split `text` in three parts
-        // - unaligned inital part, before the first word aligned address in text
+        // - unaligned inital part, before first word aligned address in text
         // - body, scan by 2 words at a time
         // - the last remaining part, < 2 word size
         let len = text.len();
@@ -421,7 +437,8 @@ mod fallback {
         let mut offset;
         if align > 0 {
             offset = cmp::min(USIZE_BYTES - align, len);
-            if let Some(index) = text[..offset].iter().position(|elt| *elt == x) {
+            let pos = text[..offset].iter().position(|elt| *elt == x);
+            if let Some(index) = pos {
                 return Some(index);
             }
         } else {
@@ -469,7 +486,8 @@ mod fallback {
         let mut offset;
         if end_align > 0 {
             offset = if end_align >= len { 0 } else { len - end_align };
-            if let Some(index) = text[offset..].iter().rposition(|elt| *elt == x) {
+            let pos = text[offset..].iter().rposition(|elt| *elt == x);
+            if let Some(index) = pos {
                 return Some(offset + index);
             }
         } else {
@@ -610,7 +628,8 @@ mod tests {
                     };
                     for byte in 0..256u32 {
                         let byte = byte as u8;
-                        if $memchr(byte, &data) != data.iter().position(|elt| *elt == byte) {
+                        let pos = data.iter().position(|elt| *elt == byte);
+                        if $memchr(byte, &data) != pos {
                             return false;
                         }
                     }
@@ -631,7 +650,8 @@ mod tests {
                     };
                     for byte in 0..256u32 {
                         let byte = byte as u8;
-                        if $memrchr(byte, &data) != data.iter().rposition(|elt| *elt == byte) {
+                        let pos = data.iter().rposition(|elt| *elt == byte);
+                        if $memrchr(byte, &data) != pos {
                             return false;
                         }
                     }
@@ -745,7 +765,8 @@ mod tests {
         assert_eq!(None, memchr3(b'a', b'b', b'c', b"xyz"));
     }
 
-    // return an iterator of the 0-based indices of haystack that match the needle
+    // return an iterator of the 0-based indices of haystack that match the
+    // needle
     fn positions1<'a>(needle: u8, haystack: &'a [u8])
         -> Box<DoubleEndedIterator<Item=usize> + 'a>
     {
@@ -758,19 +779,26 @@ mod tests {
     fn positions2<'a>(needle1: u8, needle2: u8, haystack: &'a [u8])
         -> Box<DoubleEndedIterator<Item=usize> + 'a>
     {
-        Box::new(haystack.iter()
-                         .enumerate()
-                         .filter(move |&(_, &elt)| elt == needle1 || elt == needle2)
-                         .map(|t| t.0))
+        Box::new(haystack
+            .iter()
+            .enumerate()
+            .filter(move |&(_, &elt)| elt == needle1 || elt == needle2)
+            .map(|t| t.0))
     }
 
-    fn positions3<'a>(needle1: u8, needle2: u8, needle3: u8, haystack: &'a [u8])
-        -> Box<DoubleEndedIterator<Item=usize> + 'a>
-    {
-        Box::new(haystack.iter()
-                         .enumerate()
-                         .filter(move |&(_, &elt)| elt == needle1 || elt == needle2 || elt == needle3)
-                         .map(|t| t.0))
+    fn positions3<'a>(
+        needle1: u8,
+        needle2: u8,
+        needle3: u8,
+        haystack: &'a [u8],
+    ) -> Box<DoubleEndedIterator<Item=usize> + 'a> {
+        Box::new(haystack
+            .iter()
+            .enumerate()
+            .filter(move |&(_, &elt)| {
+                elt == needle1 || elt == needle2 || elt == needle3
+            })
+            .map(|t| t.0))
     }
 
     #[test]
@@ -852,7 +880,12 @@ mod tests {
 
     #[test]
     fn qc_never_fail_memchr3() {
-        fn prop(needle1: u8, needle2: u8, needle3: u8, haystack: Vec<u8>) -> bool {
+        fn prop(
+            needle1: u8,
+            needle2: u8,
+            needle3: u8,
+            haystack: Vec<u8>,
+        ) -> bool {
             memchr3(needle1, needle2, needle3, &haystack);
             true
         }
@@ -871,7 +904,8 @@ mod tests {
             };
             for byte in 0..256u32 {
                 let byte = byte as u8;
-                if memchr(byte, &data) != data.iter().position(|elt| *elt == byte) {
+                let pos = data.iter().position(|elt| *elt == byte);
+                if memchr(byte, &data) != pos {
                     return false;
                 }
             }
@@ -892,7 +926,8 @@ mod tests {
             };
             for byte in 0..256u32 {
                 let byte = byte as u8;
-                if memrchr(byte, &data) != data.iter().rposition(|elt| *elt == byte) {
+                let pos = data.iter().rposition(|elt| *elt == byte);
+                if memrchr(byte, &data) != pos {
                     return false;
                 }
             }
@@ -914,7 +949,9 @@ mod tests {
             for b1 in 0..256u32 {
                 for b2 in 0..256u32 {
                     let (b1, b2) = (b1 as u8, b2 as u8);
-                    let expected = data.iter().position(|&b| b == b1 || b == b2);
+                    let expected = data
+                        .iter()
+                        .position(|&b| b == b1 || b == b2);
                     let got = memchr2(b1, b2, &data);
                     if expected != got {
                         return false;
@@ -967,7 +1004,8 @@ mod tests {
             if take_side.is_empty() { take_side.push(true) };
 
             let iter = Memchr::new(needle, &data);
-            let all_found = double_ended_take(iter, take_side.iter().cycle().cloned());
+            let all_found = double_ended_take(
+                iter, take_side.iter().cycle().cloned());
 
             all_found.iter().cloned().eq(positions1(needle, &data))
         }
@@ -1003,7 +1041,10 @@ mod tests {
             // test that the size hint is within reasonable bounds
             let needle = 0;
             let mut iter = Memchr::new(needle, &data);
-            let mut real_count = data.iter().filter(|&&elt| elt == needle).count();
+            let mut real_count = data
+                .iter()
+                .filter(|&&elt| elt == needle)
+                .count();
 
             while let Some(index) = iter.next() {
                 real_count -= 1;
