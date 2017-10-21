@@ -5,6 +5,7 @@ interface to the corresponding functions in `libc`.
 
 #![deny(missing_docs)]
 #![allow(unused_imports)]
+#![doc(html_root_url = "https://docs.rs/memchr/2.0.0")]
 
 #![cfg_attr(not(feature = "use_std"), no_std)]
 
