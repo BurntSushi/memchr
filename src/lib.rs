@@ -13,16 +13,16 @@ interface to the corresponding functions in `libc`.
 #[macro_use]
 extern crate std;
 
-#[cfg(feature = "libc")]
+#[cfg(all(feature = "libc", not(target_arch = "wasm32")))]
 extern crate libc;
 
 #[macro_use]
 #[cfg(test)]
 extern crate quickcheck;
 
-#[cfg(feature = "libc")]
+#[cfg(all(feature = "libc", not(target_arch = "wasm32")))]
 use libc::c_void;
-#[cfg(feature = "libc")]
+#[cfg(all(feature = "libc", not(target_arch = "wasm32")))]
 use libc::{c_int, size_t};
 
 #[cfg(feature = "use_std")]
@@ -162,6 +162,7 @@ impl<'a> DoubleEndedIterator for Memchr<'a> {
 pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     // libc memchr
     #[cfg(all(feature = "libc",
+              not(target_arch = "wasm32"),
               any(not(target_os = "windows"),
                   not(any(target_pointer_width = "32",
                           target_pointer_width = "64")))))]
@@ -182,7 +183,8 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     }
 
     // use fallback on windows, since it's faster
-    #[cfg(all(any(not(feature = "libc"), target_os = "windows"),
+    // use fallback on wasm32, since it doesn't have libc
+    #[cfg(all(any(not(feature = "libc"), target_os = "windows", target_arch = "wasm32"),
               any(target_pointer_width = "32",
                   target_pointer_width = "64")))]
     fn memchr_specific(needle: u8, haystack: &[u8]) -> Option<usize> {
