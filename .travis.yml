@@ -5,3 +5,6 @@ rust:
   - beta
   - nightly
 script: ci/script.sh
+branches:
+  only:
+    - master
