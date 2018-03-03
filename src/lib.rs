@@ -337,7 +337,7 @@ pub struct Memchr3<'a> {
 }
 
 impl<'a> Memchr3<'a> {
-    /// Create a new Memchr2 that's initalized to zero with a haystack
+    /// Create a new Memchr2 that's initialized to zero with a haystack
     pub fn new(
         needle1: u8,
         needle2: u8,
@@ -429,7 +429,7 @@ mod fallback {
         // Scan for a single byte value by reading two `usize` words at a time.
         //
         // Split `text` in three parts
-        // - unaligned inital part, before first word aligned address in text
+        // - unaligned initial part, before first word aligned address in text
         // - body, scan by 2 words at a time
         // - the last remaining part, < 2 word size
         let len = text.len();
