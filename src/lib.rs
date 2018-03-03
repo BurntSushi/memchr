@@ -125,7 +125,7 @@ impl<'a> Iterator for Memchr<'a> {
     type Item = usize;
 
     fn next(&mut self) -> Option<usize> {
-        iter_next!(self, memchr(self.needle, &self.haystack))
+        iter_next!(self, memchr(self.needle, self.haystack))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -135,7 +135,7 @@ impl<'a> Iterator for Memchr<'a> {
 
 impl<'a> DoubleEndedIterator for Memchr<'a> {
     fn next_back(&mut self) -> Option<Self::Item> {
-        iter_next_back!(self, memrchr(self.needle, &self.haystack))
+        iter_next_back!(self, memrchr(self.needle, self.haystack))
     }
 }
 
@@ -282,7 +282,7 @@ impl<'a> Iterator for Memchr2<'a> {
     type Item = usize;
 
     fn next(&mut self) -> Option<usize> {
-        iter_next!(self, memchr2(self.needle1, self.needle2, &self.haystack))
+        iter_next!(self, memchr2(self.needle1, self.needle2, self.haystack))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -360,7 +360,7 @@ impl<'a> Iterator for Memchr3<'a> {
     fn next(&mut self) -> Option<usize> {
         iter_next!(
             self,
-            memchr3(self.needle1, self.needle2, self.needle3, &self.haystack)
+            memchr3(self.needle1, self.needle2, self.needle3, self.haystack)
         )
     }
 
