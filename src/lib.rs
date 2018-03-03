@@ -337,7 +337,7 @@ pub struct Memchr3<'a> {
 }
 
 impl<'a> Memchr3<'a> {
-    /// Create a new Memchr2 that's initialized to zero with a haystack
+    /// Create a new `Memchr3` that's initialized to zero with a haystack
     pub fn new(
         needle1: u8,
         needle2: u8,
