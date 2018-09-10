@@ -30,6 +30,11 @@ use std::cmp;
 #[cfg(not(feature = "use_std"))]
 use core::cmp;
 
+#[cfg(feature = "use_std")]
+use std::usize;
+#[cfg(not(feature = "use_std"))]
+use core::usize;
+
 const LO_U64: u64 = 0x0101010101010101;
 const HI_U64: u64 = 0x8080808080808080;
 
@@ -54,21 +59,16 @@ fn contains_zero_byte(x: usize) -> bool {
     x.wrapping_sub(LO_USIZE) & !x & HI_USIZE != 0
 }
 
-#[cfg(target_pointer_width = "32")]
+#[cfg(target_pointer_width = "16")]
 #[inline]
 fn repeat_byte(b: u8) -> usize {
-    let mut rep = (b as usize) << 8 | b as usize;
-    rep = rep << 16 | rep;
-    rep
+    (b as usize) << 8 | b as usize
 }
 
-#[cfg(target_pointer_width = "64")]
+#[cfg(not(target_pointer_width = "16"))]
 #[inline]
 fn repeat_byte(b: u8) -> usize {
-    let mut rep = (b as usize) << 8 | b as usize;
-    rep = rep << 16 | rep;
-    rep = rep << 32 | rep;
-    rep
+    (b as usize) * (usize::MAX / 255)
 }
 
 macro_rules! iter_next {
