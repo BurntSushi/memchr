@@ -1,0 +1,21 @@
+[package]
+publish = false
+name = "memchr-bench"
+version = "0.0.1"
+authors = ["Andrew Gallant <jamslam@gmail.com>"]
+description = "Criterion benchmark suite for memchr."
+homepage = "https://github.com/BurntSushi/rust-memchr"
+repository = "https://github.com/BurntSushi/rust-memchr"
+license = "Unlicense/MIT"
+
+[lib]
+bench = false
+
+[[bench]]
+name = "memchr"
+harness = false
+path = "src/bench.rs"
+
+[dependencies]
+criterion = "0.2"
+memchr = { version = "*", path = ".." }
