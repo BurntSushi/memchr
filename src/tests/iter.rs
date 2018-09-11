@@ -1,32 +1,32 @@
 use std::prelude::v1::*;
 
-use tests::MEMCHR_TESTS;
+use tests::memchr_tests;
 use {Memchr, Memchr2, Memchr3};
 
 #[test]
 fn memchr1_iter() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.iter_one(false, Memchr::new);
     }
 }
 
 #[test]
 fn memchr2_iter() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.iter_two(false, Memchr2::new);
     }
 }
 
 #[test]
 fn memchr3_iter() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.iter_three(false, Memchr3::new);
     }
 }
 
 #[test]
 fn memrchr1_iter() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.iter_one(true, |n1, corpus| Memchr::new(n1, corpus).rev());
     }
 }

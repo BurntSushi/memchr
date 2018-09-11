@@ -4,60 +4,60 @@ use fallback;
 use naive;
 use {memchr, memrchr, memchr2, memchr3};
 
-use tests::MEMCHR_TESTS;
+use tests::memchr_tests;
 
 #[test]
 fn memchr1_find() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.one(false, memchr);
     }
 }
 
 #[test]
 fn memchr1_fallback_find() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.one(false, fallback::memchr);
     }
 }
 
 #[test]
 fn memchr2_find() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.two(false, memchr2);
     }
 }
 
 #[test]
 fn memchr2_fallback_find() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.two(false, fallback::memchr2);
     }
 }
 
 #[test]
 fn memchr3_find() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.three(false, memchr3);
     }
 }
 
 #[test]
 fn memchr3_fallback_find() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.three(false, fallback::memchr3);
     }
 }
 
 #[test]
 fn memrchr1_find() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.one(true, memrchr);
     }
 }
 
 #[test]
 fn memrchr1_fallback_find() {
-    for test in MEMCHR_TESTS.iter() {
+    for test in memchr_tests() {
         test.one(true, fallback::memrchr);
     }
 }
