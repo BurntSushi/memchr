@@ -8,3 +8,4 @@ script: ci/script.sh
 branches:
   only:
     - master
+    - ag/vendor
