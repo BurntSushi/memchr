@@ -1,5 +1,3 @@
-use std::prelude::v1::*;
-
 use std::iter::repeat;
 
 mod iter;
@@ -98,6 +96,16 @@ const MEMCHR_TESTS: &[MemchrTestStatic] = &[
         corpus: "\x00a\x00",
         needles: &[b'\x00'],
         positions: &[0, 2],
+    },
+    MemchrTestStatic {
+        corpus: "zzzzzzzzzzzzzzzza",
+        needles: &[b'a'],
+        positions: &[16],
+    },
+    MemchrTestStatic {
+        corpus: "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzza",
+        needles: &[b'a'],
+        positions: &[32],
     },
 
     // two needles (applied to memchr2 + memchr3)
@@ -208,20 +216,21 @@ impl MemchrTest {
         };
         // We test different alignments here. Since some implementations use
         // AVX2, which can read 32 bytes at a time, we test at least that.
-        // Moreover, with loop unrolling, we sometimes process 64 bytes at a
-        // time, so we include that in our offsets as well.
+        // Moreover, with loop unrolling, we sometimes process 64 (sse2) or 128
+        // (avx) bytes at a time, so we include that in our offsets as well.
         //
         // You might think this would cause most needles to not be found, but
         // we actually expand our tests to include corpus sizes all the way up
         // to >500 bytes, so we should exericse most branches.
-        for align in 0..66 {
+        for align in 0..130 {
             let corpus = self.corpus(align);
             assert_eq!(
                 self.positions(align, reverse).get(0).cloned(),
                 f(needles[0], corpus.as_bytes()),
-                r"search for {:?} failed in: {:?} (alignment: {})",
+                "search for {:?} failed in: {:?} (len: {}, alignment: {})",
                 needles[0] as char,
                 corpus,
+                corpus.len(),
                 align
             );
         }
@@ -236,15 +245,18 @@ impl MemchrTest {
             None => return,
             Some(needles) => needles,
         };
-        for align in 0..66 {
+        for align in 0..130 {
             let corpus = self.corpus(align);
             assert_eq!(
                 self.positions(align, reverse).get(0).cloned(),
                 f(needles[0], needles[1], corpus.as_bytes()),
-                r"search for {:?}|{:?} failed in: {:?}",
+                "search for {:?}|{:?} failed in: {:?} \
+                 (len: {}, alignment: {})",
                 needles[0] as char,
                 needles[1] as char,
-                corpus
+                corpus,
+                corpus.len(),
+                align
             );
         }
     }
@@ -258,16 +270,19 @@ impl MemchrTest {
             None => return,
             Some(needles) => needles,
         };
-        for align in 0..66 {
+        for align in 0..130 {
             let corpus = self.corpus(align);
             assert_eq!(
                 self.positions(align, reverse).get(0).cloned(),
                 f(needles[0], needles[1], needles[2], corpus.as_bytes()),
-                r"search for {:?}|{:?}|{:?} failed in: {:?}",
+                "search for {:?}|{:?}|{:?} failed in: {:?} \
+                 (len: {}, alignment: {})",
                 needles[0] as char,
                 needles[1] as char,
                 needles[2] as char,
-                corpus
+                corpus,
+                corpus.len(),
+                align
             );
         }
     }

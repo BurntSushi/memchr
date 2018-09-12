@@ -1,11 +1,34 @@
 language: rust
-rust:
-  - 1.13.0
-  - stable
-  - beta
-  - nightly
+addons:
+  apt:
+    packages:
+      # For dealing with MUSL.
+      - musl-tools
+matrix:
+  fast_finish: true
+  include:
+    - os: osx
+      rust: nightly
+      env: TARGET=x86_64-apple-darwin
+    - os: linux
+      rust: nightly
+      env: TARGET=i686-unknown-linux-musl
+    - os: linux
+      rust: nightly
+      env: TARGET=x86_64-unknown-linux-musl
+    - os: linux
+      rust: nightly
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: linux
+      rust: beta
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: linux
+      rust: stable
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: linux
+      rust: 1.13.0
+      env: TARGET=x86_64-unknown-linux-gnu
 script: ci/script.sh
 branches:
   only:
     - master
-    - ag/vendor

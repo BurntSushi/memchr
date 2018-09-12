@@ -3,18 +3,17 @@
 // get auto-vectorized.
 
 use core::cmp;
+use core::ptr;
 use core::usize;
-
-const LO_U64: u64 = 0x0101010101010101;
-const HI_U64: u64 = 0x8080808080808080;
-
-const LO_USIZE: usize = LO_U64 as usize;
-const HI_USIZE: usize = HI_U64 as usize;
 
 #[cfg(target_pointer_width = "32")]
 const USIZE_BYTES: usize = 4;
+
 #[cfg(target_pointer_width = "64")]
 const USIZE_BYTES: usize = 8;
+
+// The number of bytes to loop at in one iteration of memchr/memrchr.
+const LOOP_SIZE: usize = 2 * USIZE_BYTES;
 
 /// Return `true` if `x` contains any zero byte.
 ///
@@ -25,6 +24,12 @@ const USIZE_BYTES: usize = 8;
 /// bit."
 #[inline(always)]
 fn contains_zero_byte(x: usize) -> bool {
+    const LO_U64: u64 = 0x0101010101010101;
+    const HI_U64: u64 = 0x8080808080808080;
+
+    const LO_USIZE: usize = LO_U64 as usize;
+    const HI_USIZE: usize = HI_U64 as usize;
+
     x.wrapping_sub(LO_USIZE) & !x & HI_USIZE != 0
 }
 
@@ -37,173 +42,305 @@ fn repeat_byte(b: u8) -> usize {
     (b as usize) * (usize::MAX / 255)
 }
 
-/// Return the first index matching the byte `x` in `text`.
-pub fn memchr(x: u8, text: &[u8]) -> Option<usize> {
-    // Scan for a single byte value by reading two `usize` words at a time.
-    //
-    // Split `text` in three parts
-    // - unaligned initial part, before first word aligned address in text
-    // - body, scan by 2 words at a time
-    // - the last remaining part, < 2 word size
-    let len = text.len();
-    let ptr = text.as_ptr();
+pub fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
+    let vn1 = repeat_byte(n1);
+    let confirm = |byte| byte == n1;
+    let loop_size = cmp::min(LOOP_SIZE, haystack.len());
+    let align = USIZE_BYTES - 1;
+    let start_ptr = haystack.as_ptr();
+    let end_ptr = haystack[haystack.len()..].as_ptr();
+    let mut ptr = start_ptr;
 
-    // search up to an aligned boundary
-    let align = (ptr as usize) & (USIZE_BYTES - 1);
-    let mut offset;
-    if align > 0 {
-        offset = cmp::min(USIZE_BYTES - align, len);
-        let pos = text[..offset].iter().position(|elt| *elt == x);
-        if let Some(index) = pos {
-            return Some(index);
+    unsafe {
+        if haystack.len() < USIZE_BYTES {
+            return forward_search(start_ptr, end_ptr, ptr, confirm);
         }
-    } else {
-        offset = 0;
-    }
 
-    // search the body of the text
-    let repeated_x = repeat_byte(x);
+        let chunk = read_unaligned_usize(ptr);
+        if contains_zero_byte(chunk ^ vn1) {
+            return forward_search(start_ptr, end_ptr, ptr, confirm);
+        }
 
-    if len >= 2 * USIZE_BYTES {
-        while offset <= len - 2 * USIZE_BYTES {
-            debug_assert_eq!((ptr as usize + offset) % USIZE_BYTES, 0);
-            unsafe {
-                let u = *(ptr.offset(offset as isize) as *const usize);
-                let v = *(ptr.offset((offset + USIZE_BYTES) as isize) as *const usize);
+        ptr = ptr_add(ptr, USIZE_BYTES - (start_ptr as usize & align));
+        debug_assert!(ptr > start_ptr);
+        debug_assert!(ptr_sub(end_ptr, USIZE_BYTES) >= start_ptr);
+        while loop_size == LOOP_SIZE && ptr <= ptr_sub(end_ptr, loop_size) {
+            debug_assert_eq!(0, (ptr as usize) % USIZE_BYTES);
 
-                // break if there is a matching byte
-                let zu = contains_zero_byte(u ^ repeated_x);
-                let zv = contains_zero_byte(v ^ repeated_x);
-                if zu || zv {
-                    break;
-                }
+            let a = *(ptr as *const usize);
+            let b = *(ptr_add(ptr, USIZE_BYTES) as *const usize);
+            let eqa = contains_zero_byte(a ^ vn1);
+            let eqb = contains_zero_byte(b ^ vn1);
+            if eqa || eqb {
+                break;
             }
-            offset += USIZE_BYTES * 2;
+            ptr = ptr_add(ptr, LOOP_SIZE);
         }
+        forward_search(start_ptr, end_ptr, ptr, confirm)
     }
-
-    // find the byte after the point the body loop stopped
-    text[offset..].iter().position(|elt| *elt == x).map(|i| offset + i)
 }
 
 /// Like `memchr`, but searches for two bytes instead of one.
-pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
-    fn slow(b1: u8, b2: u8, haystack: &[u8]) -> Option<usize> {
-        haystack.iter().position(|&b| b == b1 || b == b2)
-    }
+pub fn memchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
+    let vn1 = repeat_byte(n1);
+    let vn2 = repeat_byte(n2);
+    let confirm = |byte| byte == n1 || byte == n2;
+    let align = USIZE_BYTES - 1;
+    let start_ptr = haystack.as_ptr();
+    let end_ptr = haystack[haystack.len()..].as_ptr();
+    let mut ptr = start_ptr;
 
-    let len = haystack.len();
-    let ptr = haystack.as_ptr();
-    let align = (ptr as usize) & (USIZE_BYTES - 1);
-    let mut i = 0;
-    if align > 0 {
-        i = cmp::min(USIZE_BYTES - align, len);
-        if let Some(found) = slow(needle1, needle2, &haystack[..i]) {
-            return Some(found);
+    unsafe {
+        if haystack.len() < USIZE_BYTES {
+            return forward_search(start_ptr, end_ptr, ptr, confirm);
         }
-    }
-    let repeated_b1 = repeat_byte(needle1);
-    let repeated_b2 = repeat_byte(needle2);
-    if len >= USIZE_BYTES {
-        while i <= len - USIZE_BYTES {
-            unsafe {
-                let u = *(ptr.offset(i as isize) as *const usize);
-                let found_ub1 = contains_zero_byte(u ^ repeated_b1);
-                let found_ub2 = contains_zero_byte(u ^ repeated_b2);
-                if found_ub1 || found_ub2 {
-                    break;
-                }
+
+        let chunk = read_unaligned_usize(ptr);
+        let eq1 = contains_zero_byte(chunk ^ vn1);
+        let eq2 = contains_zero_byte(chunk ^ vn2);
+        if eq1 || eq2 {
+            return forward_search(start_ptr, end_ptr, ptr, confirm);
+        }
+
+        ptr = ptr_add(ptr, USIZE_BYTES - (start_ptr as usize & align));
+        debug_assert!(ptr > start_ptr);
+        debug_assert!(ptr_sub(end_ptr, USIZE_BYTES) >= start_ptr);
+        while ptr <= ptr_sub(end_ptr, USIZE_BYTES) {
+            debug_assert_eq!(0, (ptr as usize) % USIZE_BYTES);
+
+            let chunk = *(ptr as *const usize);
+            let eq1 = contains_zero_byte(chunk ^ vn1);
+            let eq2 = contains_zero_byte(chunk ^ vn2);
+            if eq1 || eq2 {
+                break;
             }
-            i += USIZE_BYTES;
+            ptr = ptr_add(ptr, USIZE_BYTES);
         }
+        forward_search(start_ptr, end_ptr, ptr, confirm)
     }
-    slow(needle1, needle2, &haystack[i..]).map(|pos| i + pos)
 }
 
 /// Like `memchr`, but searches for three bytes instead of one.
-pub fn memchr3(
-    needle1: u8,
-    needle2: u8,
-    needle3: u8,
-    haystack: &[u8],
-) -> Option<usize> {
-    fn slow(b1: u8, b2: u8, b3: u8, haystack: &[u8]) -> Option<usize> {
-        haystack.iter().position(|&b| b == b1 || b == b2 || b == b3)
-    }
+pub fn memchr3(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
+    let vn1 = repeat_byte(n1);
+    let vn2 = repeat_byte(n2);
+    let vn3 = repeat_byte(n3);
+    let confirm = |byte| byte == n1 || byte == n2 || byte == n3;
+    let align = USIZE_BYTES - 1;
+    let start_ptr = haystack.as_ptr();
+    let end_ptr = haystack[haystack.len()..].as_ptr();
+    let mut ptr = start_ptr;
 
-    let len = haystack.len();
-    let ptr = haystack.as_ptr();
-    let align = (ptr as usize) & (USIZE_BYTES - 1);
-    let mut i = 0;
-    if align > 0 {
-        i = cmp::min(USIZE_BYTES - align, len);
-        if let Some(found) = slow(needle1, needle2, needle3, &haystack[..i]) {
-            return Some(found);
+    unsafe {
+        if haystack.len() < USIZE_BYTES {
+            return forward_search(start_ptr, end_ptr, ptr, confirm);
         }
-    }
-    let repeated_b1 = repeat_byte(needle1);
-    let repeated_b2 = repeat_byte(needle2);
-    let repeated_b3 = repeat_byte(needle3);
-    if len >= USIZE_BYTES {
-        while i <= len - USIZE_BYTES {
-            unsafe {
-                let u = *(ptr.offset(i as isize) as *const usize);
-                let found_ub1 = contains_zero_byte(u ^ repeated_b1);
-                let found_ub2 = contains_zero_byte(u ^ repeated_b2);
-                let found_ub3 = contains_zero_byte(u ^ repeated_b3);
-                if found_ub1 || found_ub2 || found_ub3 {
-                    break;
-                }
+
+        let chunk = read_unaligned_usize(ptr);
+        let eq1 = contains_zero_byte(chunk ^ vn1);
+        let eq2 = contains_zero_byte(chunk ^ vn2);
+        let eq3 = contains_zero_byte(chunk ^ vn3);
+        if eq1 || eq2 || eq3 {
+            return forward_search(start_ptr, end_ptr, ptr, confirm);
+        }
+
+        ptr = ptr_add(ptr, USIZE_BYTES - (start_ptr as usize & align));
+        debug_assert!(ptr > start_ptr);
+        debug_assert!(ptr_sub(end_ptr, USIZE_BYTES) >= start_ptr);
+        while ptr <= ptr_sub(end_ptr, USIZE_BYTES) {
+            debug_assert_eq!(0, (ptr as usize) % USIZE_BYTES);
+
+            let chunk = *(ptr as *const usize);
+            let eq1 = contains_zero_byte(chunk ^ vn1);
+            let eq2 = contains_zero_byte(chunk ^ vn2);
+            let eq3 = contains_zero_byte(chunk ^ vn3);
+            if eq1 || eq2 || eq3 {
+                break;
             }
-            i += USIZE_BYTES;
+            ptr = ptr_add(ptr, USIZE_BYTES);
         }
+        forward_search(start_ptr, end_ptr, ptr, confirm)
     }
-    slow(needle1, needle2, needle3, &haystack[i..]).map(|pos| i + pos)
 }
 
 /// Return the last index matching the byte `x` in `text`.
-pub fn memrchr(x: u8, text: &[u8]) -> Option<usize> {
-    // Scan for a single byte value by reading two `usize` words at a time.
-    //
-    // Split `text` in three parts
-    // - unaligned tail, after the last word aligned address in text
-    // - body, scan by 2 words at a time
-    // - the first remaining bytes, < 2 word size
-    let len = text.len();
-    let ptr = text.as_ptr();
+pub fn memrchr(n1: u8, haystack: &[u8]) -> Option<usize> {
+    let vn1 = repeat_byte(n1);
+    let confirm = |byte| byte == n1;
+    let loop_size = cmp::min(LOOP_SIZE, haystack.len());
+    let align = USIZE_BYTES - 1;
+    let start_ptr = haystack.as_ptr();
+    let end_ptr = haystack[haystack.len()..].as_ptr();
+    let mut ptr = end_ptr;
 
-    // search to an aligned boundary
-    let end_align = (ptr as usize + len) & (USIZE_BYTES - 1);
-    let mut offset;
-    if end_align > 0 {
-        offset = if end_align >= len { 0 } else { len - end_align };
-        let pos = text[offset..].iter().rposition(|elt| *elt == x);
-        if let Some(index) = pos {
-            return Some(offset + index);
+    unsafe {
+        if haystack.len() < USIZE_BYTES {
+            return reverse_search(start_ptr, end_ptr, ptr, confirm);
         }
-    } else {
-        offset = len;
-    }
 
-    // search the body of the text
-    let repeated_x = repeat_byte(x);
+        let chunk = read_unaligned_usize(ptr_sub(ptr, USIZE_BYTES));
+        if contains_zero_byte(chunk ^ vn1) {
+            return reverse_search(start_ptr, end_ptr, ptr, confirm);
+        }
 
-    while offset >= 2 * USIZE_BYTES {
-        debug_assert_eq!((ptr as usize + offset) % USIZE_BYTES, 0);
-        unsafe {
-            let u = *(ptr.offset(offset as isize - 2 * USIZE_BYTES as isize) as *const usize);
-            let v = *(ptr.offset(offset as isize - USIZE_BYTES as isize) as *const usize);
+        ptr = (end_ptr as usize & !align) as *const u8;
+        debug_assert!(start_ptr <= ptr && ptr <= end_ptr);
+        while loop_size == LOOP_SIZE && ptr >= ptr_add(start_ptr, loop_size) {
+            debug_assert_eq!(0, (ptr as usize) % USIZE_BYTES);
 
-            // break if there is a matching byte
-            let zu = contains_zero_byte(u ^ repeated_x);
-            let zv = contains_zero_byte(v ^ repeated_x);
-            if zu || zv {
+            let a = *(ptr_sub(ptr, 2 * USIZE_BYTES) as *const usize);
+            let b = *(ptr_sub(ptr, 1 * USIZE_BYTES) as *const usize);
+            let eqa = contains_zero_byte(a ^ vn1);
+            let eqb = contains_zero_byte(b ^ vn1);
+            if eqa || eqb {
                 break;
             }
+            ptr = ptr_sub(ptr, loop_size);
         }
-        offset -= 2 * USIZE_BYTES;
+        reverse_search(start_ptr, end_ptr, ptr, confirm)
     }
+}
 
-    // find the byte before the point the body loop stopped
-    text[..offset].iter().rposition(|elt| *elt == x)
+/// Like `memrchr`, but searches for two bytes instead of one.
+pub fn memrchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
+    let vn1 = repeat_byte(n1);
+    let vn2 = repeat_byte(n2);
+    let confirm = |byte| byte == n1 || byte == n2;
+    let align = USIZE_BYTES - 1;
+    let start_ptr = haystack.as_ptr();
+    let end_ptr = haystack[haystack.len()..].as_ptr();
+    let mut ptr = end_ptr;
+
+    unsafe {
+        if haystack.len() < USIZE_BYTES {
+            return reverse_search(start_ptr, end_ptr, ptr, confirm);
+        }
+
+        let chunk = read_unaligned_usize(ptr_sub(ptr, USIZE_BYTES));
+        let eq1 = contains_zero_byte(chunk ^ vn1);
+        let eq2 = contains_zero_byte(chunk ^ vn2);
+        if eq1 || eq2 {
+            return reverse_search(start_ptr, end_ptr, ptr, confirm);
+        }
+
+        ptr = (end_ptr as usize & !align) as *const u8;
+        debug_assert!(start_ptr <= ptr && ptr <= end_ptr);
+        while ptr >= ptr_add(start_ptr, USIZE_BYTES) {
+            debug_assert_eq!(0, (ptr as usize) % USIZE_BYTES);
+
+            let chunk = *(ptr_sub(ptr, USIZE_BYTES) as *const usize);
+            let eq1 = contains_zero_byte(chunk ^ vn1);
+            let eq2 = contains_zero_byte(chunk ^ vn2);
+            if eq1 || eq2 {
+                break;
+            }
+            ptr = ptr_sub(ptr, USIZE_BYTES);
+        }
+        reverse_search(start_ptr, end_ptr, ptr, confirm)
+    }
+}
+
+/// Like `memrchr`, but searches for three bytes instead of one.
+pub fn memrchr3(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
+    let vn1 = repeat_byte(n1);
+    let vn2 = repeat_byte(n2);
+    let vn3 = repeat_byte(n3);
+    let confirm = |byte| byte == n1 || byte == n2 || byte == n3;
+    let align = USIZE_BYTES - 1;
+    let start_ptr = haystack.as_ptr();
+    let end_ptr = haystack[haystack.len()..].as_ptr();
+    let mut ptr = end_ptr;
+
+    unsafe {
+        if haystack.len() < USIZE_BYTES {
+            return reverse_search(start_ptr, end_ptr, ptr, confirm);
+        }
+
+        let chunk = read_unaligned_usize(ptr_sub(ptr, USIZE_BYTES));
+        let eq1 = contains_zero_byte(chunk ^ vn1);
+        let eq2 = contains_zero_byte(chunk ^ vn2);
+        let eq3 = contains_zero_byte(chunk ^ vn3);
+        if eq1 || eq2 || eq3 {
+            return reverse_search(start_ptr, end_ptr, ptr, confirm);
+        }
+
+        ptr = (end_ptr as usize & !align) as *const u8;
+        debug_assert!(start_ptr <= ptr && ptr <= end_ptr);
+        while ptr >= ptr_add(start_ptr, USIZE_BYTES) {
+            debug_assert_eq!(0, (ptr as usize) % USIZE_BYTES);
+
+            let chunk = *(ptr_sub(ptr, USIZE_BYTES) as *const usize);
+            let eq1 = contains_zero_byte(chunk ^ vn1);
+            let eq2 = contains_zero_byte(chunk ^ vn2);
+            let eq3 = contains_zero_byte(chunk ^ vn3);
+            if eq1 || eq2 || eq3 {
+                break;
+            }
+            ptr = ptr_sub(ptr, USIZE_BYTES);
+        }
+        reverse_search(start_ptr, end_ptr, ptr, confirm)
+    }
+}
+
+#[inline(always)]
+unsafe fn forward_search<F: Fn(u8) -> bool>(
+    start_ptr: *const u8,
+    end_ptr: *const u8,
+    mut ptr: *const u8,
+    confirm: F,
+) -> Option<usize> {
+    debug_assert!(start_ptr <= ptr);
+    debug_assert!(ptr <= end_ptr);
+
+    while ptr < end_ptr {
+        if confirm(*ptr) {
+            return Some(sub(ptr, start_ptr));
+        }
+        ptr = ptr.offset(1);
+    }
+    None
+}
+
+#[inline(always)]
+unsafe fn reverse_search<F: Fn(u8) -> bool>(
+    start_ptr: *const u8,
+    end_ptr: *const u8,
+    mut ptr: *const u8,
+    confirm: F,
+) -> Option<usize> {
+    debug_assert!(start_ptr <= ptr);
+    debug_assert!(ptr <= end_ptr);
+
+    while ptr > start_ptr {
+        ptr = ptr.offset(-1);
+        if confirm(*ptr) {
+            return Some(sub(ptr, start_ptr));
+        }
+    }
+    None
+}
+
+/// Increment the given pointer by the given amount.
+unsafe fn ptr_add(ptr: *const u8, amt: usize) -> *const u8 {
+    debug_assert!(amt < ::core::isize::MAX as usize);
+    ptr.offset(amt as isize)
+}
+
+/// Decrement the given pointer by the given amount.
+unsafe fn ptr_sub(ptr: *const u8, amt: usize) -> *const u8 {
+    debug_assert!(amt < ::core::isize::MAX as usize);
+    ptr.offset((amt as isize).wrapping_neg())
+}
+
+unsafe fn read_unaligned_usize(ptr: *const u8) -> usize {
+    let mut n: usize = 0;
+    ptr::copy_nonoverlapping(ptr as *const usize, &mut n, USIZE_BYTES);
+    n
+}
+
+/// Subtract `b` from `a` and return the difference. `a` should be greater than
+/// or equal to `b`.
+fn sub(a: *const u8, b: *const u8) -> usize {
+    debug_assert!(a >= b);
+    (a as usize) - (b as usize)
 }
