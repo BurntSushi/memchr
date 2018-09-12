@@ -1,4 +1,21 @@
-#![allow(dead_code)]
+/// A description of an input to benchmark on.
+#[derive(Clone, Copy, Debug)]
+pub struct Input {
+    /// The bytes to search.
+    pub corpus: &'static [u8],
+    /// Distinct bytes that never occur in the input.
+    pub never: &'static [SearchByte],
+    /// Distinct bytes that occur very rarely (<0.1%).
+    pub rare: &'static [SearchByte],
+    /// Distinct bytes that are uncommon (~1%).
+    pub uncommon: &'static [SearchByte],
+    /// Distinct bytes that are common (~5%).
+    pub common: &'static [SearchByte],
+    /// Distinct bytes that are very common (~10%).
+    pub verycommon: &'static [SearchByte],
+    /// Distinct bytes that are super common (>90%).
+    pub supercommon: &'static [SearchByte],
+}
 
 pub const HUGE: Input = Input {
     corpus: include_bytes!("../data/sherlock-holmes-huge.txt"),
@@ -93,25 +110,6 @@ pub const EMPTY: Input = Input {
     verycommon: &[],
     supercommon: &[],
 };
-
-/// A description of an input to benchmark on.
-#[derive(Clone, Copy, Debug)]
-pub struct Input {
-    /// The bytes to search.
-    pub corpus: &'static [u8],
-    /// Distinct bytes that never occur in the input.
-    pub never: &'static [SearchByte],
-    /// Distinct bytes that occur very rarely (<0.1%).
-    pub rare: &'static [SearchByte],
-    /// Distinct bytes that are uncommon (~1%).
-    pub uncommon: &'static [SearchByte],
-    /// Distinct bytes that are common (~5%).
-    pub common: &'static [SearchByte],
-    /// Distinct bytes that are very common (~10%).
-    pub verycommon: &'static [SearchByte],
-    /// Distinct bytes that are super common (>90%).
-    pub supercommon: &'static [SearchByte],
-}
 
 impl Input {
     /// Return all of this input's "never" bytes only if there are at least

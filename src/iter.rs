@@ -1,4 +1,4 @@
-use {memchr, memchr2, memchr3, memrchr};
+use {memchr, memchr2, memchr3, memrchr, memrchr2, memrchr3};
 
 macro_rules! iter_next {
     // Common code for the memchr iterators:
@@ -30,7 +30,7 @@ macro_rules! iter_next_back {
     }
 }
 
-/// An iterator for memchr
+/// An iterator for `memchr`.
 pub struct Memchr<'a> {
     needle: u8,
     // The haystack to iterate over
@@ -41,6 +41,7 @@ pub struct Memchr<'a> {
 
 impl<'a> Memchr<'a> {
     /// Creates a new iterator that yields all positions of needle in haystack.
+    #[inline]
     pub fn new(needle: u8, haystack: &[u8]) -> Memchr {
         Memchr {
             needle: needle,
@@ -53,22 +54,25 @@ impl<'a> Memchr<'a> {
 impl<'a> Iterator for Memchr<'a> {
     type Item = usize;
 
+    #[inline]
     fn next(&mut self) -> Option<usize> {
         iter_next!(self, memchr(self.needle, self.haystack))
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         (0, Some(self.haystack.len()))
     }
 }
 
 impl<'a> DoubleEndedIterator for Memchr<'a> {
+    #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         iter_next_back!(self, memrchr(self.needle, self.haystack))
     }
 }
 
-/// An iterator for Memchr2
+/// An iterator for `memchr2`.
 pub struct Memchr2<'a> {
     needle1: u8,
     needle2: u8,
@@ -80,6 +84,7 @@ pub struct Memchr2<'a> {
 
 impl<'a> Memchr2<'a> {
     /// Creates a new iterator that yields all positions of needle in haystack.
+    #[inline]
     pub fn new(needle1: u8, needle2: u8, haystack: &[u8]) -> Memchr2 {
         Memchr2 {
             needle1: needle1,
@@ -93,16 +98,28 @@ impl<'a> Memchr2<'a> {
 impl<'a> Iterator for Memchr2<'a> {
     type Item = usize;
 
+    #[inline]
     fn next(&mut self) -> Option<usize> {
         iter_next!(self, memchr2(self.needle1, self.needle2, self.haystack))
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         (0, Some(self.haystack.len()))
     }
 }
 
-/// An iterator for Memchr3
+impl<'a> DoubleEndedIterator for Memchr2<'a> {
+    #[inline]
+    fn next_back(&mut self) -> Option<Self::Item> {
+        iter_next_back!(
+            self,
+            memrchr2(self.needle1, self.needle2, self.haystack)
+        )
+    }
+}
+
+/// An iterator for `memchr3`.
 pub struct Memchr3<'a> {
     needle1: u8,
     needle2: u8,
@@ -115,6 +132,7 @@ pub struct Memchr3<'a> {
 
 impl<'a> Memchr3<'a> {
     /// Create a new `Memchr3` that's initialized to zero with a haystack
+    #[inline]
     pub fn new(
         needle1: u8,
         needle2: u8,
@@ -134,6 +152,7 @@ impl<'a> Memchr3<'a> {
 impl<'a> Iterator for Memchr3<'a> {
     type Item = usize;
 
+    #[inline]
     fn next(&mut self) -> Option<usize> {
         iter_next!(
             self,
@@ -141,7 +160,18 @@ impl<'a> Iterator for Memchr3<'a> {
         )
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         (0, Some(self.haystack.len()))
+    }
+}
+
+impl<'a> DoubleEndedIterator for Memchr3<'a> {
+    #[inline]
+    fn next_back(&mut self) -> Option<Self::Item> {
+        iter_next_back!(
+            self,
+            memrchr3(self.needle1, self.needle2, self.needle3, self.haystack)
+        )
     }
 }

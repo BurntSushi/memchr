@@ -1,5 +1,3 @@
-use std::prelude::v1::*;
-
 use tests::memchr_tests;
 use {Memchr, Memchr2, Memchr3};
 
@@ -31,6 +29,24 @@ fn memrchr1_iter() {
     }
 }
 
+#[test]
+fn memrchr2_iter() {
+    for test in memchr_tests() {
+        test.iter_two(true, |n1, n2, corpus| {
+            Memchr2::new(n1, n2, corpus).rev()
+        })
+    }
+}
+
+#[test]
+fn memrchr3_iter() {
+    for test in memchr_tests() {
+        test.iter_three(true, |n1, n2, n3, corpus| {
+            Memchr3::new(n1, n2, n3, corpus).rev()
+        })
+    }
+}
+
 quickcheck! {
     fn qc_memchr_double_ended_iter(
         needle: u8, data: Vec<u8>, take_side: Vec<bool>
@@ -44,6 +60,38 @@ quickcheck! {
             iter, take_side.iter().cycle().cloned());
 
         all_found.iter().cloned().eq(positions1(needle, &data))
+    }
+
+    fn qc_memchr2_double_ended_iter(
+        needle1: u8, needle2: u8, data: Vec<u8>, take_side: Vec<bool>
+    ) -> bool {
+        // make nonempty
+        let mut take_side = take_side;
+        if take_side.is_empty() { take_side.push(true) };
+
+        let iter = Memchr2::new(needle1, needle2, &data);
+        let all_found = double_ended_take(
+            iter, take_side.iter().cycle().cloned());
+
+        all_found.iter().cloned().eq(positions2(needle1, needle2, &data))
+    }
+
+    fn qc_memchr3_double_ended_iter(
+        needle1: u8, needle2: u8, needle3: u8,
+        data: Vec<u8>, take_side: Vec<bool>
+    ) -> bool {
+        // make nonempty
+        let mut take_side = take_side;
+        if take_side.is_empty() { take_side.push(true) };
+
+        let iter = Memchr3::new(needle1, needle2, needle3, &data);
+        let all_found = double_ended_take(
+            iter, take_side.iter().cycle().cloned());
+
+        all_found
+            .iter()
+            .cloned()
+            .eq(positions3(needle1, needle2, needle3, &data))
     }
 
     fn qc_memchr1_iter(data: Vec<u8>) -> bool {
@@ -65,12 +113,27 @@ quickcheck! {
         answer.eq(Memchr2::new(needle1, needle2, &data))
     }
 
+    fn qc_memchr2_rev_iter(data: Vec<u8>) -> bool {
+        let needle1 = 0;
+        let needle2 = 1;
+        let answer = positions2(needle1, needle2, &data);
+        answer.rev().eq(Memchr2::new(needle1, needle2, &data).rev())
+    }
+
     fn qc_memchr3_iter(data: Vec<u8>) -> bool {
         let needle1 = 0;
         let needle2 = 1;
         let needle3 = 2;
         let answer = positions3(needle1, needle2, needle3, &data);
         answer.eq(Memchr3::new(needle1, needle2, needle3, &data))
+    }
+
+    fn qc_memchr3_rev_iter(data: Vec<u8>) -> bool {
+        let needle1 = 0;
+        let needle2 = 1;
+        let needle3 = 2;
+        let answer = positions3(needle1, needle2, needle3, &data);
+        answer.rev().eq(Memchr3::new(needle1, needle2, needle3, &data).rev())
     }
 
     fn qc_memchr1_iter_size_hint(data: Vec<u8>) -> bool {

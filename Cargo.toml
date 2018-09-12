@@ -23,6 +23,7 @@ default = ["use_std", "libc"]
 use_std = ["libc", "libc/use_std"]
 
 [dependencies]
+cfg-if = "0.1.5"
 libc = { version = "0.2.18", default-features = false, optional = true }
 
 [build-dependencies]

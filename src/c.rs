@@ -1,6 +1,8 @@
 // This module defines safe wrappers around memchr (POSIX) and memrchr (GNU
 // extension).
 
+#![allow(dead_code)]
+
 extern crate libc;
 
 use self::libc::{c_int, c_void, size_t};

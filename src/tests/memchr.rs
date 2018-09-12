@@ -1,8 +1,6 @@
-use std::prelude::v1::*;
-
 use fallback;
 use naive;
-use {memchr, memrchr, memchr2, memchr3};
+use {memchr, memchr2, memchr3, memrchr, memrchr2, memrchr3};
 
 use tests::memchr_tests;
 
@@ -62,34 +60,31 @@ fn memrchr1_fallback_find() {
     }
 }
 
-quickcheck! {
-    fn qc_memchr1_never_fail(n1: u8, corpus: Vec<u8>) -> bool {
-        memchr(n1, &corpus);
-        true
+#[test]
+fn memrchr2_find() {
+    for test in memchr_tests() {
+        test.two(true, memrchr2);
     }
 }
 
-quickcheck! {
-    fn qc_memchr2_never_fail(n1: u8, n2: u8, corpus: Vec<u8>) -> bool {
-        memchr2(n1, n2, &corpus);
-        true
+#[test]
+fn memrchr2_fallback_find() {
+    for test in memchr_tests() {
+        test.two(true, fallback::memrchr2);
     }
 }
 
-quickcheck! {
-    fn qc_memchr3_never_fail(
-        n1: u8, n2: u8, n3: u8,
-        corpus: Vec<u8>
-    ) -> bool {
-        memchr3(n1, n2, n3, &corpus);
-        true
+#[test]
+fn memrchr3_find() {
+    for test in memchr_tests() {
+        test.three(true, memrchr3);
     }
 }
 
-quickcheck! {
-    fn qc_memrchr1_never_fail(n1: u8, corpus: Vec<u8>) -> bool {
-        memrchr(n1, &corpus);
-        true
+#[test]
+fn memrchr3_fallback_find() {
+    for test in memchr_tests() {
+        test.three(true, fallback::memrchr3);
     }
 }
 
@@ -117,5 +112,20 @@ quickcheck! {
 quickcheck! {
     fn qc_memrchr1_matches_naive(n1: u8, corpus: Vec<u8>) -> bool {
         memrchr(n1, &corpus) == naive::memrchr(n1, &corpus)
+    }
+}
+
+quickcheck! {
+    fn qc_memrchr2_matches_naive(n1: u8, n2: u8, corpus: Vec<u8>) -> bool {
+        memrchr2(n1, n2, &corpus) == naive::memrchr2(n1, n2, &corpus)
+    }
+}
+
+quickcheck! {
+    fn qc_memrchr3_matches_naive(
+        n1: u8, n2: u8, n3: u8,
+        corpus: Vec<u8>
+    ) -> bool {
+        memrchr3(n1, n2, n3, &corpus) == naive::memrchr3(n1, n2, n3, &corpus)
     }
 }
