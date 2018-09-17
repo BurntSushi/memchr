@@ -34,7 +34,7 @@ provides its own implementation of `memrchr` as well, on top of `memchr2`,
 `memchr2` is that that `memchr2` permits finding all occurrences of two bytes
 instead of one. Similarly for `memchr3`.
 
-### Compilg without the standard library
+### Compiling without the standard library
 
 memchr links to the standard library by default, but you can disable the
 `use_std` feature if you want to use it in a `#![no_std]` crate:
