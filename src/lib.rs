@@ -227,7 +227,7 @@ pub fn memchr3(
 ///
 /// This shows how to find the last position of a byte in a byte string.
 ///
-/// ```ignore
+/// ```
 /// use memchr::memrchr;
 ///
 /// let haystack = b"the quick brown fox";
