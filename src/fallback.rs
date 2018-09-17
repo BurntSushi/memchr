@@ -334,7 +334,7 @@ unsafe fn ptr_sub(ptr: *const u8, amt: usize) -> *const u8 {
 
 unsafe fn read_unaligned_usize(ptr: *const u8) -> usize {
     let mut n: usize = 0;
-    ptr::copy_nonoverlapping(ptr as *const usize, &mut n, USIZE_BYTES);
+    ptr::copy_nonoverlapping(ptr, &mut n as *mut _ as *mut u8, USIZE_BYTES);
     n
 }
 
