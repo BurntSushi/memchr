@@ -1,5 +1,5 @@
 use std::mem;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicPtr, Ordering};
 
 use fallback;
 
@@ -27,30 +27,29 @@ mod sse2;
 // probably can't be inlined anyway---unless you've compiled your entire
 // program with AVX2 enabled. However, even then, the various memchr
 // implementations aren't exactly small, so inlining might not help anyway!
+type FnRaw = *mut ();
 macro_rules! ifunc {
     ($fnty:ty, $name:ident, $haystack:ident, $($needle:ident),+) => {{
-        static mut FN: $fnty = detect;
+        static FN: AtomicPtr<()> = AtomicPtr::new(detect as FnRaw);
 
         fn detect($($needle: u8),+, haystack: &[u8]) -> Option<usize> {
             let fun =
                 if cfg!(memchr_runtime_avx) && is_x86_feature_detected!("avx2") {
-                    avx::$name as usize
+                    avx::$name as FnRaw
                 } else if cfg!(memchr_runtime_sse2) {
-                    sse2::$name as usize
+                    sse2::$name as FnRaw
                 } else {
-                    fallback::$name as usize
+                    fallback::$name as FnRaw
                 };
-            let slot = unsafe { &*(&FN as *const _ as *const AtomicUsize) };
-            slot.store(fun as usize, Ordering::Relaxed);
+            FN.store(fun as FnRaw, Ordering::Relaxed);
             unsafe {
-                mem::transmute::<usize, $fnty>(fun)($($needle),+, haystack)
+                mem::transmute::<FnRaw, $fnty>(fun)($($needle),+, haystack)
             }
         }
 
         unsafe {
-            let slot = &*(&FN as *const _ as *const AtomicUsize);
-            let fun = slot.load(Ordering::Relaxed);
-            mem::transmute::<usize, $fnty>(fun)($($needle),+, $haystack)
+            let fun = FN.load(Ordering::Relaxed);
+            mem::transmute::<FnRaw, $fnty>(fun)($($needle),+, $haystack)
         }
     }}
 }
