@@ -2,6 +2,16 @@
 
 # vim: ft=sh sw=2 ts=2 sts=2
 
+# Setup some variables for executing cargo commands.
+# Things are a little different if we're testing with cross.
+if [ -n "$CROSS" ]; then
+  rustup target add "$TARGET"
+  cargo install cross --force
+  export CARGO_CMD="cross"
+else
+  export CARGO_CMD="cargo"
+fi
+
 is_x86_64() {
     case "$TARGET" in
         x86_64-*)
@@ -34,9 +44,9 @@ fi
 if [[ "$(host)" != "$TARGET" ]]; then
   rustup target add "$TARGET"
 fi
-cargo build --target "$TARGET" --verbose --no-default-features
-cargo build --target "$TARGET" --verbose
-cargo doc --target "$TARGET" --verbose
+"$CARGO_CMD" build --target "$TARGET" --verbose --no-default-features
+"$CARGO_CMD" build --target "$TARGET" --verbose
+"$CARGO_CMD" doc --target "$TARGET" --verbose
 
 # If we're testing on an older version of Rust, then only check that we
 # can build the crate. This is because the dev dependencies might be updated
@@ -47,27 +57,28 @@ if [ "$TRAVIS_RUST_VERSION" = "1.13.0" ]; then
   exit
 fi
 
-cargo test --target "$TARGET" --verbose
+"$CARGO_CMD" test --target "$TARGET" --verbose
+"$CARGO_CMD" test --target "$TARGET" --verbose byte_order -- --nocapture
 # If we're testing on x86_64, then test all possible permutations of SIMD
 # config.
 if is_x86_64; then
   preamble="--cfg memchr_disable_auto_simd"
 
   # Force use of libc.
-  RUSTFLAGS="$preamble" cargo test --target "$TARGET" --verbose
+  RUSTFLAGS="$preamble" "$CARGO_CMD" test --target "$TARGET" --verbose
 
   preamble="$preamble --cfg memchr_runtime_simd"
   # Force use of fallback
-  RUSTFLAGS="$preamble" cargo test --target "$TARGET" --verbose
+  RUSTFLAGS="$preamble" "$CARGO_CMD" test --target "$TARGET" --verbose
   # Force use of sse2 only
   RUSTFLAGS="$preamble --cfg memchr_runtime_sse2" \
-    cargo test --target "$TARGET" --verbose
+    "$CARGO_CMD" test --target "$TARGET" --verbose
   # Force use of avx only
   RUSTFLAGS="$preamble --cfg memchr_runtime_avx" \
-    cargo test --target "$TARGET" --verbose
+    "$CARGO_CMD" test --target "$TARGET" --verbose
 fi
 if [[ "$TRAVIS_RUST_VERSION" = "nightly" ]] && is_x86_64 && [[ "$TRAVIS_OS_NAME" = "linux" ]]; then
-  cargo bench \
+  "$CARGO_CMD" bench \
     --manifest-path bench/Cargo.toml \
     --target "$TARGET" \
     --verbose \
