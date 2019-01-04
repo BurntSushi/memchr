@@ -28,6 +28,11 @@ matrix:
     - os: linux
       rust: 1.13.0
       env: TARGET=x86_64-unknown-linux-gnu
+    # For testing big-endian.
+    - env: TARGET=mips64-unknown-linux-gnuabi64 CROSS=1
+      rust: stable
+      services: docker
+      sudo: required
 script: ci/script.sh
 branches:
   only:

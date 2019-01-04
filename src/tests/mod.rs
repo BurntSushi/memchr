@@ -3,6 +3,18 @@ use std::iter::repeat;
 mod iter;
 mod memchr;
 
+#[cfg(target_endian = "little")]
+#[test]
+fn byte_order() {
+    eprintln!("LITTLE ENDIAN");
+}
+
+#[cfg(target_endian = "big")]
+#[test]
+fn byte_order() {
+    eprintln!("BIG ENDIAN");
+}
+
 /// Create a sequence of tests that should be run by memchr implementations.
 fn memchr_tests() -> Vec<MemchrTest> {
     let mut tests = Vec::new();
