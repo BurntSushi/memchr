@@ -222,7 +222,7 @@ pub fn memchr3(
 ///
 /// While this is operationally the same as something like
 /// `haystack.iter().rposition(|&b| b == needle)`, `memrchr` will use a highly
-/// optimized routine that can be up to an order of magnitude master in some
+/// optimized routine that can be up to an order of magnitude faster in some
 /// cases.
 ///
 /// # Example
