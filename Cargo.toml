@@ -27,9 +27,6 @@ use_std = ["libc", "libc/use_std"]
 cfg-if = "0.1.5"
 libc = { version = "0.2.18", default-features = false, optional = true }
 
-[build-dependencies]
-version_check = "0.1.4"
-
 [dev-dependencies]
 quickcheck = { version = "0.8", default-features = false }
 
