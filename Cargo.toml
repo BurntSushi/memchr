@@ -31,7 +31,7 @@ libc = { version = "0.2.18", default-features = false, optional = true }
 version_check = "0.1.4"
 
 [dev-dependencies]
-quickcheck = { version = "0.7", default-features = false }
+quickcheck = { version = "0.8", default-features = false }
 
 [profile.test]
 opt-level = 3
