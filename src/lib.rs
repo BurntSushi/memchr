@@ -53,7 +53,7 @@ mod c;
 mod fallback;
 mod iter;
 mod naive;
-#[cfg(all(target_arch = "x86_64", memchr_runtime_simd, feature = "use_std"))]
+#[cfg(all(target_arch = "x86_64", memchr_runtime_simd))]
 mod x86;
 #[cfg(test)]
 mod tests;
@@ -135,7 +135,7 @@ pub fn memrchr3_iter(
 #[inline]
 pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     cfg_if! {
-        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, feature = "use_std"))] {
+        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd))] {
             #[inline(always)]
             fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
                 x86::memchr(n1, haystack)
@@ -168,7 +168,7 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 #[inline]
 pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
     cfg_if! {
-        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, feature = "use_std"))] {
+        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd))] {
             #[inline(always)]
             fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
                 x86::memchr2(n1, n2, haystack)
@@ -196,7 +196,7 @@ pub fn memchr3(
     haystack: &[u8],
 ) -> Option<usize> {
     cfg_if! {
-        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, feature = "use_std"))] {
+        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd))] {
             #[inline(always)]
             fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
                 x86::memchr3(n1, n2, n3, haystack)
@@ -238,7 +238,7 @@ pub fn memchr3(
 #[inline]
 pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     cfg_if! {
-        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, feature = "use_std"))] {
+        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd))] {
             #[inline(always)]
             fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
                 x86::memrchr(n1, haystack)
@@ -272,7 +272,7 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 #[inline]
 pub fn memrchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
     cfg_if! {
-        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, feature = "use_std"))] {
+        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd))] {
             #[inline(always)]
             fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
                 x86::memrchr2(n1, n2, haystack)
@@ -300,7 +300,7 @@ pub fn memrchr3(
     haystack: &[u8],
 ) -> Option<usize> {
     cfg_if! {
-        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, feature = "use_std"))] {
+        if #[cfg(all(target_arch = "x86_64", memchr_runtime_simd))] {
             #[inline(always)]
             fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
                 x86::memrchr3(n1, n2, n3, haystack)

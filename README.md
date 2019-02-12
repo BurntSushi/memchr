@@ -43,3 +43,8 @@ memchr links to the standard library by default, but you can disable the
 [dependencies]
 memchr = { version = "2", default-features = false }
 ```
+
+On x86 platforms, when the `use_std` feature is disabled, the SSE2
+implementation of memchr will be used in compilers that support it. When
+`use_std` is enabled, the AVX implementation of memchr will be used if the CPU
+is determined to support it at runtime.
