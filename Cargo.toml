@@ -24,7 +24,6 @@ default = ["use_std"]
 use_std = []
 
 [dependencies]
-cfg-if = "0.1.5"
 libc = { version = "0.2.18", default-features = false, optional = true }
 
 [dev-dependencies]
