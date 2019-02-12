@@ -20,8 +20,8 @@ name = "memchr"
 bench = false
 
 [features]
-default = ["use_std", "libc"]
-use_std = ["libc", "libc/use_std"]
+default = ["use_std"]
+use_std = []
 
 [dependencies]
 cfg-if = "0.1.5"
