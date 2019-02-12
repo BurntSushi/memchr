@@ -43,11 +43,8 @@ use core::iter::Rev;
 
 pub use iter::{Memchr, Memchr2, Memchr3};
 
-#[cfg(all(
-    feature = "libc",
-    not(target_arch = "wasm32"),
-    not(target_env = "sgx"),
-))]
+// N.B. If you're looking for the cfg knobs for libc, see build.rs.
+#[cfg(memchr_libc)]
 mod c;
 #[allow(dead_code)]
 mod fallback;
@@ -140,12 +137,7 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
             fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
                 x86::memchr(n1, haystack)
             }
-        } else if #[cfg(all(
-            feature = "libc",
-            not(target_arch = "wasm32"),
-            not(target_arch = "windows"),
-            not(target_env = "sgx"),
-        ))] {
+        } else if #[cfg(memchr_libc)] {
             #[inline(always)]
             fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
                 c::memchr(n1, haystack)
@@ -243,13 +235,7 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
             fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
                 x86::memrchr(n1, haystack)
             }
-        } else if #[cfg(all(
-            feature = "libc",
-            target_os = "linux",
-            not(target_arch = "wasm32"),
-            not(target_arch = "windows"),
-            not(target_env = "sgx"),
-        ))] {
+        } else if #[cfg(all(memchr_libc, target_os = "linux"))] {
             #[inline(always)]
             fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
                 c::memrchr(n1, haystack)
