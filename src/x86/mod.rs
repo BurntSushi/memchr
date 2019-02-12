@@ -1,8 +1,8 @@
-use std::mem;
-use std::sync::atomic::{AtomicUsize, Ordering};
-
 use fallback;
 
+// We only use AVX when we can detect at runtime whether it's available, which
+// requires std.
+#[cfg(feature = "use_std")]
 mod avx;
 mod sse2;
 
@@ -27,8 +27,12 @@ mod sse2;
 // probably can't be inlined anyway---unless you've compiled your entire
 // program with AVX2 enabled. However, even then, the various memchr
 // implementations aren't exactly small, so inlining might not help anyway!
+#[cfg(feature = "use_std")]
 macro_rules! ifunc {
     ($fnty:ty, $name:ident, $haystack:ident, $($needle:ident),+) => {{
+        use std::mem;
+        use std::sync::atomic::{AtomicUsize, Ordering};
+
         static mut FN: $fnty = detect;
 
         fn detect($($needle: u8),+, haystack: &[u8]) -> Option<usize> {
@@ -51,6 +55,21 @@ macro_rules! ifunc {
             let slot = &*(&FN as *const _ as *const AtomicUsize);
             let fun = slot.load(Ordering::Relaxed);
             mem::transmute::<usize, $fnty>(fun)($($needle),+, $haystack)
+        }
+    }}
+}
+
+// When std isn't enable (which provides runtime CPU feature detection), or if
+// runtime CPU feature detection has been explicitly disabled, then just call
+// our optimized SSE2 routine directly. SSE2 is avalbale on all x86_64 targets,
+// so no CPU feature detection is necessary.
+#[cfg(not(feature = "use_std"))]
+macro_rules! ifunc {
+    ($fnty:ty, $name:ident, $haystack:ident, $($needle:ident),+) => {{
+        if cfg!(memchr_runtime_sse2) {
+            unsafe { sse2::$name($($needle),+, $haystack) }
+        } else {
+            fallback::$name($($needle),+, $haystack)
         }
     }}
 }
