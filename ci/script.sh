@@ -57,18 +57,27 @@ if [ "$TRAVIS_RUST_VERSION" = "1.13.0" ]; then
   exit
 fi
 
-"$CARGO_CMD" test --target "$TARGET" --verbose
+# A sanity check for the byte order used in these tests.
 "$CARGO_CMD" test --target "$TARGET" --verbose byte_order -- --nocapture
+
+"$CARGO_CMD" test --target "$TARGET" --verbose
+
 # If we're testing on x86_64, then test all possible permutations of SIMD
 # config.
 if is_x86_64; then
   preamble="--cfg memchr_disable_auto_simd"
 
-  # Force use of libc.
+  # Force use of fallback without libc.
   RUSTFLAGS="$preamble" "$CARGO_CMD" test --target "$TARGET" --verbose
 
+  # Force use of libc.
+  RUSTFLAGS="$preamble" "$CARGO_CMD" test \
+    --target "$TARGET" \
+    --features libc \
+    --verbose
+
   preamble="$preamble --cfg memchr_runtime_simd"
-  # Force use of fallback
+  # Force use of fallback even when SIMD is enabled.
   RUSTFLAGS="$preamble" "$CARGO_CMD" test --target "$TARGET" --verbose
   # Force use of sse2 only
   RUSTFLAGS="$preamble --cfg memchr_runtime_sse2" \
