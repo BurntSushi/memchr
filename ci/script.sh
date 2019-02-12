@@ -2,6 +2,8 @@
 
 # vim: ft=sh sw=2 ts=2 sts=2
 
+set -e
+
 # Setup some variables for executing cargo commands.
 # Things are a little different if we're testing with cross.
 if [ -n "$CROSS" ]; then
