@@ -25,11 +25,6 @@ instead of one. Similarly for `memchr3`.
 #![deny(missing_docs)]
 #![doc(html_root_url = "https://docs.rs/memchr/2.0.0")]
 
-// Supporting 16-bit would be fine. If you need it, please submit a bug report
-// at https://github.com/BurntSushi/rust-memchr
-#[cfg(not(any(target_pointer_width = "32", target_pointer_width = "64")))]
-compile_error!("memchr currently not supported on non-32 or non-64 bit");
-
 #[cfg(feature = "use_std")]
 extern crate core;
 
