@@ -16,8 +16,8 @@ Dual-licensed under MIT or the [UNLICENSE](http://unlicense.org).
 
 ### Overview
 
-The `memchr` function is traditionally provided by libc, however, the
-performance of `memchr` can vary significantly depending on the specific
+The `memchr` function is traditionally provided by libc, but its
+performance can vary significantly depending on the specific
 implementation of libc that is used. They can range from manually tuned
 Assembly implementations (like that found in GNU's libc) all the way to
 non-vectorized C implementations (like that found in MUSL).
@@ -31,7 +31,7 @@ Assembler.
 Additionally, GNU libc also provides an extension, `memrchr`. This crate
 provides its own implementation of `memrchr` as well, on top of `memchr2`,
 `memchr3`, `memrchr2` and `memrchr3`. The difference between `memchr` and
-`memchr2` is that that `memchr2` permits finding all occurrences of two bytes
+`memchr2` is that `memchr2` permits finding all occurrences of two bytes
 instead of one. Similarly for `memchr3`.
 
 ### Compiling without the standard library
