@@ -25,7 +25,7 @@ pub unsafe fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
     // While this routine is very long, the basic idea is actually very simple
     // and can be expressed straight-forwardly in pseudo code:
     //
-    //     needle = (n1 << 15) | (n1 << 14) | ... | (n1 << 1) | n1
+    //     needle = (n1 << 120) | (n1 << 112) | ... | (n1 << 8) | n1
     //     while i <= haystack.len() - 16:
     //       // A 16 byte vector. Each byte in chunk corresponds to a byte in
     //       // the haystack.
