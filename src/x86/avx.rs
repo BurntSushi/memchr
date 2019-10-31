@@ -226,14 +226,6 @@ pub unsafe fn memchr3(
             let mask1 = _mm256_movemask_epi8(eqb1);
             let mask2 = _mm256_movemask_epi8(eqb2);
             let mask3 = _mm256_movemask_epi8(eqb3);
-            if mask1 != 0 || mask2 != 0 || mask3 != 0 {
-                return Some(at + forward_pos3(mask1, mask2, mask3));
-            }
-
-            at += VECTOR_SIZE;
-            let mask1 = _mm256_movemask_epi8(eqb1);
-            let mask2 = _mm256_movemask_epi8(eqb2);
-            let mask3 = _mm256_movemask_epi8(eqb3);
             return Some(at + forward_pos3(mask1, mask2, mask3));
         }
         ptr = ptr.add(loop_size);
