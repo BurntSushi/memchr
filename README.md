@@ -37,16 +37,16 @@ instead of one. Similarly for `memchr3`.
 ### Compiling without the standard library
 
 memchr links to the standard library by default, but you can disable the
-`use_std` feature if you want to use it in a `#![no_std]` crate:
+`std` feature if you want to use it in a `#![no_std]` crate:
 
 ```toml
 [dependencies]
 memchr = { version = "2", default-features = false }
 ```
 
-On x86 platforms, when the `use_std` feature is disabled, the SSE2
+On x86 platforms, when the `std` feature is disabled, the SSE2
 implementation of memchr will be used in compilers that support it. When
-`use_std` is enabled, the AVX implementation of memchr will be used if the CPU
+`std` is enabled, the AVX implementation of memchr will be used if the CPU
 is determined to support it at runtime.
 
 ### Using libc
