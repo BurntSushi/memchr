@@ -365,7 +365,7 @@ impl MemchrTest {
         // Add bytes to the end of the corpus.
         for i in 1..515 {
             let mut t = self.clone();
-            let mut padding: String = repeat('%').take(i).collect();
+            let padding: String = repeat('%').take(i).collect();
             t.corpus.push_str(&padding);
             more.push(t);
         }
