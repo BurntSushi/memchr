@@ -55,7 +55,7 @@ fi
 # more frequently, and therefore might require a newer version of Rust.
 #
 # This isn't ideal. It's a compromise.
-if [ "$TRAVIS_RUST_VERSION" = "1.13.0" ]; then
+if [ "$TRAVIS_RUST_VERSION" = "1.28.0" ]; then
   exit
 fi
 

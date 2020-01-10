@@ -64,3 +64,17 @@ a standard part of libc, so they will always use the implementations in this
 crate. One exception to this is `memrchr`, which is an extension commonly found
 on Linux. On Linux, `memrchr` is used in precisely the same scenario as
 `memchr`, as described above.
+
+
+### Minimum Rust version policy
+
+This crate's minimum supported `rustc` version is `1.28.0`.
+
+The current policy is that the minimum Rust version required to use this crate
+can be increased in minor version updates. For example, if `crate 1.0` requires
+Rust 1.20.0, then `crate 1.0.z` for all values of `z` will also require Rust
+1.20.0 or newer. However, `crate 1.y` for `y > 0` may require a newer minimum
+version of Rust.
+
+In general, this crate will be conservative with respect to the minimum
+supported version of Rust.
