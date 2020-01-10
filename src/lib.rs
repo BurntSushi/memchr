@@ -20,7 +20,7 @@ provides its own implementation of `memrchr` as well, on top of `memchr2`,
 instead of one. Similarly for `memchr3`.
 */
 
-#![cfg_attr(not(feature = "use_std"), no_std)]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![deny(missing_docs)]
 #![doc(html_root_url = "https://docs.rs/memchr/2.0.0")]
 
@@ -33,7 +33,7 @@ instead of one. Similarly for `memchr3`.
 )))]
 compile_error!("memchr currently not supported on non-32 or non-64 bit");
 
-#[cfg(feature = "use_std")]
+#[cfg(feature = "std")]
 extern crate core;
 
 #[cfg(test)]
