@@ -1,7 +1,7 @@
 #[cfg(target_arch = "x86_64")]
 use c;
 use fallback;
-use memchr::{Memchr, Memchr2, Memchr3, memrchr, memrchr2, memrchr3};
+use memchr::{memrchr, memrchr2, memrchr3, Memchr, Memchr2, Memchr3};
 use naive;
 
 pub fn memchr1_count(b1: u8, haystack: &[u8]) -> usize {

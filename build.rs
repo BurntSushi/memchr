@@ -53,7 +53,7 @@ fn enable_libc() {
 }
 
 fn is_feature_set(name: &str) -> bool {
-    is_env_set(&format!("CARGO_FEATURE_{}",  name))
+    is_env_set(&format!("CARGO_FEATURE_{}", name))
 }
 
 fn is_env_set(name: &str) -> bool {

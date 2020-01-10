@@ -21,7 +21,6 @@ instead of one. Similarly for `memchr3`.
 */
 
 #![cfg_attr(not(feature = "use_std"), no_std)]
-
 #![deny(missing_docs)]
 #![doc(html_root_url = "https://docs.rs/memchr/2.0.0")]
 
@@ -52,10 +51,10 @@ mod c;
 mod fallback;
 mod iter;
 mod naive;
-#[cfg(all(target_arch = "x86_64", memchr_runtime_simd))]
-mod x86;
 #[cfg(test)]
 mod tests;
+#[cfg(all(target_arch = "x86_64", memchr_runtime_simd))]
+mod x86;
 
 /// An iterator over all occurrences of the needle in a haystack.
 #[inline]
@@ -65,11 +64,7 @@ pub fn memchr_iter(needle: u8, haystack: &[u8]) -> Memchr {
 
 /// An iterator over all occurrences of the needles in a haystack.
 #[inline]
-pub fn memchr2_iter(
-    needle1: u8,
-    needle2: u8,
-    haystack: &[u8],
-) -> Memchr2 {
+pub fn memchr2_iter(needle1: u8, needle2: u8, haystack: &[u8]) -> Memchr2 {
     Memchr2::new(needle1, needle2, haystack)
 }
 
