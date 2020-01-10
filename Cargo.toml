@@ -27,7 +27,7 @@ use_std = []
 libc = { version = "0.2.18", default-features = false, optional = true }
 
 [dev-dependencies]
-quickcheck = { version = "0.8", default-features = false }
+quickcheck = { version = "0.9", default-features = false }
 
 [profile.test]
 opt-level = 3
