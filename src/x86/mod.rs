@@ -86,7 +86,14 @@ pub fn memchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
 
 #[inline(always)]
 pub fn memchr3(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
-    ifunc!(fn(u8, u8, u8, &[u8]) -> Option<usize>, memchr3, haystack, n1, n2, n3)
+    ifunc!(
+        fn(u8, u8, u8, &[u8]) -> Option<usize>,
+        memchr3,
+        haystack,
+        n1,
+        n2,
+        n3
+    )
 }
 
 #[inline(always)]
@@ -101,5 +108,12 @@ pub fn memrchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
 
 #[inline(always)]
 pub fn memrchr3(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
-    ifunc!(fn(u8, u8, u8, &[u8]) -> Option<usize>, memrchr3, haystack, n1, n2, n3)
+    ifunc!(
+        fn(u8, u8, u8, &[u8]) -> Option<usize>,
+        memrchr3,
+        haystack,
+        n1,
+        n2,
+        n3
+    )
 }

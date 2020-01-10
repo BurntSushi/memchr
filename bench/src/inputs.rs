@@ -39,9 +39,7 @@ pub const HUGE: Input = Input {
         SearchByte { byte: b't', count: 39268 },
         SearchByte { byte: b'o', count: 34495 },
     ],
-    verycommon: &[
-        SearchByte { byte: b' ', count: 97626 },
-    ],
+    verycommon: &[SearchByte { byte: b' ', count: 97626 }],
     supercommon: &[],
 };
 
@@ -62,9 +60,7 @@ pub const TINY: Input = Input {
         SearchByte { byte: b's', count: 5 },
         SearchByte { byte: b'e', count: 6 },
     ],
-    common: &[
-        SearchByte { byte: b' ', count: 11 },
-    ],
+    common: &[SearchByte { byte: b' ', count: 11 }],
     verycommon: &[],
     supercommon: &[],
 };
@@ -91,9 +87,7 @@ pub const SMALL: Input = Input {
         SearchByte { byte: b'h', count: 34 },
         SearchByte { byte: b'i', count: 35 },
     ],
-    verycommon: &[
-        SearchByte { byte: b' ', count: 106 },
-    ],
+    verycommon: &[SearchByte { byte: b' ', count: 106 }],
     supercommon: &[],
 };
 

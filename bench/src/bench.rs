@@ -8,15 +8,11 @@ extern crate memchr;
 use criterion::{Bencher, Benchmark, Criterion, Throughput};
 
 use imp::{
-    memchr1_count, memchr2_count, memchr3_count,
-    memrchr1_count, memrchr2_count, memrchr3_count,
-    fallback1_count, fallback2_count, fallback3_count,
-    naive1_count, naive2_count, naive3_count,
+    fallback1_count, fallback2_count, fallback3_count, memchr1_count,
+    memchr2_count, memchr3_count, memrchr1_count, memrchr2_count,
+    memrchr3_count, naive1_count, naive2_count, naive3_count,
 };
-use inputs::{
-    Input, Search1, Search2, Search3,
-    HUGE, SMALL, TINY, EMPTY,
-};
+use inputs::{Input, Search1, Search2, Search3, EMPTY, HUGE, SMALL, TINY};
 
 #[cfg(target_arch = "x86_64")]
 #[path = "../../src/c.rs"]
@@ -651,27 +647,19 @@ fn define_input1<'i>(
 ) {
     if let Some(search) = input.never1() {
         let mut bench = bench.clone();
-        define(c, group, "never", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "never", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.rare1() {
         let mut bench = bench.clone();
-        define(c, group, "rare", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "rare", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.uncommon1() {
         let mut bench = bench.clone();
-        define(c, group, "uncommon", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "uncommon", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.common1() {
         let mut bench = bench.clone();
-        define(c, group, "common", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "common", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.verycommon1() {
         let mut bench = bench.clone();
@@ -695,27 +683,19 @@ fn define_input2<'i>(
 ) {
     if let Some(search) = input.never2() {
         let mut bench = bench.clone();
-        define(c, group, "never", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "never", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.rare2() {
         let mut bench = bench.clone();
-        define(c, group, "rare", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "rare", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.uncommon2() {
         let mut bench = bench.clone();
-        define(c, group, "uncommon", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "uncommon", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.common2() {
         let mut bench = bench.clone();
-        define(c, group, "common", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "common", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.verycommon2() {
         let mut bench = bench.clone();
@@ -739,27 +719,19 @@ fn define_input3<'i>(
 ) {
     if let Some(search) = input.never3() {
         let mut bench = bench.clone();
-        define(c, group, "never", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "never", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.rare3() {
         let mut bench = bench.clone();
-        define(c, group, "rare", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "rare", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.uncommon3() {
         let mut bench = bench.clone();
-        define(c, group, "uncommon", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "uncommon", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.common3() {
         let mut bench = bench.clone();
-        define(c, group, "common", input.corpus, move |b| {
-            bench(search, b)
-        });
+        define(c, group, "common", input.corpus, move |b| bench(search, b));
     }
     if let Some(search) = input.verycommon3() {
         let mut bench = bench.clone();
