@@ -191,7 +191,7 @@ fn double_ended_take<I, J>(mut iter: I, take_side: J) -> Vec<I::Item>
 fn positions1<'a>(
     n1: u8,
     haystack: &'a [u8],
-) -> Box<DoubleEndedIterator<Item=usize> + 'a> {
+) -> Box<dyn DoubleEndedIterator<Item=usize> + 'a> {
     let it = haystack
         .iter()
         .enumerate()
@@ -204,7 +204,7 @@ fn positions2<'a>(
     n1: u8,
     n2: u8,
     haystack: &'a [u8],
-) -> Box<DoubleEndedIterator<Item=usize> + 'a> {
+) -> Box<dyn DoubleEndedIterator<Item=usize> + 'a> {
     let it = haystack
         .iter()
         .enumerate()
@@ -218,7 +218,7 @@ fn positions3<'a>(
     n2: u8,
     n3: u8,
     haystack: &'a [u8],
-) -> Box<DoubleEndedIterator<Item=usize> + 'a> {
+) -> Box<dyn DoubleEndedIterator<Item=usize> + 'a> {
     let it = haystack
         .iter()
         .enumerate()
