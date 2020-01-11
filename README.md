@@ -2,8 +2,7 @@ memchr
 ======
 The `memchr` crate provides heavily optimized routines for searching bytes.
 
-[![Build status](https://api.travis-ci.org/BurntSushi/rust-memchr.png)](https://travis-ci.org/BurntSushi/rust-memchr)
-[![Build status](https://ci.appveyor.com/api/projects/status/8i9484t8l4w7uql0/branch/master?svg=true)](https://ci.appveyor.com/project/BurntSushi/rust-memchr/branch/master)
+[![Build status](https://github.com/BurntSushi/rust-memchr/workflows/ci/badge.svg)](https://github.com/BurntSushi/rust-memchr/actions)
 [![](http://meritbadge.herokuapp.com/memchr)](https://crates.io/crates/memchr)
 
 Dual-licensed under MIT or the [UNLICENSE](http://unlicense.org).

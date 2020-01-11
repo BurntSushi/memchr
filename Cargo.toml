@@ -11,10 +11,6 @@ keywords = ["memchr", "char", "scan", "strchr", "string"]
 license = "Unlicense/MIT"
 exclude = ["/ci/*", "/.travis.yml", "/Makefile", "/appveyor.yml"]
 
-[badges]
-travis-ci = { repository = "BurntSushi/rust-memchr" }
-appveyor = { repository = "BurntSushi/rust-memchr" }
-
 [lib]
 name = "memchr"
 bench = false
