@@ -64,9 +64,11 @@ jobs:
       with:
         fetch-depth: 1
     - name: Install Rust
-      uses: hecrj/setup-rust-action@v1
+      uses: actions-rs/toolchain@v1
       with:
-        rust-version: ${{ matrix.rust }}
+        toolchain: ${{ matrix.rust }}
+        profile: minimal
+        override: true
     - name: Use Cross
       if: matrix.target != ''
       run: |
@@ -131,9 +133,12 @@ jobs:
       with:
         fetch-depth: 1
     - name: Install Rust
-      uses: hecrj/setup-rust-action@v1
+      uses: actions-rs/toolchain@v1
       with:
-        rust-version: stable
+        toolchain: stable
+        override: true
+        profile: minimal
+        components: rustfmt
     - name: Install rustfmt
       run: rustup component add rustfmt
     - name: Check formatting
