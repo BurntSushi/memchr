@@ -205,7 +205,7 @@ pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
 /// Like `memchr`, but searches for any of three bytes instead of just one.
 ///
 /// This returns the index corresponding to the first occurrence of `needle1`,
-/// the first occurrence of `needle2`, or the first occurence of `needle3` in
+/// the first occurrence of `needle2`, or the first occurrence of `needle3` in
 /// `haystack` (whichever occurs earliest), or `None` if none are found.
 ///
 /// While this is operationally the same as something like
@@ -349,7 +349,7 @@ pub fn memrchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
 /// Like `memrchr`, but searches for any of three bytes instead of just one.
 ///
 /// This returns the index corresponding to the last occurrence of `needle1`,
-/// the last occurrence of `needle2`, or the last occurence of `needle3` in
+/// the last occurrence of `needle2`, or the last occurrence of `needle3` in
 /// `haystack` (whichever occurs later), or `None` if none are found.
 ///
 /// While this is operationally the same as something like
