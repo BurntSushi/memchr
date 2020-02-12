@@ -129,6 +129,27 @@ jobs:
       name: Run benchmarks as tests
       run: cargo bench --manifest-path bench/Cargo.toml --verbose -- --test
 
+  test-with-miri:
+    name: test with miri
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        profile: minimal
+        override: true
+        components: miri
+    - name: Show CPU info for debugging
+      run: lscpu
+    - run: cargo miri test --verbose
+    - run: cargo miri test --verbose --no-default-features
+    - run: cargo miri test --verbose --features libc
+
   rustfmt:
     name: rustfmt
     runs-on: ubuntu-18.04
