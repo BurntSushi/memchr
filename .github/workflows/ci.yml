@@ -98,6 +98,11 @@ jobs:
       name: Run under different SIMD configurations
       run: |
         set -x
+
+        # Allow using libc while SIMD is available.
+        # (This is to ensure valid logic in the picking process.)
+        RUSTFLAGS="--cfg memchr_runtime_simd" cargo test --verbose --features libc
+
         preamble="--cfg memchr_disable_auto_simd"
 
         # Force use of fallback without libc.
