@@ -142,19 +142,18 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 
     #[cfg(all(
         memchr_libc,
-        not(all(miri, target_arch = "x86_64", memchr_runtime_simd))
+        not(all(target_arch = "x86_64", memchr_runtime_simd, miri))
     ))]
     #[inline(always)]
     fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
         c::memchr(n1, haystack)
     }
 
-    #[cfg(not(all(
-        miri,
-        target_arch = "x86_64",
-        memchr_runtime_simd,
-        memchr_libc
-    )))]
+    #[cfg(all(
+        not(memchr_libc),
+        not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(miri),
+    ))]
     #[inline(always)]
     fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
         fallback::memchr(n1, haystack)
@@ -203,7 +202,10 @@ pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
         x86::memchr2(n1, n2, haystack)
     }
 
-    #[cfg(not(all(miri, target_arch = "x86_64", memchr_runtime_simd)))]
+    #[cfg(all(
+        not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(miri),
+    ))]
     #[inline(always)]
     fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
         fallback::memchr2(n1, n2, haystack)
@@ -257,7 +259,10 @@ pub fn memchr3(
         x86::memchr3(n1, n2, n3, haystack)
     }
 
-    #[cfg(not(all(miri, target_arch = "x86_64", memchr_runtime_simd)))]
+    #[cfg(all(
+        not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(miri),
+    ))]
     #[inline(always)]
     fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
         fallback::memchr3(n1, n2, n3, haystack)
@@ -307,20 +312,18 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     #[cfg(all(
         memchr_libc,
         target_os = "linux",
-        not(all(miri, target_arch = "x86_64", memchr_runtime_simd))
+        not(all(target_arch = "x86_64", memchr_runtime_simd, miri))
     ))]
     #[inline(always)]
     fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
         c::memrchr(n1, haystack)
     }
 
-    #[cfg(not(all(
-        miri,
-        target_arch = "x86_64",
-        memchr_runtime_simd,
-        memchr_libc,
-        target_os = "linux"
-    )))]
+    #[cfg(all(
+        not(all(memchr_libc, target_os = "linux")),
+        not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(miri),
+    ))]
     #[inline(always)]
     fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
         fallback::memrchr(n1, haystack)
@@ -369,7 +372,10 @@ pub fn memrchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
         x86::memrchr2(n1, n2, haystack)
     }
 
-    #[cfg(not(all(miri, target_arch = "x86_64", memchr_runtime_simd)))]
+    #[cfg(all(
+        not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(miri),
+    ))]
     #[inline(always)]
     fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
         fallback::memrchr2(n1, n2, haystack)
@@ -423,7 +429,10 @@ pub fn memrchr3(
         x86::memrchr3(n1, n2, n3, haystack)
     }
 
-    #[cfg(not(all(miri, target_arch = "x86_64", memchr_runtime_simd)))]
+    #[cfg(all(
+        not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(miri),
+    ))]
     #[inline(always)]
     fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
         fallback::memrchr3(n1, n2, n3, haystack)
