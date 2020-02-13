@@ -36,7 +36,7 @@ compile_error!("memchr currently not supported on non-32 or non-64 bit");
 #[cfg(feature = "std")]
 extern crate core;
 
-#[cfg(test)]
+#[cfg(all(test, not(miri)))]
 #[macro_use]
 extern crate quickcheck;
 
@@ -51,7 +51,10 @@ mod c;
 mod fallback;
 mod iter;
 mod naive;
-#[cfg(test)]
+#[cfg(all(test, not(miri)))]
+mod tests;
+#[cfg(all(test, miri))]
+#[path = "tests/miri.rs"]
 mod tests;
 #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
 mod x86;
@@ -142,7 +145,8 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 
     #[cfg(all(
         memchr_libc,
-        not(all(target_arch = "x86_64", memchr_runtime_simd, miri))
+        not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(miri),
     ))]
     #[inline(always)]
     fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
@@ -312,7 +316,8 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     #[cfg(all(
         memchr_libc,
         target_os = "linux",
-        not(all(target_arch = "x86_64", memchr_runtime_simd, miri))
+        not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(miri)
     ))]
     #[inline(always)]
     fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
