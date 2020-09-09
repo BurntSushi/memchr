@@ -19,9 +19,7 @@ path = "src/bench.rs"
 [dependencies]
 criterion = "0.2"
 memchr = { version = "*", path = ".." }
-
-[target.'cfg(target_arch = "x86_64")'.dependencies.libc]
-version = "0.2.18"
+libc = "0.2.18"
 
 [profile.release]
 debug = true
