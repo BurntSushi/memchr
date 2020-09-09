@@ -1,7 +1,6 @@
 extern crate core;
 #[macro_use]
 extern crate criterion;
-#[cfg(target_arch = "x86_64")]
 extern crate libc;
 extern crate memchr;
 
@@ -14,7 +13,6 @@ use imp::{
 };
 use inputs::{Input, Search1, Search2, Search3, EMPTY, HUGE, SMALL, TINY};
 
-#[cfg(target_arch = "x86_64")]
 #[path = "../../src/c.rs"]
 mod c;
 #[path = "../../src/fallback.rs"]
@@ -59,41 +57,38 @@ fn all(c: &mut Criterion) {
         });
     });
 
-    #[cfg(target_arch = "x86_64")]
-    {
-        define_input1(c, "memchr1/libc/huge", HUGE, move |search, b| {
-            b.iter(|| {
-                assert_eq!(
-                    search.byte1.count,
-                    imp::memchr1_libc_count(search.byte1.byte, search.corpus),
-                );
-            });
+    define_input1(c, "memchr1/libc/huge", HUGE, move |search, b| {
+        b.iter(|| {
+            assert_eq!(
+                search.byte1.count,
+                imp::memchr1_libc_count(search.byte1.byte, search.corpus),
+            );
         });
-        define_input1(c, "memchr1/libc/small", SMALL, move |search, b| {
-            b.iter(|| {
-                assert_eq!(
-                    search.byte1.count,
-                    imp::memchr1_libc_count(search.byte1.byte, search.corpus),
-                );
-            });
+    });
+    define_input1(c, "memchr1/libc/small", SMALL, move |search, b| {
+        b.iter(|| {
+            assert_eq!(
+                search.byte1.count,
+                imp::memchr1_libc_count(search.byte1.byte, search.corpus),
+            );
         });
-        define_input1(c, "memchr1/libc/tiny", TINY, move |search, b| {
-            b.iter(|| {
-                assert_eq!(
-                    search.byte1.count,
-                    imp::memchr1_libc_count(search.byte1.byte, search.corpus),
-                );
-            });
+    });
+    define_input1(c, "memchr1/libc/tiny", TINY, move |search, b| {
+        b.iter(|| {
+            assert_eq!(
+                search.byte1.count,
+                imp::memchr1_libc_count(search.byte1.byte, search.corpus),
+            );
         });
-        define_input1(c, "memchr1/libc/empty", EMPTY, move |search, b| {
-            b.iter(|| {
-                assert_eq!(
-                    search.byte1.count,
-                    imp::memchr1_libc_count(search.byte1.byte, search.corpus),
-                );
-            });
+    });
+    define_input1(c, "memchr1/libc/empty", EMPTY, move |search, b| {
+        b.iter(|| {
+            assert_eq!(
+                search.byte1.count,
+                imp::memchr1_libc_count(search.byte1.byte, search.corpus),
+            );
         });
-    }
+    });
 
     define_input1(c, "memchr1/fallback/huge", HUGE, move |search, b| {
         b.iter(|| {
@@ -500,7 +495,7 @@ fn all(c: &mut Criterion) {
         });
     });
 
-    #[cfg(all(target_arch = "x86_64", target_os = "linux"))]
+    #[cfg(all(target_os = "linux"))]
     {
         define_input1(c, "memrchr1/libc/huge", HUGE, move |search, b| {
             b.iter(|| {

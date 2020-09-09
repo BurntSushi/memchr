@@ -1,4 +1,3 @@
-#[cfg(target_arch = "x86_64")]
 use c;
 use fallback;
 use memchr::{memrchr, memrchr2, memrchr3, Memchr, Memchr2, Memchr3};
@@ -8,7 +7,6 @@ pub fn memchr1_count(b1: u8, haystack: &[u8]) -> usize {
     Memchr::new(b1, haystack).count()
 }
 
-#[cfg(target_arch = "x86_64")]
 pub fn memchr1_libc_count(b1: u8, haystack: &[u8]) -> usize {
     let mut count = 0;
     let mut start = 0;
@@ -97,7 +95,7 @@ pub fn memrchr1_count(b1: u8, haystack: &[u8]) -> usize {
     count
 }
 
-#[cfg(all(target_arch = "x86_64", target_os = "linux"))]
+#[cfg(all(target_os = "linux"))]
 pub fn memrchr1_libc_count(b1: u8, haystack: &[u8]) -> usize {
     let mut count = 0;
     let mut end = haystack.len();
