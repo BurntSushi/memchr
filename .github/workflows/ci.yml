@@ -129,6 +129,23 @@ jobs:
       name: Run benchmarks as tests
       run: cargo bench --manifest-path bench/Cargo.toml --verbose -- --test
 
+  build-for-non_sse-target:
+    name: build for non-SSE target
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        profile: minimal
+        override: true
+        components: rust-src
+    - run: cargo build -Z build-std=core --target=src/tests/x86_64-soft_float.json --verbose --no-default-features
+
   test-with-miri:
     name: test with miri
     runs-on: ubuntu-18.04
