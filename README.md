@@ -3,9 +3,9 @@ memchr
 The `memchr` crate provides heavily optimized routines for searching bytes.
 
 [![Build status](https://github.com/BurntSushi/rust-memchr/workflows/ci/badge.svg)](https://github.com/BurntSushi/rust-memchr/actions)
-[![](http://meritbadge.herokuapp.com/memchr)](https://crates.io/crates/memchr)
+[![](https://meritbadge.herokuapp.com/memchr)](https://crates.io/crates/memchr)
 
-Dual-licensed under MIT or the [UNLICENSE](http://unlicense.org).
+Dual-licensed under MIT or the [UNLICENSE](https://unlicense.org/).
 
 
 ### Documentation
