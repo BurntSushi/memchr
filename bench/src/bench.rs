@@ -1,17 +1,15 @@
-extern crate core;
-#[macro_use]
-extern crate criterion;
-extern crate libc;
-extern crate memchr;
+use criterion::{
+    criterion_group, criterion_main, Bencher, Benchmark, Criterion, Throughput,
+};
 
-use criterion::{Bencher, Benchmark, Criterion, Throughput};
-
-use imp::{
+use crate::imp::{
     fallback1_count, fallback2_count, fallback3_count, memchr1_count,
     memchr2_count, memchr3_count, memrchr1_count, memrchr2_count,
     memrchr3_count, naive1_count, naive2_count, naive3_count,
 };
-use inputs::{Input, Search1, Search2, Search3, EMPTY, HUGE, SMALL, TINY};
+use crate::inputs::{
+    Input, Search1, Search2, Search3, EMPTY, HUGE, SMALL, TINY,
+};
 
 #[path = "../../src/c.rs"]
 mod c;
@@ -638,7 +636,7 @@ fn define_input1<'i>(
     c: &mut Criterion,
     group: &str,
     input: Input,
-    bench: impl FnMut(Search1, &mut Bencher) + Clone + 'static,
+    bench: impl FnMut(Search1, &mut Bencher<'_>) + Clone + 'static,
 ) {
     if let Some(search) = input.never1() {
         let mut bench = bench.clone();
@@ -674,7 +672,7 @@ fn define_input2<'i>(
     c: &mut Criterion,
     group: &str,
     input: Input,
-    bench: impl FnMut(Search2, &mut Bencher) + Clone + 'static,
+    bench: impl FnMut(Search2, &mut Bencher<'_>) + Clone + 'static,
 ) {
     if let Some(search) = input.never2() {
         let mut bench = bench.clone();
@@ -710,7 +708,7 @@ fn define_input3<'i>(
     c: &mut Criterion,
     group: &str,
     input: Input,
-    bench: impl FnMut(Search3, &mut Bencher) + Clone + 'static,
+    bench: impl FnMut(Search3, &mut Bencher<'_>) + Clone + 'static,
 ) {
     if let Some(search) = input.never3() {
         let mut bench = bench.clone();
@@ -747,7 +745,7 @@ fn define(
     group_name: &str,
     bench_name: &str,
     corpus: &[u8],
-    bench: impl FnMut(&mut Bencher) + 'static,
+    bench: impl FnMut(&mut Bencher<'_>) + 'static,
 ) {
     let tput = Throughput::Bytes(corpus.len() as u64);
     let benchmark = Benchmark::new(bench_name, bench).throughput(tput);

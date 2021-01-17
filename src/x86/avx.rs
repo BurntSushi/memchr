@@ -1,8 +1,6 @@
-use core::arch::x86_64::*;
-use core::cmp;
-use core::mem::size_of;
+use core::{arch::x86_64::*, cmp, mem::size_of};
 
-use x86::sse2;
+use crate::x86::sse2;
 
 const VECTOR_SIZE: usize = size_of::<__m256i>();
 const VECTOR_ALIGN: usize = VECTOR_SIZE - 1;

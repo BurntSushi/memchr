@@ -7,6 +7,7 @@ description = "Criterion benchmark suite for memchr."
 homepage = "https://github.com/BurntSushi/rust-memchr"
 repository = "https://github.com/BurntSushi/rust-memchr"
 license = "Unlicense/MIT"
+edition = "2018"
 
 [lib]
 bench = false
@@ -20,9 +21,3 @@ path = "src/bench.rs"
 criterion = "0.3.3"
 memchr = { version = "*", path = ".." }
 libc = "0.2.81"
-
-[profile.bench]
-debug = true
-
-[profile.release]
-debug = true

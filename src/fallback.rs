@@ -2,8 +2,7 @@
 // the memchr routines. We do our best to make them fast. Some of them may even
 // get auto-vectorized.
 
-use core::cmp;
-use core::usize;
+use core::{cmp, usize};
 
 #[cfg(target_pointer_width = "16")]
 const USIZE_BYTES: usize = 2;
