@@ -44,10 +44,7 @@ mod c;
 mod fallback;
 mod iter;
 mod naive;
-#[cfg(all(test, all(not(miri), feature = "std")))]
-mod tests;
-#[cfg(all(test, any(miri, not(feature = "std"))))]
-#[path = "tests/miri.rs"]
+#[cfg(test)]
 mod tests;
 #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
 mod x86;

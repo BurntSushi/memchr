@@ -1,7 +1,6 @@
-use crate::c;
-use crate::fallback;
 use memchr::{memrchr, memrchr2, memrchr3, Memchr, Memchr2, Memchr3};
-use crate::naive;
+
+use crate::memchr::{c, fallback, naive};
 
 pub fn memchr1_count(b1: u8, haystack: &[u8]) -> usize {
     Memchr::new(b1, haystack).count()
