@@ -1,6 +1,6 @@
 use quickcheck::quickcheck;
 
-use crate::{tests::memchr_tests, Memchr, Memchr2, Memchr3};
+use crate::{tests::memchr::testdata::memchr_tests, Memchr, Memchr2, Memchr3};
 
 #[test]
 fn memchr1_iter() {

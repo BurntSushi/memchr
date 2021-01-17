@@ -18,7 +18,7 @@ pub struct Input {
 }
 
 pub const HUGE: Input = Input {
-    corpus: include_bytes!("../data/sherlock-holmes-huge.txt"),
+    corpus: crate::data::SHERLOCK_HUGE,
     never: &[
         SearchByte { byte: b'<', count: 0 },
         SearchByte { byte: b'>', count: 0 },
@@ -43,30 +43,8 @@ pub const HUGE: Input = Input {
     supercommon: &[],
 };
 
-pub const TINY: Input = Input {
-    corpus: include_bytes!("../data/sherlock-holmes-tiny.txt"),
-    never: &[
-        SearchByte { byte: b'<', count: 0 },
-        SearchByte { byte: b'>', count: 0 },
-        SearchByte { byte: b'=', count: 0 },
-    ],
-    rare: &[
-        SearchByte { byte: b'.', count: 1 },
-        SearchByte { byte: b'H', count: 1 },
-        SearchByte { byte: b'M', count: 1 },
-    ],
-    uncommon: &[
-        SearchByte { byte: b'l', count: 5 },
-        SearchByte { byte: b's', count: 5 },
-        SearchByte { byte: b'e', count: 6 },
-    ],
-    common: &[SearchByte { byte: b' ', count: 11 }],
-    verycommon: &[],
-    supercommon: &[],
-};
-
 pub const SMALL: Input = Input {
-    corpus: include_bytes!("../data/sherlock-holmes-small.txt"),
+    corpus: crate::data::SHERLOCK_SMALL,
     never: &[
         SearchByte { byte: b'<', count: 0 },
         SearchByte { byte: b'>', count: 0 },
@@ -88,6 +66,28 @@ pub const SMALL: Input = Input {
         SearchByte { byte: b'i', count: 35 },
     ],
     verycommon: &[SearchByte { byte: b' ', count: 106 }],
+    supercommon: &[],
+};
+
+pub const TINY: Input = Input {
+    corpus: crate::data::SHERLOCK_TINY,
+    never: &[
+        SearchByte { byte: b'<', count: 0 },
+        SearchByte { byte: b'>', count: 0 },
+        SearchByte { byte: b'=', count: 0 },
+    ],
+    rare: &[
+        SearchByte { byte: b'.', count: 1 },
+        SearchByte { byte: b'H', count: 1 },
+        SearchByte { byte: b'M', count: 1 },
+    ],
+    uncommon: &[
+        SearchByte { byte: b'l', count: 5 },
+        SearchByte { byte: b's', count: 5 },
+        SearchByte { byte: b'e', count: 6 },
+    ],
+    common: &[SearchByte { byte: b' ', count: 11 }],
+    verycommon: &[],
     supercommon: &[],
 };
 

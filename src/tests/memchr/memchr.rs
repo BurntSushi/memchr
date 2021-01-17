@@ -2,7 +2,7 @@ use quickcheck::quickcheck;
 
 use crate::{
     fallback, memchr, memchr2, memchr3, memrchr, memrchr2, memrchr3, naive,
-    tests::memchr_tests,
+    tests::memchr::testdata::memchr_tests,
 };
 
 #[test]
