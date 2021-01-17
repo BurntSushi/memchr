@@ -1,8 +1,9 @@
-use fallback;
-use naive;
-use {memchr, memchr2, memchr3, memrchr, memrchr2, memrchr3};
+use quickcheck::quickcheck;
 
-use tests::memchr_tests;
+use crate::{
+    fallback, memchr, memchr2, memchr3, memrchr, memrchr2, memrchr3, naive,
+    tests::memchr_tests,
+};
 
 #[test]
 fn memchr1_find() {

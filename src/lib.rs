@@ -31,18 +31,11 @@ instead of one. Similarly for `memchr3`.
     target_pointer_width = "32",
     target_pointer_width = "64"
 )))]
-compile_error!("memchr currently not supported on non-32 or non-64 bit");
-
-#[cfg(feature = "std")]
-extern crate core;
-
-#[cfg(all(test, all(not(miri), feature = "std")))]
-#[macro_use]
-extern crate quickcheck;
+compile_error!("memchr currently not supported on non-{16,32,64}");
 
 use core::iter::Rev;
 
-pub use iter::{Memchr, Memchr2, Memchr3};
+pub use crate::iter::{Memchr, Memchr2, Memchr3};
 
 // N.B. If you're looking for the cfg knobs for libc, see build.rs.
 #[cfg(memchr_libc)]
@@ -61,13 +54,13 @@ mod x86;
 
 /// An iterator over all occurrences of the needle in a haystack.
 #[inline]
-pub fn memchr_iter(needle: u8, haystack: &[u8]) -> Memchr {
+pub fn memchr_iter(needle: u8, haystack: &[u8]) -> Memchr<'_> {
     Memchr::new(needle, haystack)
 }
 
 /// An iterator over all occurrences of the needles in a haystack.
 #[inline]
-pub fn memchr2_iter(needle1: u8, needle2: u8, haystack: &[u8]) -> Memchr2 {
+pub fn memchr2_iter(needle1: u8, needle2: u8, haystack: &[u8]) -> Memchr2<'_> {
     Memchr2::new(needle1, needle2, haystack)
 }
 
@@ -78,13 +71,13 @@ pub fn memchr3_iter(
     needle2: u8,
     needle3: u8,
     haystack: &[u8],
-) -> Memchr3 {
+) -> Memchr3<'_> {
     Memchr3::new(needle1, needle2, needle3, haystack)
 }
 
 /// An iterator over all occurrences of the needle in a haystack, in reverse.
 #[inline]
-pub fn memrchr_iter(needle: u8, haystack: &[u8]) -> Rev<Memchr> {
+pub fn memrchr_iter(needle: u8, haystack: &[u8]) -> Rev<Memchr<'_>> {
     Memchr::new(needle, haystack).rev()
 }
 
@@ -94,7 +87,7 @@ pub fn memrchr2_iter(
     needle1: u8,
     needle2: u8,
     haystack: &[u8],
-) -> Rev<Memchr2> {
+) -> Rev<Memchr2<'_>> {
     Memchr2::new(needle1, needle2, haystack).rev()
 }
 
@@ -105,7 +98,7 @@ pub fn memrchr3_iter(
     needle2: u8,
     needle3: u8,
     haystack: &[u8],
-) -> Rev<Memchr3> {
+) -> Rev<Memchr3<'_>> {
     Memchr3::new(needle1, needle2, needle3, haystack).rev()
 }
 
