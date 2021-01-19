@@ -18,6 +18,10 @@ harness = false
 path = "src/bench.rs"
 
 [dependencies]
+bstr = "0.2.15"
 criterion = "0.3.3"
 memchr = { version = "*", path = ".." }
 libc = "0.2.81"
+regex = "1.4.5"
+sliceslice = "0.2.1"
+twoway = "0.2.1"

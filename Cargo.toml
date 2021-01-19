@@ -37,8 +37,12 @@ libc = { version = "0.2.18", default-features = false, optional = true }
 [dev-dependencies]
 quickcheck = { version = "1.0.3", default-features = false }
 
+[profile.release]
+debug = true
+
 [profile.bench]
 debug = true
 
 [profile.test]
 opt-level = 3
+debug = true
