@@ -12,18 +12,18 @@ use crate::{
     },
 };
 
-#[path = "../../../src/c.rs"]
+#[path = "../../../src/memchr/c.rs"]
 mod c;
 #[allow(dead_code)]
-#[path = "../../../src/fallback.rs"]
+#[path = "../../../src/memchr/fallback.rs"]
 mod fallback;
 mod imp;
 mod inputs;
-#[path = "../../../src/naive.rs"]
+#[path = "../../../src/memchr/naive.rs"]
 mod naive;
 
 pub fn all(c: &mut Criterion) {
-    define_memchr_input1(c, "memchr1/rust/huge", HUGE, move |search, b| {
+    define_memchr_input1(c, "memchr1/krate/huge", HUGE, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count,
@@ -31,7 +31,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input1(c, "memchr1/rust/small", SMALL, move |search, b| {
+    define_memchr_input1(c, "memchr1/krate/small", SMALL, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count,
@@ -39,7 +39,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input1(c, "memchr1/rust/tiny", TINY, move |search, b| {
+    define_memchr_input1(c, "memchr1/krate/tiny", TINY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count,
@@ -47,7 +47,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input1(c, "memchr1/rust/empty", EMPTY, move |search, b| {
+    define_memchr_input1(c, "memchr1/krate/empty", EMPTY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count,
@@ -175,7 +175,7 @@ pub fn all(c: &mut Criterion) {
         });
     });
 
-    define_memchr_input2(c, "memchr2/rust/huge", HUGE, move |search, b| {
+    define_memchr_input2(c, "memchr2/krate/huge", HUGE, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count,
@@ -187,7 +187,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input2(c, "memchr2/rust/small", SMALL, move |search, b| {
+    define_memchr_input2(c, "memchr2/krate/small", SMALL, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count,
@@ -199,7 +199,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input2(c, "memchr2/rust/tiny", TINY, move |search, b| {
+    define_memchr_input2(c, "memchr2/krate/tiny", TINY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count,
@@ -211,7 +211,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input2(c, "memchr2/rust/empty", EMPTY, move |search, b| {
+    define_memchr_input2(c, "memchr2/krate/empty", EMPTY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count,
@@ -342,7 +342,7 @@ pub fn all(c: &mut Criterion) {
         });
     });
 
-    define_memchr_input3(c, "memchr3/rust/huge", HUGE, move |search, b| {
+    define_memchr_input3(c, "memchr3/krate/huge", HUGE, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count + search.byte3.count,
@@ -355,7 +355,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input3(c, "memchr3/rust/small", SMALL, move |search, b| {
+    define_memchr_input3(c, "memchr3/krate/small", SMALL, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count + search.byte3.count,
@@ -368,7 +368,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input3(c, "memchr3/rust/tiny", TINY, move |search, b| {
+    define_memchr_input3(c, "memchr3/krate/tiny", TINY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count + search.byte3.count,
@@ -381,7 +381,7 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input3(c, "memchr3/rust/empty", EMPTY, move |search, b| {
+    define_memchr_input3(c, "memchr3/krate/empty", EMPTY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count + search.byte3.count,
@@ -529,7 +529,7 @@ pub fn all(c: &mut Criterion) {
         });
     });
 
-    define_memchr_input1(c, "memrchr1/rust/huge", HUGE, move |search, b| {
+    define_memchr_input1(c, "memrchr1/krate/huge", HUGE, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count,
@@ -537,7 +537,20 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input1(c, "memrchr1/rust/small", SMALL, move |search, b| {
+    define_memchr_input1(
+        c,
+        "memrchr1/krate/small",
+        SMALL,
+        move |search, b| {
+            b.iter(|| {
+                assert_eq!(
+                    search.byte1.count,
+                    memrchr1_count(search.byte1.byte, search.corpus)
+                );
+            });
+        },
+    );
+    define_memchr_input1(c, "memrchr1/krate/tiny", TINY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count,
@@ -545,22 +558,19 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input1(c, "memrchr1/rust/tiny", TINY, move |search, b| {
-        b.iter(|| {
-            assert_eq!(
-                search.byte1.count,
-                memrchr1_count(search.byte1.byte, search.corpus)
-            );
-        });
-    });
-    define_memchr_input1(c, "memrchr1/rust/empty", EMPTY, move |search, b| {
-        b.iter(|| {
-            assert_eq!(
-                search.byte1.count,
-                memrchr1_count(search.byte1.byte, search.corpus)
-            );
-        });
-    });
+    define_memchr_input1(
+        c,
+        "memrchr1/krate/empty",
+        EMPTY,
+        move |search, b| {
+            b.iter(|| {
+                assert_eq!(
+                    search.byte1.count,
+                    memrchr1_count(search.byte1.byte, search.corpus)
+                );
+            });
+        },
+    );
 
     #[cfg(all(target_os = "linux"))]
     {
@@ -630,7 +640,7 @@ pub fn all(c: &mut Criterion) {
         );
     }
 
-    define_memchr_input2(c, "memrchr2/rust/huge", HUGE, move |search, b| {
+    define_memchr_input2(c, "memrchr2/krate/huge", HUGE, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count,
@@ -642,7 +652,24 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input2(c, "memrchr2/rust/small", SMALL, move |search, b| {
+    define_memchr_input2(
+        c,
+        "memrchr2/krate/small",
+        SMALL,
+        move |search, b| {
+            b.iter(|| {
+                assert_eq!(
+                    search.byte1.count + search.byte2.count,
+                    memrchr2_count(
+                        search.byte1.byte,
+                        search.byte2.byte,
+                        search.corpus,
+                    )
+                );
+            });
+        },
+    );
+    define_memchr_input2(c, "memrchr2/krate/tiny", TINY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count,
@@ -654,32 +681,25 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input2(c, "memrchr2/rust/tiny", TINY, move |search, b| {
-        b.iter(|| {
-            assert_eq!(
-                search.byte1.count + search.byte2.count,
-                memrchr2_count(
-                    search.byte1.byte,
-                    search.byte2.byte,
-                    search.corpus,
-                )
-            );
-        });
-    });
-    define_memchr_input2(c, "memrchr2/rust/empty", EMPTY, move |search, b| {
-        b.iter(|| {
-            assert_eq!(
-                search.byte1.count + search.byte2.count,
-                memrchr2_count(
-                    search.byte1.byte,
-                    search.byte2.byte,
-                    search.corpus,
-                )
-            );
-        });
-    });
+    define_memchr_input2(
+        c,
+        "memrchr2/krate/empty",
+        EMPTY,
+        move |search, b| {
+            b.iter(|| {
+                assert_eq!(
+                    search.byte1.count + search.byte2.count,
+                    memrchr2_count(
+                        search.byte1.byte,
+                        search.byte2.byte,
+                        search.corpus,
+                    )
+                );
+            });
+        },
+    );
 
-    define_memchr_input3(c, "memrchr3/rust/huge", HUGE, move |search, b| {
+    define_memchr_input3(c, "memrchr3/krate/huge", HUGE, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count + search.byte3.count,
@@ -692,7 +712,27 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input3(c, "memrchr3/rust/small", SMALL, move |search, b| {
+    define_memchr_input3(
+        c,
+        "memrchr3/krate/small",
+        SMALL,
+        move |search, b| {
+            b.iter(|| {
+                assert_eq!(
+                    search.byte1.count
+                        + search.byte2.count
+                        + search.byte3.count,
+                    memrchr3_count(
+                        search.byte1.byte,
+                        search.byte2.byte,
+                        search.byte3.byte,
+                        search.corpus,
+                    )
+                );
+            });
+        },
+    );
+    define_memchr_input3(c, "memrchr3/krate/tiny", TINY, move |search, b| {
         b.iter(|| {
             assert_eq!(
                 search.byte1.count + search.byte2.count + search.byte3.count,
@@ -705,32 +745,26 @@ pub fn all(c: &mut Criterion) {
             );
         });
     });
-    define_memchr_input3(c, "memrchr3/rust/tiny", TINY, move |search, b| {
-        b.iter(|| {
-            assert_eq!(
-                search.byte1.count + search.byte2.count + search.byte3.count,
-                memrchr3_count(
-                    search.byte1.byte,
-                    search.byte2.byte,
-                    search.byte3.byte,
-                    search.corpus,
-                )
-            );
-        });
-    });
-    define_memchr_input3(c, "memrchr3/rust/empty", EMPTY, move |search, b| {
-        b.iter(|| {
-            assert_eq!(
-                search.byte1.count + search.byte2.count + search.byte3.count,
-                memrchr3_count(
-                    search.byte1.byte,
-                    search.byte2.byte,
-                    search.byte3.byte,
-                    search.corpus,
-                )
-            );
-        });
-    });
+    define_memchr_input3(
+        c,
+        "memrchr3/krate/empty",
+        EMPTY,
+        move |search, b| {
+            b.iter(|| {
+                assert_eq!(
+                    search.byte1.count
+                        + search.byte2.count
+                        + search.byte3.count,
+                    memrchr3_count(
+                        search.byte1.byte,
+                        search.byte2.byte,
+                        search.byte3.byte,
+                        search.corpus,
+                    )
+                );
+            });
+        },
+    );
 }
 
 fn define_memchr_input1<'i>(
@@ -739,34 +773,22 @@ fn define_memchr_input1<'i>(
     input: Input,
     bench: impl FnMut(Search1, &mut Bencher<'_>) + Clone + 'static,
 ) {
-    if let Some(search) = input.never1() {
-        let mut bench = bench.clone();
-        define(c, group, "never", input.corpus, move |b| bench(search, b));
+    macro_rules! def {
+        ($name:expr, $kind:ident) => {
+            if let Some(search) = input.$kind() {
+                let corp = input.corpus;
+                let name = format!("{}/{}", group, $name);
+                let mut bench = bench.clone();
+                define(c, &name, corp, Box::new(move |b| bench(search, b)));
+            }
+        };
     }
-    if let Some(search) = input.rare1() {
-        let mut bench = bench.clone();
-        define(c, group, "rare", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.uncommon1() {
-        let mut bench = bench.clone();
-        define(c, group, "uncommon", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.common1() {
-        let mut bench = bench.clone();
-        define(c, group, "common", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.verycommon1() {
-        let mut bench = bench.clone();
-        define(c, group, "verycommon", input.corpus, move |b| {
-            bench(search, b)
-        });
-    }
-    if let Some(search) = input.supercommon1() {
-        let mut bench = bench.clone();
-        define(c, group, "supercommon", input.corpus, move |b| {
-            bench(search, b)
-        });
-    }
+    def!("never", never1);
+    def!("rare", rare1);
+    def!("uncommon", uncommon1);
+    def!("common", common1);
+    def!("verycommon", verycommon1);
+    def!("supercommon", supercommon1);
 }
 
 fn define_memchr_input2<'i>(
@@ -775,34 +797,22 @@ fn define_memchr_input2<'i>(
     input: Input,
     bench: impl FnMut(Search2, &mut Bencher<'_>) + Clone + 'static,
 ) {
-    if let Some(search) = input.never2() {
-        let mut bench = bench.clone();
-        define(c, group, "never", input.corpus, move |b| bench(search, b));
+    macro_rules! def {
+        ($name:expr, $kind:ident) => {
+            if let Some(search) = input.$kind() {
+                let corp = input.corpus;
+                let name = format!("{}/{}", group, $name);
+                let mut bench = bench.clone();
+                define(c, &name, corp, Box::new(move |b| bench(search, b)));
+            }
+        };
     }
-    if let Some(search) = input.rare2() {
-        let mut bench = bench.clone();
-        define(c, group, "rare", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.uncommon2() {
-        let mut bench = bench.clone();
-        define(c, group, "uncommon", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.common2() {
-        let mut bench = bench.clone();
-        define(c, group, "common", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.verycommon2() {
-        let mut bench = bench.clone();
-        define(c, group, "verycommon", input.corpus, move |b| {
-            bench(search, b)
-        });
-    }
-    if let Some(search) = input.supercommon2() {
-        let mut bench = bench.clone();
-        define(c, group, "supercommon", input.corpus, move |b| {
-            bench(search, b)
-        });
-    }
+    def!("never", never2);
+    def!("rare", rare2);
+    def!("uncommon", uncommon2);
+    def!("common", common2);
+    def!("verycommon", verycommon2);
+    def!("supercommon", supercommon2);
 }
 
 fn define_memchr_input3<'i>(
@@ -811,32 +821,20 @@ fn define_memchr_input3<'i>(
     input: Input,
     bench: impl FnMut(Search3, &mut Bencher<'_>) + Clone + 'static,
 ) {
-    if let Some(search) = input.never3() {
-        let mut bench = bench.clone();
-        define(c, group, "never", input.corpus, move |b| bench(search, b));
+    macro_rules! def {
+        ($name:expr, $kind:ident) => {
+            if let Some(search) = input.$kind() {
+                let corp = input.corpus;
+                let name = format!("{}/{}", group, $name);
+                let mut bench = bench.clone();
+                define(c, &name, corp, Box::new(move |b| bench(search, b)));
+            }
+        };
     }
-    if let Some(search) = input.rare3() {
-        let mut bench = bench.clone();
-        define(c, group, "rare", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.uncommon3() {
-        let mut bench = bench.clone();
-        define(c, group, "uncommon", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.common3() {
-        let mut bench = bench.clone();
-        define(c, group, "common", input.corpus, move |b| bench(search, b));
-    }
-    if let Some(search) = input.verycommon3() {
-        let mut bench = bench.clone();
-        define(c, group, "verycommon", input.corpus, move |b| {
-            bench(search, b)
-        });
-    }
-    if let Some(search) = input.supercommon3() {
-        let mut bench = bench.clone();
-        define(c, group, "supercommon", input.corpus, move |b| {
-            bench(search, b)
-        });
-    }
+    def!("never", never3);
+    def!("rare", rare3);
+    def!("uncommon", uncommon3);
+    def!("common", common3);
+    def!("verycommon", verycommon3);
+    def!("supercommon", supercommon3);
 }

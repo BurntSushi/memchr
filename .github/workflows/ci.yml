@@ -15,6 +15,8 @@ jobs:
       CARGO: cargo
       # When CARGO is set to CROSS, TARGET is set to `--target matrix.target`.
       TARGET:
+      # Make quickcheck run more tests for hopefully better coverage.
+      QUICKCHECK_TESTS: 100000
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

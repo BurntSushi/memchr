@@ -1,0 +1,79 @@
+cargo-features = ['named-profiles']
+
+[package]
+publish = false
+name = "memchr-fuzz"
+version = "0.0.0"
+authors = ["Andrew Gallant <jamslam@gmail.com>"]
+edition = "2018"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.memchr]
+path = ".."
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "memchr"
+path = "fuzz_targets/memchr.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "memchr2"
+path = "fuzz_targets/memchr2.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "memchr3"
+path = "fuzz_targets/memchr3.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "memrchr"
+path = "fuzz_targets/memrchr.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "memrchr2"
+path = "fuzz_targets/memrchr2.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "memrchr3"
+path = "fuzz_targets/memrchr3.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "memmem"
+path = "fuzz_targets/memmem.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "memrmem"
+path = "fuzz_targets/memrmem.rs"
+test = false
+doc = false
+
+[profile.release]
+opt-level = 3
+debug = true
+
+[profile.debug]
+inherits = "release"
+
+[profile.test]
+inherits = "release"

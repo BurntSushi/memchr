@@ -6,6 +6,7 @@
 use libc::{c_int, c_void, size_t};
 
 pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
+    // SAFETY: This is safe to call since all pointers are valid.
     let p = unsafe {
         libc::memchr(
             haystack.as_ptr() as *const c_void,
@@ -27,6 +28,7 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
     if haystack.is_empty() {
         return None;
     }
+    // SAFETY: This is safe to call since all pointers are valid.
     let p = unsafe {
         libc::memrchr(
             haystack.as_ptr() as *const c_void,
