@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ $# != 1 ]; then
+  echo "Usage: $(basename "$0") <critcmp-benchmark-export-json>" >&2
+  exit 1
+fi
+benchdata="$1"
+
+echo
+echo '# memchr benchmarks'
+echo
+echo '```'
+critcmp "$benchdata" -g 'memchr1/[^/]+/(.*)'
+echo '```'
+echo
+echo '# memmem benchmarks'
+echo
+echo '```'
+# We don't show all comparisons. For now, we leave out bstr and krate_nopre,
+# largely because they aren't as interesting.
+critcmp \
+  "$benchdata" \
+  -g 'memmem/[^/]+/(.*)' \
+  -f '/(krate|regex|twoway|stud|sliceslice)/'
+echo '```'

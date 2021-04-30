@@ -63,7 +63,7 @@ fn search_short_haystack(c: &mut Criterion) {
     let needles = words.clone();
     define(
         c,
-        "memmem/krate-nopre/prebuilt/sliceslice-words/words",
+        "memmem/krate_nopre/prebuilt/sliceslice-words/words",
         &[],
         Box::new(move |b| {
             let searchers = needles
@@ -89,7 +89,7 @@ fn search_short_haystack(c: &mut Criterion) {
     let needles = words.clone();
     define(
         c,
-        "memmem/std/prebuilt/sliceslice-words/words",
+        "memmem/stud/prebuilt/sliceslice-words/words",
         &[],
         Box::new(move |b| {
             b.iter(|| {
@@ -160,7 +160,7 @@ fn search_long_haystack(c: &mut Criterion) {
     let needles = words.clone();
     define(
         c,
-        "memmem/krate-nopre/prebuilt/sliceslice-i386/words",
+        "memmem/krate_nopre/prebuilt/sliceslice-i386/words",
         &[],
         Box::new(move |b| {
             let searchers = needles
@@ -183,7 +183,7 @@ fn search_long_haystack(c: &mut Criterion) {
     let needles = words.clone();
     define(
         c,
-        "memmem/std/prebuilt/sliceslice-i386/words",
+        "memmem/stud/prebuilt/sliceslice-i386/words",
         &[],
         Box::new(move |b| {
             b.iter(|| {

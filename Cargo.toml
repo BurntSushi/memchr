@@ -9,7 +9,7 @@ repository = "https://github.com/BurntSushi/rust-memchr"
 readme = "README.md"
 keywords = ["memchr", "char", "scan", "strchr", "string"]
 license = "Unlicense/MIT"
-exclude = ["/ci/*", "/.travis.yml", "/Makefile", "/appveyor.yml"]
+exclude = ["/bench", "/.github", "/fuzz"]
 edition = "2018"
 
 [workspace]
