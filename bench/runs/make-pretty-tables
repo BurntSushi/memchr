@@ -17,9 +17,10 @@ echo '# memmem benchmarks'
 echo
 echo '```'
 # We don't show all comparisons. For now, we leave out bstr and krate_nopre,
-# largely because they aren't as interesting.
+# largely because they aren't as interesting. We also leave out regex since
+# regex now uses this crate for single literal prefilter search.
 critcmp \
   "$benchdata" \
   -g 'memmem/[^/]+/(.*)' \
-  -f '/(krate|regex|twoway|stud|sliceslice)/'
+  -f '/(krate|twoway|stud|sliceslice)/'
 echo '```'
