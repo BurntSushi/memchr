@@ -59,6 +59,8 @@ pub const SLICESLICE_I386: &'static str =
     include_str!("../data/sliceslice/i386.txt");
 pub const SLICESLICE_WORDS: &'static str =
     include_str!("../data/sliceslice/words.txt");
+pub const SLICESLICE_HAYSTACK: &'static str =
+    include_str!("../data/sliceslice/haystack.txt");
 
 pub const CODE_RUST_LIBRARY: &'static str =
     include_str!("../data/code/rust-library.rs");

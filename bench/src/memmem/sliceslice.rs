@@ -31,6 +31,7 @@ use crate::{data::*, define};
 pub fn all(c: &mut Criterion) {
     search_short_haystack(c);
     search_long_haystack(c);
+    search_i386_haystack(c);
 }
 
 fn search_short_haystack(c: &mut Criterion) {
@@ -137,6 +138,94 @@ fn search_short_haystack(c: &mut Criterion) {
 
 fn search_long_haystack(c: &mut Criterion) {
     let words: Vec<&str> = SLICESLICE_WORDS.lines().collect();
+    let haystack = SLICESLICE_HAYSTACK;
+    let needles = words.clone();
+    define(
+        c,
+        "memmem/krate/prebuilt/sliceslice-haystack/words",
+        &[],
+        Box::new(move |b| {
+            let searchers = needles
+                .iter()
+                .map(|needle| memmem::Finder::new(needle.as_bytes()))
+                .collect::<Vec<_>>();
+            b.iter(|| {
+                for searcher in searchers.iter() {
+                    black_box(searcher.find(haystack.as_bytes()).is_some());
+                }
+            });
+        }),
+    );
+
+    let needles = words.clone();
+    define(
+        c,
+        "memmem/krate_nopre/prebuilt/sliceslice-haystack/words",
+        &[],
+        Box::new(move |b| {
+            let searchers = needles
+                .iter()
+                .map(|needle| {
+                    memmem::FinderBuilder::new()
+                        .prefilter(memmem::Prefilter::None)
+                        .build_forward(needle)
+                })
+                .collect::<Vec<_>>();
+            b.iter(|| {
+                for searcher in searchers.iter() {
+                    black_box(searcher.find(haystack.as_bytes()).is_some());
+                }
+            });
+        }),
+    );
+
+    let needles = words.clone();
+    define(
+        c,
+        "memmem/stud/prebuilt/sliceslice-haystack/words",
+        &[],
+        Box::new(move |b| {
+            b.iter(|| {
+                for needle in needles.iter() {
+                    black_box(haystack.contains(needle));
+                }
+            });
+        }),
+    );
+
+    #[cfg(target_arch = "x86_64")]
+    {
+        use sliceslice::x86::DynamicAvx2Searcher;
+
+        let needles = words.clone();
+        define(
+            c,
+            "memmem/sliceslice/prebuilt/sliceslice-haystack/words",
+            &[],
+            Box::new(move |b| {
+                let searchers = needles
+                    .iter()
+                    .map(|needle| unsafe {
+                        DynamicAvx2Searcher::new(
+                            needle.as_bytes().to_owned().into_boxed_slice(),
+                        )
+                    })
+                    .collect::<Vec<_>>();
+
+                b.iter(|| {
+                    for searcher in &searchers {
+                        black_box(unsafe {
+                            searcher.search_in(haystack.as_bytes())
+                        });
+                    }
+                });
+            }),
+        );
+    }
+}
+
+fn search_i386_haystack(c: &mut Criterion) {
+    let words: Vec<&str> = SLICESLICE_WORDS.lines().collect();
     let haystack = SLICESLICE_I386;
     let needles = words.clone();
     define(
@@ -156,7 +245,6 @@ fn search_long_haystack(c: &mut Criterion) {
         }),
     );
 
-    let haystack = SLICESLICE_I386;
     let needles = words.clone();
     define(
         c,
@@ -179,7 +267,6 @@ fn search_long_haystack(c: &mut Criterion) {
         }),
     );
 
-    let haystack = SLICESLICE_I386;
     let needles = words.clone();
     define(
         c,
@@ -198,7 +285,6 @@ fn search_long_haystack(c: &mut Criterion) {
     {
         use sliceslice::x86::DynamicAvx2Searcher;
 
-        let haystack = SLICESLICE_I386;
         let needles = words.clone();
         define(
             c,
