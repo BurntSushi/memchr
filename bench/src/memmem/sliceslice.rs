@@ -116,9 +116,7 @@ fn search_short_haystack(c: &mut Criterion) {
                 let searchers = needles
                     .iter()
                     .map(|&needle| unsafe {
-                        DynamicAvx2Searcher::new(
-                            needle.as_bytes().to_owned().into_boxed_slice(),
-                        )
+                        DynamicAvx2Searcher::new(needle.as_bytes())
                     })
                     .collect::<Vec<_>>();
 
@@ -206,9 +204,7 @@ fn search_long_haystack(c: &mut Criterion) {
                 let searchers = needles
                     .iter()
                     .map(|needle| unsafe {
-                        DynamicAvx2Searcher::new(
-                            needle.as_bytes().to_owned().into_boxed_slice(),
-                        )
+                        DynamicAvx2Searcher::new(needle.as_bytes())
                     })
                     .collect::<Vec<_>>();
 
@@ -294,9 +290,7 @@ fn search_i386_haystack(c: &mut Criterion) {
                 let searchers = needles
                     .iter()
                     .map(|needle| unsafe {
-                        DynamicAvx2Searcher::new(
-                            needle.as_bytes().to_owned().into_boxed_slice(),
-                        )
+                        DynamicAvx2Searcher::new(needle.as_bytes())
                     })
                     .collect::<Vec<_>>();
 

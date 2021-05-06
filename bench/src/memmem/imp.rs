@@ -561,7 +561,16 @@ pub(crate) mod sliceslice {
 
     pub(crate) mod fwd {
         pub(crate) fn oneshot(haystack: &str, needle: &str) -> bool {
-            prebuilt(needle)(haystack)
+            if !is_x86_feature_detected!("avx2") {
+                unreachable!("sliceslice cannot be called without avx2");
+            }
+            let needle = needle.as_bytes();
+            // SAFETY: This code path is only entered when AVX2 is enabled,
+            // which is the only requirement for using DynamicAvx2Searcher.
+            unsafe {
+                let finder = sliceslice::x86::DynamicAvx2Searcher::new(needle);
+                finder.search_in(haystack.as_bytes())
+            }
         }
 
         pub(crate) fn prebuilt(
@@ -570,7 +579,7 @@ pub(crate) mod sliceslice {
             if !is_x86_feature_detected!("avx2") {
                 unreachable!("sliceslice cannot be called without avx2");
             }
-            let needle = needle.as_bytes().to_owned().into_boxed_slice();
+            let needle = needle.as_bytes().to_vec();
             // SAFETY: This code path is only entered when AVX2 is enabled,
             // which is the only requirement for using DynamicAvx2Searcher.
             unsafe {
