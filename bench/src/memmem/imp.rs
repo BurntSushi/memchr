@@ -640,44 +640,47 @@ pub(crate) mod sliceslice {
         }
 
         pub(crate) fn prebuilt(_: &str) -> impl Fn(&str) -> bool + 'static {
-            unimplemented!("sliceslice only runs on x86")
+            if true {
+                unimplemented!("sliceslice only runs on x86")
+            }
+            |_| false
         }
 
         pub(crate) fn oneshotiter<'a>(
-            haystack: &'a str,
-            needle: &'a str,
+            _haystack: &'a str,
+            _needle: &'a str,
         ) -> impl Iterator<Item = usize> + 'static {
             std::iter::from_fn(move || {
                 unimplemented!("sliceslice only runs on x86")
             })
         }
 
-        pub(crate) fn prebuiltiter(needle: &str) -> super::super::NoIter {
+        pub(crate) fn prebuiltiter(_needle: &str) -> super::super::NoIter {
             unimplemented!("sliceslice only runs on x86")
         }
     }
 
     pub(crate) mod rev {
-        pub(crate) fn oneshot(haystack: &str, needle: &str) -> bool {
+        pub(crate) fn oneshot(_haystack: &str, _needle: &str) -> bool {
             unimplemented!("sliceslice does not support reverse searches")
         }
 
         pub(crate) fn prebuilt(
-            needle: &str,
+            _needle: &str,
         ) -> impl Fn(&str) -> bool + 'static {
             |_| unimplemented!("sliceslice does not support reverse searches")
         }
 
         pub(crate) fn oneshotiter(
-            haystack: &str,
-            needle: &str,
+            _haystack: &str,
+            _needle: &str,
         ) -> impl Iterator<Item = usize> + 'static {
             std::iter::from_fn(move || {
                 unimplemented!("sliceslice does not support reverse searches")
             })
         }
 
-        pub(crate) fn prebuiltiter(needle: &str) -> super::super::NoIter {
+        pub(crate) fn prebuiltiter(_needle: &str) -> super::super::NoIter {
             unimplemented!("sliceslice does not support reverse searches")
         }
     }
@@ -693,9 +696,21 @@ pub(crate) mod libc {
     }
 
     pub(crate) mod fwd {
+        #[cfg(target_arch = "wasm32")]
+        extern "C" {
+            fn memmem(
+                haystack: *const libc::c_void,
+                haystack_len: usize,
+                needle: *const libc::c_void,
+                needle_len: usize,
+            ) -> *const libc::c_void;
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        use libc::memmem;
+
         fn find(haystack: &[u8], needle: &[u8]) -> Option<usize> {
             let p = unsafe {
-                libc::memmem(
+                memmem(
                     haystack.as_ptr() as *const libc::c_void,
                     haystack.len(),
                     needle.as_ptr() as *const libc::c_void,

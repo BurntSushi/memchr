@@ -1,8 +1,10 @@
 use crate::memmem::{rarebytes::RareNeedleBytes, NeedleInfo};
 
 mod fallback;
-#[cfg(all(target_arch = "x86_64", memchr_runtime_simd))]
+#[cfg(memchr_runtime_simd)]
 mod genericsimd;
+#[cfg(all(not(miri), target_arch = "wasm32", memchr_runtime_simd))]
+mod wasm;
 #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
 mod x86;
 
@@ -89,6 +91,21 @@ pub(crate) type PrefilterFnTy = unsafe fn(
     haystack: &[u8],
     needle: &[u8],
 ) -> Option<usize>;
+
+// If the haystack is too small for SSE2, then just run memchr on the
+// rarest byte and be done with it. (It is likely that this code path is
+// rarely exercised, since a higher level routine will probably dispatch to
+// Rabin-Karp for such a small haystack.)
+#[cfg(memchr_runtime_simd)]
+fn simple_memchr_fallback(
+    _prestate: &mut PrefilterState,
+    ninfo: &NeedleInfo,
+    haystack: &[u8],
+    needle: &[u8],
+) -> Option<usize> {
+    let (rare, _) = ninfo.rarebytes.as_rare_ordered_usize();
+    crate::memchr(needle[rare], haystack).map(|i| i.saturating_sub(rare))
+}
 
 impl PrefilterFn {
     /// Create a new prefilter function from the function pointer given.
@@ -269,7 +286,6 @@ impl PrefilterState {
 /// This only applies to x86_64 when runtime SIMD detection is enabled (which
 /// is the default). In general, we try to use an AVX prefilter, followed by
 /// SSE and then followed by a generic one based on memchr.
-#[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
 #[inline(always)]
 pub(crate) fn forward(
     config: &Prefilter,
@@ -280,46 +296,37 @@ pub(crate) fn forward(
         return None;
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
     {
-        if cfg!(memchr_runtime_avx) {
-            if is_x86_feature_detected!("avx2") {
-                // SAFETY: x86::avx::find only requires the avx2 feature,
-                // which we've just checked above.
-                return unsafe { Some(PrefilterFn::new(x86::avx::find)) };
+        #[cfg(feature = "std")]
+        {
+            if cfg!(memchr_runtime_avx) {
+                if is_x86_feature_detected!("avx2") {
+                    // SAFETY: x86::avx::find only requires the avx2 feature,
+                    // which we've just checked above.
+                    return unsafe { Some(PrefilterFn::new(x86::avx::find)) };
+                }
             }
         }
+        if cfg!(memchr_runtime_sse2) {
+            // SAFETY: x86::sse::find only requires the sse2 feature, which is
+            // guaranteed to be available on x86_64.
+            return unsafe { Some(PrefilterFn::new(x86::sse::find)) };
+        }
     }
-    if cfg!(memchr_runtime_sse2) {
-        // SAFETY: x86::sse::find only requires the sse2 feature, which is
-        // guaranteed to be available on x86_64.
-        return unsafe { Some(PrefilterFn::new(x86::sse::find)) };
+    #[cfg(all(not(miri), target_arch = "wasm32", memchr_runtime_simd))]
+    {
+        // SAFETY: `wasm::find` is actually a safe function
+        //
+        // Also note that the `if true` is here to prevent, on wasm with simd,
+        // rustc warning about the code below being dead code.
+        if true {
+            return unsafe { Some(PrefilterFn::new(wasm::find)) };
+        }
     }
     // Check that our rarest byte has a reasonably low rank. The main issue
     // here is that the fallback prefilter can perform pretty poorly if it's
     // given common bytes. So we try to avoid the worst cases here.
-    let (rare1_rank, _) = rare.as_ranks(needle);
-    if rare1_rank <= MAX_FALLBACK_RANK {
-        // SAFETY: fallback::find is safe to call in all environments.
-        return unsafe { Some(PrefilterFn::new(fallback::find)) };
-    }
-    None
-}
-
-/// Determine which prefilter function, if any, to use.
-///
-/// Since SIMD is currently only supported on x86_64, this will just select
-/// the fallback prefilter if the rare bytes provided have a low enough rank.
-#[cfg(not(all(not(miri), target_arch = "x86_64", memchr_runtime_simd)))]
-#[inline(always)]
-pub(crate) fn forward(
-    config: &Prefilter,
-    rare: &RareNeedleBytes,
-    needle: &[u8],
-) -> Option<PrefilterFn> {
-    if config.is_none() || needle.len() <= 1 {
-        return None;
-    }
     let (rare1_rank, _) = rare.as_ranks(needle);
     if rare1_rank <= MAX_FALLBACK_RANK {
         // SAFETY: fallback::find is safe to call in all environments.

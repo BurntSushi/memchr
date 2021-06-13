@@ -146,16 +146,17 @@ macro_rules! define_memmem_simple_tests {
 }
 
 mod byte_frequencies;
-#[cfg(all(target_arch = "x86_64", memchr_runtime_simd))]
+#[cfg(memchr_runtime_simd)]
 mod genericsimd;
 mod prefilter;
 mod rabinkarp;
 mod rarebytes;
 mod twoway;
 mod util;
-// SIMD is only supported on x86_64 currently.
-#[cfg(target_arch = "x86_64")]
+#[cfg(memchr_runtime_simd)]
 mod vector;
+#[cfg(all(memchr_runtime_wasm128))]
+mod wasm;
 #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
 mod x86;
 
@@ -773,47 +774,47 @@ enum SearcherKind {
     TwoWay(twoway::Forward),
     #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
     GenericSIMD128(x86::sse::Forward),
+    #[cfg(memchr_runtime_wasm128)]
+    GenericSIMD128(wasm::Forward),
     #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
     GenericSIMD256(x86::avx::Forward),
 }
 
 impl<'n> Searcher<'n> {
-    #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
     fn new(config: SearcherConfig, needle: &'n [u8]) -> Searcher<'n> {
         use self::SearcherKind::*;
 
         let ninfo = NeedleInfo::new(needle);
-        let prefn =
-            prefilter::forward(&config.prefilter, &ninfo.rarebytes, needle);
-        let kind = if needle.len() == 0 {
-            Empty
-        } else if needle.len() == 1 {
-            OneByte(needle[0])
-        } else if let Some(fwd) = x86::avx::Forward::new(&ninfo, needle) {
-            GenericSIMD256(fwd)
-        } else if let Some(fwd) = x86::sse::Forward::new(&ninfo, needle) {
-            GenericSIMD128(fwd)
-        } else {
-            TwoWay(twoway::Forward::new(needle))
+        let mk = |kind: SearcherKind| {
+            let prefn = prefilter::forward(
+                &config.prefilter,
+                &ninfo.rarebytes,
+                needle,
+            );
+            Searcher { needle: CowBytes::new(needle), ninfo, prefn, kind }
         };
-        Searcher { needle: CowBytes::new(needle), ninfo, prefn, kind }
-    }
+        if needle.len() == 0 {
+            return mk(Empty);
+        }
+        if needle.len() == 1 {
+            return mk(OneByte(needle[0]));
+        }
+        #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
+        {
+            if let Some(fwd) = x86::avx::Forward::new(&ninfo, needle) {
+                return mk(GenericSIMD256(fwd));
+            } else if let Some(fwd) = x86::sse::Forward::new(&ninfo, needle) {
+                return mk(GenericSIMD128(fwd));
+            }
+        }
+        #[cfg(all(target_arch = "wasm32", memchr_runtime_simd))]
+        {
+            if let Some(fwd) = wasm::Forward::new(&ninfo, needle) {
+                return mk(GenericSIMD128(fwd));
+            }
+        }
 
-    #[cfg(not(all(not(miri), target_arch = "x86_64", memchr_runtime_simd)))]
-    fn new(config: SearcherConfig, needle: &'n [u8]) -> Searcher<'n> {
-        use self::SearcherKind::*;
-
-        let ninfo = NeedleInfo::new(needle);
-        let prefn =
-            prefilter::forward(&config.prefilter, &ninfo.rarebytes, needle);
-        let kind = if needle.len() == 0 {
-            Empty
-        } else if needle.len() == 1 {
-            OneByte(needle[0])
-        } else {
-            TwoWay(twoway::Forward::new(needle))
-        };
-        Searcher { needle: CowBytes::new(needle), ninfo, prefn, kind }
+        mk(TwoWay(twoway::Forward::new(needle)))
     }
 
     /// Return a fresh prefilter state that can be used with this searcher.
@@ -844,11 +845,7 @@ impl<'n> Searcher<'n> {
             Empty => Empty,
             OneByte(b) => OneByte(b),
             TwoWay(tw) => TwoWay(tw),
-            #[cfg(all(
-                not(miri),
-                target_arch = "x86_64",
-                memchr_runtime_simd
-            ))]
+            #[cfg(all(not(miri), memchr_runtime_simd))]
             GenericSIMD128(gs) => GenericSIMD128(gs),
             #[cfg(all(
                 not(miri),
@@ -873,11 +870,7 @@ impl<'n> Searcher<'n> {
             Empty => Empty,
             OneByte(b) => OneByte(b),
             TwoWay(tw) => TwoWay(tw),
-            #[cfg(all(
-                not(miri),
-                target_arch = "x86_64",
-                memchr_runtime_simd
-            ))]
+            #[cfg(all(not(miri), memchr_runtime_simd))]
             GenericSIMD128(gs) => GenericSIMD128(gs),
             #[cfg(all(
                 not(miri),
@@ -921,11 +914,7 @@ impl<'n> Searcher<'n> {
                     self.find_tw(tw, state, haystack, needle)
                 }
             }
-            #[cfg(all(
-                not(miri),
-                target_arch = "x86_64",
-                memchr_runtime_simd
-            ))]
+            #[cfg(all(not(miri), memchr_runtime_simd))]
             GenericSIMD128(ref gs) => {
                 // The SIMD matcher can't handle particularly short haystacks,
                 // so we fall back to RK in these cases.
