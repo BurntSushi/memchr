@@ -84,7 +84,7 @@ approaches:
 * A huge suite of benchmarks that are also run as tests. Benchmarks always
   confirm that the expected result occurs.
 
-Improvements to the testing infrastructue are very welcome.
+Improvements to the testing infrastructure are very welcome.
 
 
 ### Algorithms used
