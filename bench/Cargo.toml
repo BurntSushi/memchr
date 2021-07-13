@@ -4,8 +4,8 @@ name = "memchr-bench"
 version = "0.0.1"
 authors = ["Andrew Gallant <jamslam@gmail.com>"]
 description = "Criterion benchmark suite for memchr."
-homepage = "https://github.com/BurntSushi/rust-memchr"
-repository = "https://github.com/BurntSushi/rust-memchr"
+homepage = "https://github.com/BurntSushi/memchr"
+repository = "https://github.com/BurntSushi/memchr"
 license = "Unlicense/MIT"
 edition = "2018"
 
