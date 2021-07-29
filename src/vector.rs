@@ -19,8 +19,22 @@
 /// to ensure they get appropriately inlined. (inline(always) cannot be used
 /// with target_feature.)
 pub(crate) trait Vector: Copy + core::fmt::Debug {
+    /// Returns the size of this vector, in bytes
+    #[inline]
+    fn size() -> usize {
+        core::mem::size_of::<Self>()
+    }
+
+    /// Returns a mask used to align pointers to this vector's alignment
+    #[inline]
+    fn align_mask() -> usize {
+        Self::size() - 1
+    }
+
     /// _mm_set1_epi8 or _mm256_set1_epi8
     unsafe fn splat(byte: u8) -> Self;
+    /// _mm_load_si128 or _mm256_load_si256
+    unsafe fn load_aligned(data: *const u8) -> Self;
     /// _mm_loadu_si128 or _mm256_loadu_si256
     unsafe fn load_unaligned(data: *const u8) -> Self;
     /// _mm_movemask_epi8 or _mm256_movemask_epi8
@@ -29,6 +43,8 @@ pub(crate) trait Vector: Copy + core::fmt::Debug {
     unsafe fn cmpeq(self, vector2: Self) -> Self;
     /// _mm_and_si128 or _mm256_and_si256
     unsafe fn and(self, vector2: Self) -> Self;
+    /// _mm_or_si128 or _mm256_or_si256
+    unsafe fn or(self, vector2: Self) -> Self;
 }
 
 #[cfg(target_arch = "x86_64")]
@@ -40,6 +56,11 @@ mod x86sse {
         #[inline(always)]
         unsafe fn splat(byte: u8) -> __m128i {
             _mm_set1_epi8(byte as i8)
+        }
+
+        #[inline(always)]
+        unsafe fn load_aligned(data: *const u8) -> __m128i {
+            _mm_load_si128(data as *const __m128i)
         }
 
         #[inline(always)]
@@ -61,6 +82,11 @@ mod x86sse {
         unsafe fn and(self, vector2: Self) -> __m128i {
             _mm_and_si128(self, vector2)
         }
+
+        #[inline(always)]
+        unsafe fn or(self, vector2: Self) -> __m128i {
+            _mm_or_si128(self, vector2)
+        }
     }
 }
 
@@ -73,6 +99,11 @@ mod x86avx {
         #[inline(always)]
         unsafe fn splat(byte: u8) -> __m256i {
             _mm256_set1_epi8(byte as i8)
+        }
+
+        #[inline(always)]
+        unsafe fn load_aligned(data: *const u8) -> __m256i {
+            _mm256_load_si256(data as *const __m256i)
         }
 
         #[inline(always)]
@@ -94,10 +125,15 @@ mod x86avx {
         unsafe fn and(self, vector2: Self) -> __m256i {
             _mm256_and_si256(self, vector2)
         }
+
+        #[inline(always)]
+        unsafe fn or(self, vector2: Self) -> __m256i {
+            _mm256_or_si256(self, vector2)
+        }
     }
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(target_family = "wasm")]
 mod wasm_simd128 {
     use super::Vector;
     use core::arch::wasm32::*;
@@ -106,6 +142,11 @@ mod wasm_simd128 {
         #[inline(always)]
         unsafe fn splat(byte: u8) -> v128 {
             u8x16_splat(byte)
+        }
+
+        #[inline(always)]
+        unsafe fn load_aligned(data: *const u8) -> v128 {
+            *data.cast()
         }
 
         #[inline(always)]
@@ -126,6 +167,11 @@ mod wasm_simd128 {
         #[inline(always)]
         unsafe fn and(self, vector2: Self) -> v128 {
             v128_and(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn or(self, vector2: Self) -> v128 {
+            v128_or(self, vector2)
         }
     }
 }

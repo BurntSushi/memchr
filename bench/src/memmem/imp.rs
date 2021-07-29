@@ -696,7 +696,7 @@ pub(crate) mod libc {
     }
 
     pub(crate) mod fwd {
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(target_family = "wasm")]
         extern "C" {
             fn memmem(
                 haystack: *const libc::c_void,
@@ -705,7 +705,7 @@ pub(crate) mod libc {
                 needle_len: usize,
             ) -> *const libc::c_void;
         }
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(target_family = "wasm"))]
         use libc::memmem;
 
         fn find(haystack: &[u8], needle: &[u8]) -> Option<usize> {

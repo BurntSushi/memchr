@@ -7,10 +7,10 @@ pub use self::iter::{Memchr, Memchr2, Memchr3};
 mod c;
 #[allow(dead_code)]
 pub mod fallback;
+#[cfg(memchr_runtime_simd)]
+mod genericsimd;
 mod iter;
 pub mod naive;
-#[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
-mod x86;
 
 /// An iterator over all occurrences of the needle in a haystack.
 #[inline]
@@ -62,6 +62,85 @@ pub fn memrchr3_iter(
     Memchr3::new(needle1, needle2, needle3, haystack).rev()
 }
 
+/// This is a helper macro to handle runtime feature detection and delegation to
+/// platform-specific implementations. This is called for all exported functions
+/// below to call specialized functions on a per-platform basis.
+macro_rules! delegate {
+    ($method:ident($($param:ident: $ty:ty),*) $($ret:tt)*) => ({
+        // Miri for now always uses the naive version to avoid using simd
+        // things.
+        if cfg!(miri) {
+            return naive::$method($($param),*);
+        }
+        if cfg!(memchr_runtime_simd) {
+            // On x86_64 we can optionally use either sse2 or avx2 acceleration.
+            // The former is 128-bits wide and the latter is 256-bits wide, so
+            // the latter is preferred. The avx2 feature is detected at runtime
+            // if the `std` feature is enabled, and otherwise `sse2` is always
+            // enabled for x86_64 so that's called as a fallback.
+            #[cfg(target_arch = "x86_64")]
+            {
+                #[cfg(feature = "std")]
+                {
+                    if is_x86_feature_detected!("avx2") {
+                        enable_target_feature_and_call!(
+                            "avx2",
+                            core::arch::x86_64::__m256i,
+                            $method($($param: $ty),*) $($ret)*
+                        );
+                    }
+                }
+                enable_target_feature_and_call!(
+                    "sse2",
+                    core::arch::x86_64::__m128i,
+                    $method($($param: $ty),*) $($ret)*
+                );
+            }
+
+            // On wasm platforms when the simd128 feature is enabled then the
+            // `v128` type can be used to avoid having to use the naive fallback
+            // implementation of these functions.
+            #[cfg(all(target_family = "wasm", memchr_runtime_simd))]
+            enable_target_feature_and_call!(
+                "simd128",
+                core::arch::wasm32::v128,
+                $method($($param: $ty),*) $($ret)*
+            );
+        }
+
+        // If the libc feature is enabled then this will delegate to the
+        // appropriate libc function for the `$method` specified, or it will do
+        // nothing if libc doesn't have an equivalent.
+        maybe_delegate_libc!($method($($param),*));
+
+        // If all else fails we use the in-Rust-written versions as a fallback.
+        fallback::$method($($param),*)
+    })
+}
+
+#[cfg(memchr_runtime_simd)]
+macro_rules! enable_target_feature_and_call {
+    ($feature:tt, $vector:ty, $method:ident($($param:ident: $ty:ty),*) $($ret:tt)*) => {
+        #[target_feature(enable = $feature)]
+        unsafe fn $method($($param: $ty),*) $($ret)* {
+            genericsimd::$method::<$vector>($($param),*)
+        }
+        return unsafe { $method($($param),*) };
+    }
+}
+
+macro_rules! maybe_delegate_libc {
+    (memchr($($param:tt)*)) => (
+        #[cfg(memchr_libc)]
+        return c::memchr($($param)*);
+    );
+    (memrchr($($param:tt)*)) => (
+        #[cfg(memchr_libc)]
+        return c::memrchr($($param)*);
+    );
+    ($($other:tt)*) => ();
+}
+
 /// Search for the first occurrence of a byte in a slice.
 ///
 /// This returns the index corresponding to the first occurrence of `needle` in
@@ -85,43 +164,10 @@ pub fn memrchr3_iter(
 /// ```
 #[inline]
 pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
-    #[cfg(miri)]
-    #[inline(always)]
-    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
-        naive::memchr(n1, haystack)
-    }
-
-    #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, not(miri)))]
-    #[inline(always)]
-    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
-        x86::memchr(n1, haystack)
-    }
-
-    #[cfg(all(
-        memchr_libc,
-        not(all(target_arch = "x86_64", memchr_runtime_simd)),
-        not(miri),
-    ))]
-    #[inline(always)]
-    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
-        c::memchr(n1, haystack)
-    }
-
-    #[cfg(all(
-        not(memchr_libc),
-        not(all(target_arch = "x86_64", memchr_runtime_simd)),
-        not(miri),
-    ))]
-    #[inline(always)]
-    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
-        fallback::memchr(n1, haystack)
-    }
-
     if haystack.is_empty() {
-        None
-    } else {
-        imp(needle, haystack)
+        return None;
     }
+    delegate!(memchr(needle: u8, haystack: &[u8]) -> Option<usize>)
 }
 
 /// Like `memchr`, but searches for either of two bytes instead of just one.
@@ -149,32 +195,10 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 /// ```
 #[inline]
 pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
-    #[cfg(miri)]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
-        naive::memchr2(n1, n2, haystack)
-    }
-
-    #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, not(miri)))]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
-        x86::memchr2(n1, n2, haystack)
-    }
-
-    #[cfg(all(
-        not(all(target_arch = "x86_64", memchr_runtime_simd)),
-        not(miri),
-    ))]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
-        fallback::memchr2(n1, n2, haystack)
-    }
-
     if haystack.is_empty() {
-        None
-    } else {
-        imp(needle1, needle2, haystack)
+        return None;
     }
+    delegate!(memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize>)
 }
 
 /// Like `memchr`, but searches for any of three bytes instead of just one.
@@ -207,32 +231,10 @@ pub fn memchr3(
     needle3: u8,
     haystack: &[u8],
 ) -> Option<usize> {
-    #[cfg(miri)]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
-        naive::memchr3(n1, n2, n3, haystack)
-    }
-
-    #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, not(miri)))]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
-        x86::memchr3(n1, n2, n3, haystack)
-    }
-
-    #[cfg(all(
-        not(all(target_arch = "x86_64", memchr_runtime_simd)),
-        not(miri),
-    ))]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
-        fallback::memchr3(n1, n2, n3, haystack)
-    }
-
     if haystack.is_empty() {
-        None
-    } else {
-        imp(needle1, needle2, needle3, haystack)
+        return None;
     }
+    delegate!(memchr3(needle1: u8, needle2: u8, needle3: u8, haystack: &[u8]) -> Option<usize>)
 }
 
 /// Search for the last occurrence of a byte in a slice.
@@ -258,44 +260,10 @@ pub fn memchr3(
 /// ```
 #[inline]
 pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
-    #[cfg(miri)]
-    #[inline(always)]
-    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
-        naive::memrchr(n1, haystack)
-    }
-
-    #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, not(miri)))]
-    #[inline(always)]
-    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
-        x86::memrchr(n1, haystack)
-    }
-
-    #[cfg(all(
-        memchr_libc,
-        target_os = "linux",
-        not(all(target_arch = "x86_64", memchr_runtime_simd)),
-        not(miri)
-    ))]
-    #[inline(always)]
-    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
-        c::memrchr(n1, haystack)
-    }
-
-    #[cfg(all(
-        not(all(memchr_libc, target_os = "linux")),
-        not(all(target_arch = "x86_64", memchr_runtime_simd)),
-        not(miri),
-    ))]
-    #[inline(always)]
-    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
-        fallback::memrchr(n1, haystack)
-    }
-
     if haystack.is_empty() {
-        None
-    } else {
-        imp(needle, haystack)
+        return None;
     }
+    delegate!(memrchr(needle: u8, haystack: &[u8]) -> Option<usize>)
 }
 
 /// Like `memrchr`, but searches for either of two bytes instead of just one.
@@ -323,32 +291,10 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
 /// ```
 #[inline]
 pub fn memrchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
-    #[cfg(miri)]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
-        naive::memrchr2(n1, n2, haystack)
-    }
-
-    #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, not(miri)))]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
-        x86::memrchr2(n1, n2, haystack)
-    }
-
-    #[cfg(all(
-        not(all(target_arch = "x86_64", memchr_runtime_simd)),
-        not(miri),
-    ))]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
-        fallback::memrchr2(n1, n2, haystack)
-    }
-
     if haystack.is_empty() {
-        None
-    } else {
-        imp(needle1, needle2, haystack)
+        return None;
     }
+    delegate!(memrchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize>)
 }
 
 /// Like `memrchr`, but searches for any of three bytes instead of just one.
@@ -381,30 +327,8 @@ pub fn memrchr3(
     needle3: u8,
     haystack: &[u8],
 ) -> Option<usize> {
-    #[cfg(miri)]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
-        naive::memrchr3(n1, n2, n3, haystack)
-    }
-
-    #[cfg(all(target_arch = "x86_64", memchr_runtime_simd, not(miri)))]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
-        x86::memrchr3(n1, n2, n3, haystack)
-    }
-
-    #[cfg(all(
-        not(all(target_arch = "x86_64", memchr_runtime_simd)),
-        not(miri),
-    ))]
-    #[inline(always)]
-    fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
-        fallback::memrchr3(n1, n2, n3, haystack)
-    }
-
     if haystack.is_empty() {
-        None
-    } else {
-        imp(needle1, needle2, needle3, haystack)
+        return None;
     }
+    delegate!(memrchr3(needle1: u8, needle2: u8, needle3: u8, haystack: &[u8]) -> Option<usize>)
 }

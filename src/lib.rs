@@ -179,3 +179,5 @@ mod memchr;
 pub mod memmem;
 #[cfg(test)]
 mod tests;
+#[cfg(memchr_runtime_simd)]
+mod vector;

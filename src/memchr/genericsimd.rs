@@ -1,19 +1,20 @@
-use core::{arch::x86_64::*, cmp, mem::size_of};
+use crate::vector::Vector;
+use core::cmp;
 
-const VECTOR_SIZE: usize = size_of::<__m128i>();
-const VECTOR_ALIGN: usize = VECTOR_SIZE - 1;
+// The number of elements to loop at in one iteration of memchr/memrchr.
+const LOOP_AMT: usize = 4;
 
-// The number of bytes to loop at in one iteration of memchr/memrchr.
-const LOOP_SIZE: usize = 4 * VECTOR_SIZE;
-
-// The number of bytes to loop at in one iteration of memchr2/memrchr2 and
+// The number of elements to loop at in one iteration of memchr2/memrchr2 and
 // memchr3/memrchr3. There was no observable difference between 64 and 32 bytes
 // in benchmarks. memchr3 in particular only gets a very slight speed up from
 // the loop unrolling.
-const LOOP_SIZE2: usize = 2 * VECTOR_SIZE;
+const LOOP_AMT2: usize = 2;
 
-#[target_feature(enable = "sse2")]
-pub unsafe fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
+#[inline(always)]
+pub(crate) unsafe fn memchr<V: Vector>(
+    n1: u8,
+    haystack: &[u8],
+) -> Option<usize> {
     // What follows is a fast SSE2-only algorithm to detect the position of
     // `n1` in `haystack` if it exists. From what I know, this is the "classic"
     // algorithm. I believe it can be found in places like glibc and Go's
@@ -105,14 +106,14 @@ pub unsafe fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
     // structure to what you see below, so this comment applies fairly well to
     // all of them.
 
-    let vn1 = _mm_set1_epi8(n1 as i8);
+    let vn1 = V::splat(n1);
     let len = haystack.len();
-    let loop_size = cmp::min(LOOP_SIZE, len);
+    let loop_size = cmp::min(V::size() * LOOP_AMT, len);
     let start_ptr = haystack.as_ptr();
     let end_ptr = start_ptr.add(haystack.len());
     let mut ptr = start_ptr;
 
-    if haystack.len() < VECTOR_SIZE {
+    if haystack.len() < V::size() {
         while ptr < end_ptr {
             if *ptr == n1 {
                 return Some(sub(ptr, start_ptr));
@@ -126,77 +127,81 @@ pub unsafe fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
         return Some(i);
     }
 
-    ptr = ptr.add(VECTOR_SIZE - (start_ptr as usize & VECTOR_ALIGN));
-    debug_assert!(ptr > start_ptr && end_ptr.sub(VECTOR_SIZE) >= start_ptr);
-    while loop_size == LOOP_SIZE && ptr <= end_ptr.sub(loop_size) {
-        debug_assert_eq!(0, (ptr as usize) % VECTOR_SIZE);
+    ptr = ptr.add(V::size() - (start_ptr as usize & V::align_mask()));
+    debug_assert!(ptr > start_ptr && end_ptr.sub(V::size()) >= start_ptr);
+    while loop_size == V::size() * LOOP_AMT && ptr <= end_ptr.sub(loop_size) {
+        debug_assert_eq!(0, (ptr as usize) % V::size());
 
-        let a = _mm_load_si128(ptr as *const __m128i);
-        let b = _mm_load_si128(ptr.add(VECTOR_SIZE) as *const __m128i);
-        let c = _mm_load_si128(ptr.add(2 * VECTOR_SIZE) as *const __m128i);
-        let d = _mm_load_si128(ptr.add(3 * VECTOR_SIZE) as *const __m128i);
-        let eqa = _mm_cmpeq_epi8(vn1, a);
-        let eqb = _mm_cmpeq_epi8(vn1, b);
-        let eqc = _mm_cmpeq_epi8(vn1, c);
-        let eqd = _mm_cmpeq_epi8(vn1, d);
-        let or1 = _mm_or_si128(eqa, eqb);
-        let or2 = _mm_or_si128(eqc, eqd);
-        let or3 = _mm_or_si128(or1, or2);
-        if _mm_movemask_epi8(or3) != 0 {
+        let a = V::load_aligned(ptr);
+        let b = V::load_aligned(ptr.add(V::size()));
+        let c = V::load_aligned(ptr.add(2 * V::size()));
+        let d = V::load_aligned(ptr.add(3 * V::size()));
+        let eqa = vn1.cmpeq(a);
+        let eqb = vn1.cmpeq(b);
+        let eqc = vn1.cmpeq(c);
+        let eqd = vn1.cmpeq(d);
+        let or1 = eqa.or(eqb);
+        let or2 = eqc.or(eqd);
+        let or3 = or1.or(or2);
+        if or3.movemask() != 0 {
             let mut at = sub(ptr, start_ptr);
-            let mask = _mm_movemask_epi8(eqa);
+            let mask = eqa.movemask();
             if mask != 0 {
                 return Some(at + forward_pos(mask));
             }
 
-            at += VECTOR_SIZE;
-            let mask = _mm_movemask_epi8(eqb);
+            at += V::size();
+            let mask = eqb.movemask();
             if mask != 0 {
                 return Some(at + forward_pos(mask));
             }
 
-            at += VECTOR_SIZE;
-            let mask = _mm_movemask_epi8(eqc);
+            at += V::size();
+            let mask = eqc.movemask();
             if mask != 0 {
                 return Some(at + forward_pos(mask));
             }
 
-            at += VECTOR_SIZE;
-            let mask = _mm_movemask_epi8(eqd);
+            at += V::size();
+            let mask = eqd.movemask();
             debug_assert!(mask != 0);
             return Some(at + forward_pos(mask));
         }
         ptr = ptr.add(loop_size);
     }
-    while ptr <= end_ptr.sub(VECTOR_SIZE) {
-        debug_assert!(sub(end_ptr, ptr) >= VECTOR_SIZE);
+    while ptr <= end_ptr.sub(V::size()) {
+        debug_assert!(sub(end_ptr, ptr) >= V::size());
 
         if let Some(i) = forward_search1(start_ptr, end_ptr, ptr, vn1) {
             return Some(i);
         }
-        ptr = ptr.add(VECTOR_SIZE);
+        ptr = ptr.add(V::size());
     }
     if ptr < end_ptr {
-        debug_assert!(sub(end_ptr, ptr) < VECTOR_SIZE);
-        ptr = ptr.sub(VECTOR_SIZE - sub(end_ptr, ptr));
-        debug_assert_eq!(sub(end_ptr, ptr), VECTOR_SIZE);
+        debug_assert!(sub(end_ptr, ptr) < V::size());
+        ptr = ptr.sub(V::size() - sub(end_ptr, ptr));
+        debug_assert_eq!(sub(end_ptr, ptr), V::size());
 
         return forward_search1(start_ptr, end_ptr, ptr, vn1);
     }
     None
 }
 
-#[target_feature(enable = "sse2")]
-pub unsafe fn memchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
-    let vn1 = _mm_set1_epi8(n1 as i8);
-    let vn2 = _mm_set1_epi8(n2 as i8);
+#[inline(always)]
+pub(crate) unsafe fn memchr2<V: Vector>(
+    n1: u8,
+    n2: u8,
+    haystack: &[u8],
+) -> Option<usize> {
+    let vn1 = V::splat(n1);
+    let vn2 = V::splat(n2);
     let len = haystack.len();
-    let loop_size = cmp::min(LOOP_SIZE2, len);
+    let loop_size = cmp::min(LOOP_AMT2 * V::size(), len);
     let start_ptr = haystack.as_ptr();
     let end_ptr = start_ptr.add(haystack.len());
     let mut ptr = start_ptr;
 
-    if haystack.len() < VECTOR_SIZE {
+    if haystack.len() < V::size() {
         while ptr < end_ptr {
             if *ptr == n1 || *ptr == n2 {
                 return Some(sub(ptr, start_ptr));
@@ -210,68 +215,68 @@ pub unsafe fn memchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
         return Some(i);
     }
 
-    ptr = ptr.add(VECTOR_SIZE - (start_ptr as usize & VECTOR_ALIGN));
-    debug_assert!(ptr > start_ptr && end_ptr.sub(VECTOR_SIZE) >= start_ptr);
-    while loop_size == LOOP_SIZE2 && ptr <= end_ptr.sub(loop_size) {
-        debug_assert_eq!(0, (ptr as usize) % VECTOR_SIZE);
+    ptr = ptr.add(V::size() - (start_ptr as usize & V::align_mask()));
+    debug_assert!(ptr > start_ptr && end_ptr.sub(V::size()) >= start_ptr);
+    while loop_size == LOOP_AMT2 * V::size() && ptr <= end_ptr.sub(loop_size) {
+        debug_assert_eq!(0, (ptr as usize) % V::size());
 
-        let a = _mm_load_si128(ptr as *const __m128i);
-        let b = _mm_load_si128(ptr.add(VECTOR_SIZE) as *const __m128i);
-        let eqa1 = _mm_cmpeq_epi8(vn1, a);
-        let eqb1 = _mm_cmpeq_epi8(vn1, b);
-        let eqa2 = _mm_cmpeq_epi8(vn2, a);
-        let eqb2 = _mm_cmpeq_epi8(vn2, b);
-        let or1 = _mm_or_si128(eqa1, eqb1);
-        let or2 = _mm_or_si128(eqa2, eqb2);
-        let or3 = _mm_or_si128(or1, or2);
-        if _mm_movemask_epi8(or3) != 0 {
+        let a = V::load_aligned(ptr);
+        let b = V::load_aligned(ptr.add(V::size()));
+        let eqa1 = vn1.cmpeq(a);
+        let eqb1 = vn1.cmpeq(b);
+        let eqa2 = vn2.cmpeq(a);
+        let eqb2 = vn2.cmpeq(b);
+        let or1 = eqa1.or(eqb1);
+        let or2 = eqa2.or(eqb2);
+        let or3 = or1.or(or2);
+        if or3.movemask() != 0 {
             let mut at = sub(ptr, start_ptr);
-            let mask1 = _mm_movemask_epi8(eqa1);
-            let mask2 = _mm_movemask_epi8(eqa2);
+            let mask1 = eqa1.movemask();
+            let mask2 = eqa2.movemask();
             if mask1 != 0 || mask2 != 0 {
                 return Some(at + forward_pos2(mask1, mask2));
             }
 
-            at += VECTOR_SIZE;
-            let mask1 = _mm_movemask_epi8(eqb1);
-            let mask2 = _mm_movemask_epi8(eqb2);
+            at += V::size();
+            let mask1 = eqb1.movemask();
+            let mask2 = eqb2.movemask();
             return Some(at + forward_pos2(mask1, mask2));
         }
         ptr = ptr.add(loop_size);
     }
-    while ptr <= end_ptr.sub(VECTOR_SIZE) {
+    while ptr <= end_ptr.sub(V::size()) {
         if let Some(i) = forward_search2(start_ptr, end_ptr, ptr, vn1, vn2) {
             return Some(i);
         }
-        ptr = ptr.add(VECTOR_SIZE);
+        ptr = ptr.add(V::size());
     }
     if ptr < end_ptr {
-        debug_assert!(sub(end_ptr, ptr) < VECTOR_SIZE);
-        ptr = ptr.sub(VECTOR_SIZE - sub(end_ptr, ptr));
-        debug_assert_eq!(sub(end_ptr, ptr), VECTOR_SIZE);
+        debug_assert!(sub(end_ptr, ptr) < V::size());
+        ptr = ptr.sub(V::size() - sub(end_ptr, ptr));
+        debug_assert_eq!(sub(end_ptr, ptr), V::size());
 
         return forward_search2(start_ptr, end_ptr, ptr, vn1, vn2);
     }
     None
 }
 
-#[target_feature(enable = "sse2")]
-pub unsafe fn memchr3(
+#[inline(always)]
+pub(crate) unsafe fn memchr3<V: Vector>(
     n1: u8,
     n2: u8,
     n3: u8,
     haystack: &[u8],
 ) -> Option<usize> {
-    let vn1 = _mm_set1_epi8(n1 as i8);
-    let vn2 = _mm_set1_epi8(n2 as i8);
-    let vn3 = _mm_set1_epi8(n3 as i8);
+    let vn1 = V::splat(n1);
+    let vn2 = V::splat(n2);
+    let vn3 = V::splat(n3);
     let len = haystack.len();
-    let loop_size = cmp::min(LOOP_SIZE2, len);
+    let loop_size = cmp::min(LOOP_AMT2 * V::size(), len);
     let start_ptr = haystack.as_ptr();
     let end_ptr = start_ptr.add(haystack.len());
     let mut ptr = start_ptr;
 
-    if haystack.len() < VECTOR_SIZE {
+    if haystack.len() < V::size() {
         while ptr < end_ptr {
             if *ptr == n1 || *ptr == n2 || *ptr == n3 {
                 return Some(sub(ptr, start_ptr));
@@ -285,69 +290,72 @@ pub unsafe fn memchr3(
         return Some(i);
     }
 
-    ptr = ptr.add(VECTOR_SIZE - (start_ptr as usize & VECTOR_ALIGN));
-    debug_assert!(ptr > start_ptr && end_ptr.sub(VECTOR_SIZE) >= start_ptr);
-    while loop_size == LOOP_SIZE2 && ptr <= end_ptr.sub(loop_size) {
-        debug_assert_eq!(0, (ptr as usize) % VECTOR_SIZE);
+    ptr = ptr.add(V::size() - (start_ptr as usize & V::align_mask()));
+    debug_assert!(ptr > start_ptr && end_ptr.sub(V::size()) >= start_ptr);
+    while loop_size == LOOP_AMT2 * V::size() && ptr <= end_ptr.sub(loop_size) {
+        debug_assert_eq!(0, (ptr as usize) % V::size());
 
-        let a = _mm_load_si128(ptr as *const __m128i);
-        let b = _mm_load_si128(ptr.add(VECTOR_SIZE) as *const __m128i);
-        let eqa1 = _mm_cmpeq_epi8(vn1, a);
-        let eqb1 = _mm_cmpeq_epi8(vn1, b);
-        let eqa2 = _mm_cmpeq_epi8(vn2, a);
-        let eqb2 = _mm_cmpeq_epi8(vn2, b);
-        let eqa3 = _mm_cmpeq_epi8(vn3, a);
-        let eqb3 = _mm_cmpeq_epi8(vn3, b);
-        let or1 = _mm_or_si128(eqa1, eqb1);
-        let or2 = _mm_or_si128(eqa2, eqb2);
-        let or3 = _mm_or_si128(eqa3, eqb3);
-        let or4 = _mm_or_si128(or1, or2);
-        let or5 = _mm_or_si128(or3, or4);
-        if _mm_movemask_epi8(or5) != 0 {
+        let a = V::load_aligned(ptr);
+        let b = V::load_aligned(ptr.add(V::size()));
+        let eqa1 = vn1.cmpeq(a);
+        let eqb1 = vn1.cmpeq(b);
+        let eqa2 = vn2.cmpeq(a);
+        let eqb2 = vn2.cmpeq(b);
+        let eqa3 = vn3.cmpeq(a);
+        let eqb3 = vn3.cmpeq(b);
+        let or1 = eqa1.or(eqb1);
+        let or2 = eqa2.or(eqb2);
+        let or3 = eqa3.or(eqb3);
+        let or4 = or1.or(or2);
+        let or5 = or3.or(or4);
+        if or5.movemask() != 0 {
             let mut at = sub(ptr, start_ptr);
-            let mask1 = _mm_movemask_epi8(eqa1);
-            let mask2 = _mm_movemask_epi8(eqa2);
-            let mask3 = _mm_movemask_epi8(eqa3);
+            let mask1 = eqa1.movemask();
+            let mask2 = eqa2.movemask();
+            let mask3 = eqa3.movemask();
             if mask1 != 0 || mask2 != 0 || mask3 != 0 {
                 return Some(at + forward_pos3(mask1, mask2, mask3));
             }
 
-            at += VECTOR_SIZE;
-            let mask1 = _mm_movemask_epi8(eqb1);
-            let mask2 = _mm_movemask_epi8(eqb2);
-            let mask3 = _mm_movemask_epi8(eqb3);
+            at += V::size();
+            let mask1 = eqb1.movemask();
+            let mask2 = eqb2.movemask();
+            let mask3 = eqb3.movemask();
             return Some(at + forward_pos3(mask1, mask2, mask3));
         }
         ptr = ptr.add(loop_size);
     }
-    while ptr <= end_ptr.sub(VECTOR_SIZE) {
+    while ptr <= end_ptr.sub(V::size()) {
         if let Some(i) =
             forward_search3(start_ptr, end_ptr, ptr, vn1, vn2, vn3)
         {
             return Some(i);
         }
-        ptr = ptr.add(VECTOR_SIZE);
+        ptr = ptr.add(V::size());
     }
     if ptr < end_ptr {
-        debug_assert!(sub(end_ptr, ptr) < VECTOR_SIZE);
-        ptr = ptr.sub(VECTOR_SIZE - sub(end_ptr, ptr));
-        debug_assert_eq!(sub(end_ptr, ptr), VECTOR_SIZE);
+        debug_assert!(sub(end_ptr, ptr) < V::size());
+        ptr = ptr.sub(V::size() - sub(end_ptr, ptr));
+        debug_assert_eq!(sub(end_ptr, ptr), V::size());
 
         return forward_search3(start_ptr, end_ptr, ptr, vn1, vn2, vn3);
     }
     None
 }
 
-#[target_feature(enable = "sse2")]
-pub unsafe fn memrchr(n1: u8, haystack: &[u8]) -> Option<usize> {
-    let vn1 = _mm_set1_epi8(n1 as i8);
+#[inline(always)]
+pub(crate) unsafe fn memrchr<V: Vector>(
+    n1: u8,
+    haystack: &[u8],
+) -> Option<usize> {
+    let vn1 = V::splat(n1);
     let len = haystack.len();
-    let loop_size = cmp::min(LOOP_SIZE, len);
+    let loop_size = cmp::min(LOOP_AMT * V::size(), len);
     let start_ptr = haystack.as_ptr();
     let end_ptr = start_ptr.add(haystack.len());
     let mut ptr = end_ptr;
 
-    if haystack.len() < VECTOR_SIZE {
+    if haystack.len() < V::size() {
         while ptr > start_ptr {
             ptr = ptr.offset(-1);
             if *ptr == n1 {
@@ -357,77 +365,82 @@ pub unsafe fn memrchr(n1: u8, haystack: &[u8]) -> Option<usize> {
         return None;
     }
 
-    ptr = ptr.sub(VECTOR_SIZE);
+    ptr = ptr.sub(V::size());
     if let Some(i) = reverse_search1(start_ptr, end_ptr, ptr, vn1) {
         return Some(i);
     }
 
-    ptr = (end_ptr as usize & !VECTOR_ALIGN) as *const u8;
+    ptr = (end_ptr as usize & !V::align_mask()) as *const u8;
     debug_assert!(start_ptr <= ptr && ptr <= end_ptr);
-    while loop_size == LOOP_SIZE && ptr >= start_ptr.add(loop_size) {
-        debug_assert_eq!(0, (ptr as usize) % VECTOR_SIZE);
+    while loop_size == LOOP_AMT * V::size() && ptr >= start_ptr.add(loop_size)
+    {
+        debug_assert_eq!(0, (ptr as usize) % V::size());
 
         ptr = ptr.sub(loop_size);
-        let a = _mm_load_si128(ptr as *const __m128i);
-        let b = _mm_load_si128(ptr.add(VECTOR_SIZE) as *const __m128i);
-        let c = _mm_load_si128(ptr.add(2 * VECTOR_SIZE) as *const __m128i);
-        let d = _mm_load_si128(ptr.add(3 * VECTOR_SIZE) as *const __m128i);
-        let eqa = _mm_cmpeq_epi8(vn1, a);
-        let eqb = _mm_cmpeq_epi8(vn1, b);
-        let eqc = _mm_cmpeq_epi8(vn1, c);
-        let eqd = _mm_cmpeq_epi8(vn1, d);
-        let or1 = _mm_or_si128(eqa, eqb);
-        let or2 = _mm_or_si128(eqc, eqd);
-        let or3 = _mm_or_si128(or1, or2);
-        if _mm_movemask_epi8(or3) != 0 {
-            let mut at = sub(ptr.add(3 * VECTOR_SIZE), start_ptr);
-            let mask = _mm_movemask_epi8(eqd);
+        let a = V::load_aligned(ptr);
+        let b = V::load_aligned(ptr.add(V::size()));
+        let c = V::load_aligned(ptr.add(2 * V::size()));
+        let d = V::load_aligned(ptr.add(3 * V::size()));
+        let eqa = vn1.cmpeq(a);
+        let eqb = vn1.cmpeq(b);
+        let eqc = vn1.cmpeq(c);
+        let eqd = vn1.cmpeq(d);
+        let or1 = eqa.or(eqb);
+        let or2 = eqc.or(eqd);
+        let or3 = or1.or(or2);
+        if or3.movemask() != 0 {
+            let mut at = sub(ptr.add(3 * V::size()), start_ptr);
+            let mask = eqd.movemask();
             if mask != 0 {
-                return Some(at + reverse_pos(mask));
+                return Some(at + reverse_pos::<V>(mask));
             }
 
-            at -= VECTOR_SIZE;
-            let mask = _mm_movemask_epi8(eqc);
+            at -= V::size();
+            let mask = eqc.movemask();
             if mask != 0 {
-                return Some(at + reverse_pos(mask));
+                return Some(at + reverse_pos::<V>(mask));
             }
 
-            at -= VECTOR_SIZE;
-            let mask = _mm_movemask_epi8(eqb);
+            at -= V::size();
+            let mask = eqb.movemask();
             if mask != 0 {
-                return Some(at + reverse_pos(mask));
+                return Some(at + reverse_pos::<V>(mask));
             }
 
-            at -= VECTOR_SIZE;
-            let mask = _mm_movemask_epi8(eqa);
+            at -= V::size();
+            let mask = eqa.movemask();
             debug_assert!(mask != 0);
-            return Some(at + reverse_pos(mask));
+            return Some(at + reverse_pos::<V>(mask));
         }
     }
-    while ptr >= start_ptr.add(VECTOR_SIZE) {
-        ptr = ptr.sub(VECTOR_SIZE);
+    while ptr >= start_ptr.add(V::size()) {
+        ptr = ptr.sub(V::size());
         if let Some(i) = reverse_search1(start_ptr, end_ptr, ptr, vn1) {
             return Some(i);
         }
     }
     if ptr > start_ptr {
-        debug_assert!(sub(ptr, start_ptr) < VECTOR_SIZE);
+        debug_assert!(sub(ptr, start_ptr) < V::size());
         return reverse_search1(start_ptr, end_ptr, start_ptr, vn1);
     }
     None
 }
 
-#[target_feature(enable = "sse2")]
-pub unsafe fn memrchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
-    let vn1 = _mm_set1_epi8(n1 as i8);
-    let vn2 = _mm_set1_epi8(n2 as i8);
+#[inline(always)]
+pub(crate) unsafe fn memrchr2<V: Vector>(
+    n1: u8,
+    n2: u8,
+    haystack: &[u8],
+) -> Option<usize> {
+    let vn1 = V::splat(n1);
+    let vn2 = V::splat(n2);
     let len = haystack.len();
-    let loop_size = cmp::min(LOOP_SIZE2, len);
+    let loop_size = cmp::min(LOOP_AMT2 * V::size(), len);
     let start_ptr = haystack.as_ptr();
     let end_ptr = start_ptr.add(haystack.len());
     let mut ptr = end_ptr;
 
-    if haystack.len() < VECTOR_SIZE {
+    if haystack.len() < V::size() {
         while ptr > start_ptr {
             ptr = ptr.offset(-1);
             if *ptr == n1 || *ptr == n2 {
@@ -437,70 +450,71 @@ pub unsafe fn memrchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
         return None;
     }
 
-    ptr = ptr.sub(VECTOR_SIZE);
+    ptr = ptr.sub(V::size());
     if let Some(i) = reverse_search2(start_ptr, end_ptr, ptr, vn1, vn2) {
         return Some(i);
     }
 
-    ptr = (end_ptr as usize & !VECTOR_ALIGN) as *const u8;
+    ptr = (end_ptr as usize & !V::align_mask()) as *const u8;
     debug_assert!(start_ptr <= ptr && ptr <= end_ptr);
-    while loop_size == LOOP_SIZE2 && ptr >= start_ptr.add(loop_size) {
-        debug_assert_eq!(0, (ptr as usize) % VECTOR_SIZE);
+    while loop_size == LOOP_AMT2 * V::size() && ptr >= start_ptr.add(loop_size)
+    {
+        debug_assert_eq!(0, (ptr as usize) % V::size());
 
         ptr = ptr.sub(loop_size);
-        let a = _mm_load_si128(ptr as *const __m128i);
-        let b = _mm_load_si128(ptr.add(VECTOR_SIZE) as *const __m128i);
-        let eqa1 = _mm_cmpeq_epi8(vn1, a);
-        let eqb1 = _mm_cmpeq_epi8(vn1, b);
-        let eqa2 = _mm_cmpeq_epi8(vn2, a);
-        let eqb2 = _mm_cmpeq_epi8(vn2, b);
-        let or1 = _mm_or_si128(eqa1, eqb1);
-        let or2 = _mm_or_si128(eqa2, eqb2);
-        let or3 = _mm_or_si128(or1, or2);
-        if _mm_movemask_epi8(or3) != 0 {
-            let mut at = sub(ptr.add(VECTOR_SIZE), start_ptr);
-            let mask1 = _mm_movemask_epi8(eqb1);
-            let mask2 = _mm_movemask_epi8(eqb2);
+        let a = V::load_aligned(ptr);
+        let b = V::load_aligned(ptr.add(V::size()));
+        let eqa1 = vn1.cmpeq(a);
+        let eqb1 = vn1.cmpeq(b);
+        let eqa2 = vn2.cmpeq(a);
+        let eqb2 = vn2.cmpeq(b);
+        let or1 = eqa1.or(eqb1);
+        let or2 = eqa2.or(eqb2);
+        let or3 = or1.or(or2);
+        if or3.movemask() != 0 {
+            let mut at = sub(ptr.add(V::size()), start_ptr);
+            let mask1 = eqb1.movemask();
+            let mask2 = eqb2.movemask();
             if mask1 != 0 || mask2 != 0 {
-                return Some(at + reverse_pos2(mask1, mask2));
+                return Some(at + reverse_pos2::<V>(mask1, mask2));
             }
 
-            at -= VECTOR_SIZE;
-            let mask1 = _mm_movemask_epi8(eqa1);
-            let mask2 = _mm_movemask_epi8(eqa2);
-            return Some(at + reverse_pos2(mask1, mask2));
+            at -= V::size();
+            let mask1 = eqa1.movemask();
+            let mask2 = eqa2.movemask();
+            return Some(at + reverse_pos2::<V>(mask1, mask2));
         }
     }
-    while ptr >= start_ptr.add(VECTOR_SIZE) {
-        ptr = ptr.sub(VECTOR_SIZE);
+    while ptr >= start_ptr.add(V::size()) {
+        ptr = ptr.sub(V::size());
         if let Some(i) = reverse_search2(start_ptr, end_ptr, ptr, vn1, vn2) {
             return Some(i);
         }
     }
     if ptr > start_ptr {
-        debug_assert!(sub(ptr, start_ptr) < VECTOR_SIZE);
+        debug_assert!(sub(ptr, start_ptr) < V::size());
         return reverse_search2(start_ptr, end_ptr, start_ptr, vn1, vn2);
     }
     None
 }
 
-#[target_feature(enable = "sse2")]
-pub unsafe fn memrchr3(
+#[inline(always)]
+pub(crate) unsafe fn memrchr3<V: Vector>(
     n1: u8,
     n2: u8,
     n3: u8,
     haystack: &[u8],
 ) -> Option<usize> {
-    let vn1 = _mm_set1_epi8(n1 as i8);
-    let vn2 = _mm_set1_epi8(n2 as i8);
-    let vn3 = _mm_set1_epi8(n3 as i8);
+    let vn1 = V::splat(n1);
+    let vn2 = V::splat(n2);
+    let vn3 = V::splat(n3);
     let len = haystack.len();
-    let loop_size = cmp::min(LOOP_SIZE2, len);
+    let loop_size = cmp::min(LOOP_AMT2 * V::size(), len);
     let start_ptr = haystack.as_ptr();
     let end_ptr = start_ptr.add(haystack.len());
     let mut ptr = end_ptr;
 
-    if haystack.len() < VECTOR_SIZE {
+    if haystack.len() < V::size() {
         while ptr > start_ptr {
             ptr = ptr.offset(-1);
             if *ptr == n1 || *ptr == n2 || *ptr == n3 {
@@ -510,48 +524,49 @@ pub unsafe fn memrchr3(
         return None;
     }
 
-    ptr = ptr.sub(VECTOR_SIZE);
+    ptr = ptr.sub(V::size());
     if let Some(i) = reverse_search3(start_ptr, end_ptr, ptr, vn1, vn2, vn3) {
         return Some(i);
     }
 
-    ptr = (end_ptr as usize & !VECTOR_ALIGN) as *const u8;
+    ptr = (end_ptr as usize & !V::align_mask()) as *const u8;
     debug_assert!(start_ptr <= ptr && ptr <= end_ptr);
-    while loop_size == LOOP_SIZE2 && ptr >= start_ptr.add(loop_size) {
-        debug_assert_eq!(0, (ptr as usize) % VECTOR_SIZE);
+    while loop_size == LOOP_AMT2 * V::size() && ptr >= start_ptr.add(loop_size)
+    {
+        debug_assert_eq!(0, (ptr as usize) % V::size());
 
         ptr = ptr.sub(loop_size);
-        let a = _mm_load_si128(ptr as *const __m128i);
-        let b = _mm_load_si128(ptr.add(VECTOR_SIZE) as *const __m128i);
-        let eqa1 = _mm_cmpeq_epi8(vn1, a);
-        let eqb1 = _mm_cmpeq_epi8(vn1, b);
-        let eqa2 = _mm_cmpeq_epi8(vn2, a);
-        let eqb2 = _mm_cmpeq_epi8(vn2, b);
-        let eqa3 = _mm_cmpeq_epi8(vn3, a);
-        let eqb3 = _mm_cmpeq_epi8(vn3, b);
-        let or1 = _mm_or_si128(eqa1, eqb1);
-        let or2 = _mm_or_si128(eqa2, eqb2);
-        let or3 = _mm_or_si128(eqa3, eqb3);
-        let or4 = _mm_or_si128(or1, or2);
-        let or5 = _mm_or_si128(or3, or4);
-        if _mm_movemask_epi8(or5) != 0 {
-            let mut at = sub(ptr.add(VECTOR_SIZE), start_ptr);
-            let mask1 = _mm_movemask_epi8(eqb1);
-            let mask2 = _mm_movemask_epi8(eqb2);
-            let mask3 = _mm_movemask_epi8(eqb3);
+        let a = V::load_aligned(ptr);
+        let b = V::load_aligned(ptr.add(V::size()));
+        let eqa1 = vn1.cmpeq(a);
+        let eqb1 = vn1.cmpeq(b);
+        let eqa2 = vn2.cmpeq(a);
+        let eqb2 = vn2.cmpeq(b);
+        let eqa3 = vn3.cmpeq(a);
+        let eqb3 = vn3.cmpeq(b);
+        let or1 = eqa1.or(eqb1);
+        let or2 = eqa2.or(eqb2);
+        let or3 = eqa3.or(eqb3);
+        let or4 = or1.or(or2);
+        let or5 = or3.or(or4);
+        if or5.movemask() != 0 {
+            let mut at = sub(ptr.add(V::size()), start_ptr);
+            let mask1 = eqb1.movemask();
+            let mask2 = eqb2.movemask();
+            let mask3 = eqb3.movemask();
             if mask1 != 0 || mask2 != 0 || mask3 != 0 {
-                return Some(at + reverse_pos3(mask1, mask2, mask3));
+                return Some(at + reverse_pos3::<V>(mask1, mask2, mask3));
             }
 
-            at -= VECTOR_SIZE;
-            let mask1 = _mm_movemask_epi8(eqa1);
-            let mask2 = _mm_movemask_epi8(eqa2);
-            let mask3 = _mm_movemask_epi8(eqa3);
-            return Some(at + reverse_pos3(mask1, mask2, mask3));
+            at -= V::size();
+            let mask1 = eqa1.movemask();
+            let mask2 = eqa2.movemask();
+            let mask3 = eqa3.movemask();
+            return Some(at + reverse_pos3::<V>(mask1, mask2, mask3));
         }
     }
-    while ptr >= start_ptr.add(VECTOR_SIZE) {
-        ptr = ptr.sub(VECTOR_SIZE);
+    while ptr >= start_ptr.add(V::size()) {
+        ptr = ptr.sub(V::size());
         if let Some(i) =
             reverse_search3(start_ptr, end_ptr, ptr, vn1, vn2, vn3)
         {
@@ -559,25 +574,25 @@ pub unsafe fn memrchr3(
         }
     }
     if ptr > start_ptr {
-        debug_assert!(sub(ptr, start_ptr) < VECTOR_SIZE);
+        debug_assert!(sub(ptr, start_ptr) < V::size());
         return reverse_search3(start_ptr, end_ptr, start_ptr, vn1, vn2, vn3);
     }
     None
 }
 
-#[target_feature(enable = "sse2")]
-pub unsafe fn forward_search1(
+#[inline(always)]
+pub(crate) unsafe fn forward_search1<V: Vector>(
     start_ptr: *const u8,
     end_ptr: *const u8,
     ptr: *const u8,
-    vn1: __m128i,
+    vn1: V,
 ) -> Option<usize> {
-    debug_assert!(sub(end_ptr, start_ptr) >= VECTOR_SIZE);
+    debug_assert!(sub(end_ptr, start_ptr) >= V::size());
     debug_assert!(start_ptr <= ptr);
-    debug_assert!(ptr <= end_ptr.sub(VECTOR_SIZE));
+    debug_assert!(ptr <= end_ptr.sub(V::size()));
 
-    let chunk = _mm_loadu_si128(ptr as *const __m128i);
-    let mask = _mm_movemask_epi8(_mm_cmpeq_epi8(chunk, vn1));
+    let chunk = V::load_unaligned(ptr);
+    let mask = chunk.cmpeq(vn1).movemask();
     if mask != 0 {
         Some(sub(ptr, start_ptr) + forward_pos(mask))
     } else {
@@ -585,178 +600,182 @@ pub unsafe fn forward_search1(
     }
 }
 
-#[target_feature(enable = "sse2")]
-unsafe fn forward_search2(
+#[inline(always)]
+unsafe fn forward_search2<V: Vector>(
     start_ptr: *const u8,
     end_ptr: *const u8,
     ptr: *const u8,
-    vn1: __m128i,
-    vn2: __m128i,
+    vn1: V,
+    vn2: V,
 ) -> Option<usize> {
-    debug_assert!(sub(end_ptr, start_ptr) >= VECTOR_SIZE);
+    debug_assert!(sub(end_ptr, start_ptr) >= V::size());
     debug_assert!(start_ptr <= ptr);
-    debug_assert!(ptr <= end_ptr.sub(VECTOR_SIZE));
+    debug_assert!(ptr <= end_ptr.sub(V::size()));
 
-    let chunk = _mm_loadu_si128(ptr as *const __m128i);
-    let eq1 = _mm_cmpeq_epi8(chunk, vn1);
-    let eq2 = _mm_cmpeq_epi8(chunk, vn2);
-    if _mm_movemask_epi8(_mm_or_si128(eq1, eq2)) != 0 {
-        let mask1 = _mm_movemask_epi8(eq1);
-        let mask2 = _mm_movemask_epi8(eq2);
+    let chunk = V::load_unaligned(ptr);
+    let eq1 = chunk.cmpeq(vn1);
+    let eq2 = chunk.cmpeq(vn2);
+    if eq1.or(eq2).movemask() != 0 {
+        let mask1 = eq1.movemask();
+        let mask2 = eq2.movemask();
         Some(sub(ptr, start_ptr) + forward_pos2(mask1, mask2))
     } else {
         None
     }
 }
 
-#[target_feature(enable = "sse2")]
-pub unsafe fn forward_search3(
+#[inline(always)]
+pub(crate) unsafe fn forward_search3<V: Vector>(
     start_ptr: *const u8,
     end_ptr: *const u8,
     ptr: *const u8,
-    vn1: __m128i,
-    vn2: __m128i,
-    vn3: __m128i,
+    vn1: V,
+    vn2: V,
+    vn3: V,
 ) -> Option<usize> {
-    debug_assert!(sub(end_ptr, start_ptr) >= VECTOR_SIZE);
+    debug_assert!(sub(end_ptr, start_ptr) >= V::size());
     debug_assert!(start_ptr <= ptr);
-    debug_assert!(ptr <= end_ptr.sub(VECTOR_SIZE));
+    debug_assert!(ptr <= end_ptr.sub(V::size()));
 
-    let chunk = _mm_loadu_si128(ptr as *const __m128i);
-    let eq1 = _mm_cmpeq_epi8(chunk, vn1);
-    let eq2 = _mm_cmpeq_epi8(chunk, vn2);
-    let eq3 = _mm_cmpeq_epi8(chunk, vn3);
-    let or = _mm_or_si128(eq1, eq2);
-    if _mm_movemask_epi8(_mm_or_si128(or, eq3)) != 0 {
-        let mask1 = _mm_movemask_epi8(eq1);
-        let mask2 = _mm_movemask_epi8(eq2);
-        let mask3 = _mm_movemask_epi8(eq3);
+    let chunk = V::load_unaligned(ptr);
+    let eq1 = chunk.cmpeq(vn1);
+    let eq2 = chunk.cmpeq(vn2);
+    let eq3 = chunk.cmpeq(vn3);
+    let or = eq1.or(eq2);
+    if or.or(eq3).movemask() != 0 {
+        let mask1 = eq1.movemask();
+        let mask2 = eq2.movemask();
+        let mask3 = eq3.movemask();
         Some(sub(ptr, start_ptr) + forward_pos3(mask1, mask2, mask3))
     } else {
         None
     }
 }
 
-#[target_feature(enable = "sse2")]
-unsafe fn reverse_search1(
+#[inline(always)]
+unsafe fn reverse_search1<V: Vector>(
     start_ptr: *const u8,
     end_ptr: *const u8,
     ptr: *const u8,
-    vn1: __m128i,
+    vn1: V,
 ) -> Option<usize> {
-    debug_assert!(sub(end_ptr, start_ptr) >= VECTOR_SIZE);
+    debug_assert!(sub(end_ptr, start_ptr) >= V::size());
     debug_assert!(start_ptr <= ptr);
-    debug_assert!(ptr <= end_ptr.sub(VECTOR_SIZE));
+    debug_assert!(ptr <= end_ptr.sub(V::size()));
 
-    let chunk = _mm_loadu_si128(ptr as *const __m128i);
-    let mask = _mm_movemask_epi8(_mm_cmpeq_epi8(vn1, chunk));
+    let chunk = V::load_unaligned(ptr);
+    let mask = vn1.cmpeq(chunk).movemask();
     if mask != 0 {
-        Some(sub(ptr, start_ptr) + reverse_pos(mask))
+        Some(sub(ptr, start_ptr) + reverse_pos::<V>(mask))
     } else {
         None
     }
 }
 
-#[target_feature(enable = "sse2")]
-unsafe fn reverse_search2(
+#[inline(always)]
+unsafe fn reverse_search2<V: Vector>(
     start_ptr: *const u8,
     end_ptr: *const u8,
     ptr: *const u8,
-    vn1: __m128i,
-    vn2: __m128i,
+    vn1: V,
+    vn2: V,
 ) -> Option<usize> {
-    debug_assert!(sub(end_ptr, start_ptr) >= VECTOR_SIZE);
+    debug_assert!(sub(end_ptr, start_ptr) >= V::size());
     debug_assert!(start_ptr <= ptr);
-    debug_assert!(ptr <= end_ptr.sub(VECTOR_SIZE));
+    debug_assert!(ptr <= end_ptr.sub(V::size()));
 
-    let chunk = _mm_loadu_si128(ptr as *const __m128i);
-    let eq1 = _mm_cmpeq_epi8(chunk, vn1);
-    let eq2 = _mm_cmpeq_epi8(chunk, vn2);
-    if _mm_movemask_epi8(_mm_or_si128(eq1, eq2)) != 0 {
-        let mask1 = _mm_movemask_epi8(eq1);
-        let mask2 = _mm_movemask_epi8(eq2);
-        Some(sub(ptr, start_ptr) + reverse_pos2(mask1, mask2))
+    let chunk = V::load_unaligned(ptr);
+    let eq1 = chunk.cmpeq(vn1);
+    let eq2 = chunk.cmpeq(vn2);
+    if eq1.or(eq2).movemask() != 0 {
+        let mask1 = eq1.movemask();
+        let mask2 = eq2.movemask();
+        Some(sub(ptr, start_ptr) + reverse_pos2::<V>(mask1, mask2))
     } else {
         None
     }
 }
 
-#[target_feature(enable = "sse2")]
-unsafe fn reverse_search3(
+#[inline(always)]
+unsafe fn reverse_search3<V: Vector>(
     start_ptr: *const u8,
     end_ptr: *const u8,
     ptr: *const u8,
-    vn1: __m128i,
-    vn2: __m128i,
-    vn3: __m128i,
+    vn1: V,
+    vn2: V,
+    vn3: V,
 ) -> Option<usize> {
-    debug_assert!(sub(end_ptr, start_ptr) >= VECTOR_SIZE);
+    debug_assert!(sub(end_ptr, start_ptr) >= V::size());
     debug_assert!(start_ptr <= ptr);
-    debug_assert!(ptr <= end_ptr.sub(VECTOR_SIZE));
+    debug_assert!(ptr <= end_ptr.sub(V::size()));
 
-    let chunk = _mm_loadu_si128(ptr as *const __m128i);
-    let eq1 = _mm_cmpeq_epi8(chunk, vn1);
-    let eq2 = _mm_cmpeq_epi8(chunk, vn2);
-    let eq3 = _mm_cmpeq_epi8(chunk, vn3);
-    let or = _mm_or_si128(eq1, eq2);
-    if _mm_movemask_epi8(_mm_or_si128(or, eq3)) != 0 {
-        let mask1 = _mm_movemask_epi8(eq1);
-        let mask2 = _mm_movemask_epi8(eq2);
-        let mask3 = _mm_movemask_epi8(eq3);
-        Some(sub(ptr, start_ptr) + reverse_pos3(mask1, mask2, mask3))
+    let chunk = V::load_unaligned(ptr);
+    let eq1 = chunk.cmpeq(vn1);
+    let eq2 = chunk.cmpeq(vn2);
+    let eq3 = chunk.cmpeq(vn3);
+    let or = eq1.or(eq2);
+    if or.or(eq3).movemask() != 0 {
+        let mask1 = eq1.movemask();
+        let mask2 = eq2.movemask();
+        let mask3 = eq3.movemask();
+        Some(sub(ptr, start_ptr) + reverse_pos3::<V>(mask1, mask2, mask3))
     } else {
         None
     }
 }
 
 /// Compute the position of the first matching byte from the given mask. The
-/// position returned is always in the range [0, 15].
+/// position returned is always in the range [0, V::size()).
 ///
 /// The mask given is expected to be the result of _mm_movemask_epi8.
-fn forward_pos(mask: i32) -> usize {
+fn forward_pos(mask: u32) -> usize {
     // We are dealing with little endian here, where the most significant byte
     // is at a higher address. That means the least significant bit that is set
     // corresponds to the position of our first matching byte. That position
     // corresponds to the number of zeros after the least significant bit.
+    assert!(cfg!(target_endian = "little"));
     mask.trailing_zeros() as usize
 }
 
 /// Compute the position of the first matching byte from the given masks. The
-/// position returned is always in the range [0, 15]. Each mask corresponds to
+/// position returned is always in the range [0, V::size()). Each mask corresponds to
 /// the equality comparison of a single byte.
 ///
 /// The masks given are expected to be the result of _mm_movemask_epi8, where
 /// at least one of the masks is non-zero (i.e., indicates a match).
-fn forward_pos2(mask1: i32, mask2: i32) -> usize {
+fn forward_pos2(mask1: u32, mask2: u32) -> usize {
     debug_assert!(mask1 != 0 || mask2 != 0);
 
     forward_pos(mask1 | mask2)
 }
 
 /// Compute the position of the first matching byte from the given masks. The
-/// position returned is always in the range [0, 15]. Each mask corresponds to
+/// position returned is always in the range [0, V::size()). Each mask corresponds to
 /// the equality comparison of a single byte.
 ///
 /// The masks given are expected to be the result of _mm_movemask_epi8, where
 /// at least one of the masks is non-zero (i.e., indicates a match).
-fn forward_pos3(mask1: i32, mask2: i32, mask3: i32) -> usize {
+fn forward_pos3(mask1: u32, mask2: u32, mask3: u32) -> usize {
     debug_assert!(mask1 != 0 || mask2 != 0 || mask3 != 0);
 
     forward_pos(mask1 | mask2 | mask3)
 }
 
 /// Compute the position of the last matching byte from the given mask. The
-/// position returned is always in the range [0, 15].
+/// position returned is always in the range [0, V::size()).
 ///
 /// The mask given is expected to be the result of _mm_movemask_epi8.
-fn reverse_pos(mask: i32) -> usize {
+fn reverse_pos<V: Vector>(mask: u32) -> usize {
     // We are dealing with little endian here, where the most significant byte
     // is at a higher address. That means the most significant bit that is set
     // corresponds to the position of our last matching byte. The position from
-    // the end of the mask is therefore the number of leading zeros in a 16
+    // the end of the mask is therefore the number of leading zeros in a 32
     // bit integer, and the position from the start of the mask is therefore
-    // 16 - (leading zeros) - 1.
-    VECTOR_SIZE - (mask as u16).leading_zeros() as usize - 1
+    // size - (leading zeros) - 1.
+    let r = 31 - mask.leading_zeros() as usize;
+    return r;
+    // let r = V::size() - mask.leading_zeros() as usize - 1;
+    // return r;
 }
 
 /// Compute the position of the last matching byte from the given masks. The
@@ -765,10 +784,10 @@ fn reverse_pos(mask: i32) -> usize {
 ///
 /// The masks given are expected to be the result of _mm_movemask_epi8, where
 /// at least one of the masks is non-zero (i.e., indicates a match).
-fn reverse_pos2(mask1: i32, mask2: i32) -> usize {
+fn reverse_pos2<V: Vector>(mask1: u32, mask2: u32) -> usize {
     debug_assert!(mask1 != 0 || mask2 != 0);
 
-    reverse_pos(mask1 | mask2)
+    reverse_pos::<V>(mask1 | mask2)
 }
 
 /// Compute the position of the last matching byte from the given masks. The
@@ -777,10 +796,10 @@ fn reverse_pos2(mask1: i32, mask2: i32) -> usize {
 ///
 /// The masks given are expected to be the result of _mm_movemask_epi8, where
 /// at least one of the masks is non-zero (i.e., indicates a match).
-fn reverse_pos3(mask1: i32, mask2: i32, mask3: i32) -> usize {
+fn reverse_pos3<V: Vector>(mask1: u32, mask2: u32, mask3: u32) -> usize {
     debug_assert!(mask1 != 0 || mask2 != 0 || mask3 != 0);
 
-    reverse_pos(mask1 | mask2 | mask3)
+    reverse_pos::<V>(mask1 | mask2 | mask3)
 }
 
 /// Subtract `b` from `a` and return the difference. `a` should be greater than

@@ -153,8 +153,6 @@ mod rabinkarp;
 mod rarebytes;
 mod twoway;
 mod util;
-#[cfg(memchr_runtime_simd)]
-mod vector;
 #[cfg(all(memchr_runtime_wasm128))]
 mod wasm;
 #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
@@ -807,7 +805,7 @@ impl<'n> Searcher<'n> {
                 return mk(GenericSIMD128(fwd));
             }
         }
-        #[cfg(all(target_arch = "wasm32", memchr_runtime_simd))]
+        #[cfg(all(target_family = "wasm", memchr_runtime_simd))]
         {
             if let Some(fwd) = wasm::Forward::new(&ninfo, needle) {
                 return mk(GenericSIMD128(fwd));

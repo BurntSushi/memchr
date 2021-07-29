@@ -2,9 +2,9 @@ use core::mem::size_of;
 
 use crate::memmem::{
     prefilter::{PrefilterFnTy, PrefilterState},
-    vector::Vector,
     NeedleInfo,
 };
+use crate::vector::Vector;
 
 /// The implementation of the forward vector accelerated candidate finder.
 ///

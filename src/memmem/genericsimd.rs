@@ -1,6 +1,7 @@
 use core::mem::size_of;
 
-use crate::memmem::{util::memcmp, vector::Vector, NeedleInfo};
+use crate::memmem::{util::memcmp, NeedleInfo};
+use crate::vector::Vector;
 
 /// The minimum length of a needle required for this algorithm. The minimum
 /// is 2 since a length of 1 should just use memchr and a length of 0 isn't

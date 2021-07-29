@@ -3,7 +3,7 @@ use crate::memmem::{rarebytes::RareNeedleBytes, NeedleInfo};
 mod fallback;
 #[cfg(memchr_runtime_simd)]
 mod genericsimd;
-#[cfg(all(not(miri), target_arch = "wasm32", memchr_runtime_simd))]
+#[cfg(all(not(miri), target_family = "wasm", memchr_runtime_simd))]
 mod wasm;
 #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
 mod x86;
@@ -314,7 +314,7 @@ pub(crate) fn forward(
             return unsafe { Some(PrefilterFn::new(x86::sse::find)) };
         }
     }
-    #[cfg(all(not(miri), target_arch = "wasm32", memchr_runtime_simd))]
+    #[cfg(all(not(miri), target_family = "wasm", memchr_runtime_simd))]
     {
         // SAFETY: `wasm::find` is actually a safe function
         //
