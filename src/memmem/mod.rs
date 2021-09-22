@@ -160,7 +160,8 @@ mod wasm;
 #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
 mod x86;
 
-/// Returns an iterator over all occurrences of a substring in a haystack.
+/// Returns an iterator over all non-overlapping occurrences of a substring in
+/// a haystack.
 ///
 /// # Complexity
 ///
@@ -193,8 +194,8 @@ pub fn find_iter<'h, 'n, N: 'n + ?Sized + AsRef<[u8]>>(
     FindIter::new(haystack, Finder::new(needle))
 }
 
-/// Returns a reverse iterator over all occurrences of a substring in a
-/// haystack.
+/// Returns a reverse iterator over all non-overlapping occurrences of a
+/// substring in a haystack.
 ///
 /// # Complexity
 ///
