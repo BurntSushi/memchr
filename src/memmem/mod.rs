@@ -322,6 +322,24 @@ impl<'h, 'n> FindIter<'h, 'n> {
         let prestate = finder.searcher.prefilter_state();
         FindIter { haystack, prestate, finder, pos: 0 }
     }
+
+    /// Convert this iterator into its owned variant, such that it no longer
+    /// borrows the finder and needle.
+    ///
+    /// If this is already an owned iterator, then this is a no-op. Otherwise,
+    /// this copies the needle.
+    ///
+    /// This is only available when the `std` feature is enabled.
+    #[cfg(feature = "std")]
+    #[inline]
+    pub fn into_owned(self) -> FindIter<'h, 'static> {
+        FindIter {
+            haystack: self.haystack,
+            prestate: self.prestate,
+            finder: self.finder.into_owned(),
+            pos: self.pos,
+        }
+    }
 }
 
 impl<'h, 'n> Iterator for FindIter<'h, 'n> {
@@ -369,6 +387,23 @@ impl<'h, 'n> FindRevIter<'h, 'n> {
     ) -> FindRevIter<'h, 'n> {
         let pos = Some(haystack.len());
         FindRevIter { haystack, finder, pos }
+    }
+
+    /// Convert this iterator into its owned variant, such that it no longer
+    /// borrows the finder and needle.
+    ///
+    /// If this is already an owned iterator, then this is a no-op. Otherwise,
+    /// this copies the needle.
+    ///
+    /// This is only available when the `std` feature is enabled.
+    #[cfg(feature = "std")]
+    #[inline]
+    pub fn into_owned(self) -> FindRevIter<'h, 'static> {
+        FindRevIter {
+            haystack: self.haystack,
+            finder: self.finder.into_owned(),
+            pos: self.pos,
+        }
     }
 }
 
