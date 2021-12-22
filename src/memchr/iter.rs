@@ -31,6 +31,7 @@ macro_rules! iter_next_back {
 }
 
 /// An iterator for `memchr`.
+#[derive(Clone)]
 pub struct Memchr<'a> {
     needle: u8,
     // The haystack to iterate over
@@ -69,6 +70,7 @@ impl<'a> DoubleEndedIterator for Memchr<'a> {
 }
 
 /// An iterator for `memchr2`.
+#[derive(Clone)]
 pub struct Memchr2<'a> {
     needle1: u8,
     needle2: u8,
@@ -116,6 +118,7 @@ impl<'a> DoubleEndedIterator for Memchr2<'a> {
 }
 
 /// An iterator for `memchr3`.
+#[derive(Clone)]
 pub struct Memchr3<'a> {
     needle1: u8,
     needle2: u8,
