@@ -1,3 +1,8 @@
+// This isn't used on all platforms so in general we want to just ignore dead
+// code warnings. Allow warnings on the x86_64 platform, though, to hopefully
+// still facilitate removal of actually-dead code.
+#![cfg_attr(not(target_arch = "x86_64"), allow(dead_code))]
+
 use crate::vector::Vector;
 use core::cmp;
 

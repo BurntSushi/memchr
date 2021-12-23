@@ -7,7 +7,6 @@ pub use self::iter::{Memchr, Memchr2, Memchr3};
 mod c;
 #[allow(dead_code)]
 pub mod fallback;
-#[cfg(memchr_runtime_simd)]
 mod genericsimd;
 mod iter;
 pub mod naive;
@@ -100,7 +99,7 @@ macro_rules! delegate {
             // On wasm platforms when the simd128 feature is enabled then the
             // `v128` type can be used to avoid having to use the naive fallback
             // implementation of these functions.
-            #[cfg(all(target_family = "wasm", memchr_runtime_simd))]
+            #[cfg(target_family = "wasm")]
             enable_target_feature_and_call!(
                 "simd128",
                 core::arch::wasm32::v128,
@@ -118,7 +117,7 @@ macro_rules! delegate {
     })
 }
 
-#[cfg(memchr_runtime_simd)]
+#[allow(unused_macros)] // this is used conditionally so just squelch this warning
 macro_rules! enable_target_feature_and_call {
     ($feature:tt, $vector:ty, $method:ident($($param:ident: $ty:ty),*) $($ret:tt)*) => {
         #[target_feature(enable = $feature)]
