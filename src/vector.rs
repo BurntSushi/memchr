@@ -5,10 +5,6 @@
 /// __m256i types. It's likely that once std::simd becomes a thing, we can
 /// migrate to that since the operations required are quite simple.
 ///
-/// TODO: Consider moving this trait up a level and using it to implement
-/// memchr as well. The trait might need to grow one or two methods, but
-/// otherwise should be close to sufficient already.
-///
 /// # Safety
 ///
 /// All methods are not safe since they are intended to be implemented using
