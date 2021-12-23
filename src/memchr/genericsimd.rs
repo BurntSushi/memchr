@@ -771,16 +771,20 @@ fn forward_pos3(mask1: u32, mask2: u32, mask3: u32) -> usize {
 ///
 /// The mask given is expected to be the result of _mm_movemask_epi8.
 fn reverse_pos<V: Vector>(mask: u32) -> usize {
+    // For larger vectors, such as u8x64, this function and others will have to
+    // change where the type of the mask is specific to the type of the `Vector`
+    // provided. For now it's always a 32-bit mask meaning the biggest vector
+    // supported here is a 256-bit u8x32.
+    assert!(V::size() <= 32);
+
     // We are dealing with little endian here, where the most significant byte
     // is at a higher address. That means the most significant bit that is set
     // corresponds to the position of our last matching byte. The position from
-    // the end of the mask is therefore the number of leading zeros in a 32
-    // bit integer, and the position from the start of the mask is therefore
-    // size - (leading zeros) - 1.
+    // the end of the mask is therefore the number of leading zeros in the
+    // 32-bit mask, and the position from the start of the mask is therefore
+    // 32 - (leading zeros) - 1.
     let r = 31 - mask.leading_zeros() as usize;
     return r;
-    // let r = V::size() - mask.leading_zeros() as usize - 1;
-    // return r;
 }
 
 /// Compute the position of the last matching byte from the given masks. The

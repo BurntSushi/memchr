@@ -228,17 +228,3 @@ fn positions3<'a>(
         .map(|t| t.0);
     Box::new(it)
 }
-
-// #[test]
-// fn wat() {
-//     let data = [
-//         1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 255,
-//         1, 1, 1, 255, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-//         0, 0, 0, 0,
-//     ];
-//     let needle = 0;
-//     let answer = positions1(needle, &data);
-//     println!("{:?}", positions1(needle, &data).collect::<Vec<_>>());
-//     println!("{:?}", Memchr::new(needle, &data).collect::<Vec<_>>());
-//     assert!(answer.eq(Memchr::new(needle, &data)));
-// }
