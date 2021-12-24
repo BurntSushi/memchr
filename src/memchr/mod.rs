@@ -92,7 +92,9 @@ macro_rules! delegate {
             // `v128` type can be used to avoid having to use the naive fallback
             // implementation of these functions.
             #[cfg(target_family = "wasm")]
-            return genericsimd::$method::<core::arch::wasm32::v128>($($param),*);
+            return unsafe {
+                genericsimd::$method::<core::arch::wasm32::v128>($($param),*)
+            };
         }
 
         // If the libc feature is enabled then this will delegate to the
