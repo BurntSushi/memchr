@@ -86,7 +86,7 @@ mod x86sse {
     }
 }
 
-#[cfg(all(feature = "std", target_arch = "x86_64"))]
+#[cfg(target_arch = "x86_64")]
 mod x86avx {
     use super::Vector;
     use core::arch::x86_64::*;

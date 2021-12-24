@@ -65,51 +65,40 @@ pub fn memrchr3_iter(
 /// platform-specific implementations. This is called for all exported functions
 /// below to call specialized functions on a per-platform basis.
 macro_rules! delegate {
-    ($method:ident($($param:ident: $ty:ty),*) $($ret:tt)*) => ({
+    ($method:ident($($param:ident: $ty:ty),*) -> $ret:ty) => (#[allow(unreachable_code)] {
         // Miri for now always uses the naive version to avoid using simd
         // things.
-        if cfg!(miri) {
-            return naive::$method($($param),*);
-        }
-        if cfg!(memchr_runtime_simd) {
+        #[cfg(miri)]
+        return naive::$method($($param),*);
+
+        #[cfg(memchr_runtime_simd)]
+        {
             // On x86_64 we can optionally use either sse2 or avx2 acceleration.
             // The former is 128-bits wide and the latter is 256-bits wide, so
             // the latter is preferred. The avx2 feature is detected at runtime
             // if the `std` feature is enabled, and otherwise `sse2` is always
             // enabled for x86_64 so that's called as a fallback.
             #[cfg(target_arch = "x86_64")]
-            {
-                #[cfg(feature = "std")]
-                {
-                    if is_x86_feature_detected!("avx2") {
-                        enable_target_feature_and_call!(
-                            "avx2",
-                            core::arch::x86_64::__m256i,
-                            $method($($param: $ty),*) $($ret)*
-                        );
-                    }
-                }
-                enable_target_feature_and_call!(
-                    "sse2",
-                    core::arch::x86_64::__m128i,
-                    $method($($param: $ty),*) $($ret)*
-                );
+            runtime_detect! {
+                sig: $method($($param: $ty),*) -> $ret,
+                types: if is_x86_feature_detected!("avx2") {
+                    genericsimd::$method::<core::arch::x86_64::__m256i>
+                } else if is_x86_feature_detected!("sse2") {
+                    genericsimd::$method::<core::arch::x86_64::__m128i>
+                },
             }
 
             // On wasm platforms when the simd128 feature is enabled then the
             // `v128` type can be used to avoid having to use the naive fallback
             // implementation of these functions.
             #[cfg(target_family = "wasm")]
-            enable_target_feature_and_call!(
-                "simd128",
-                core::arch::wasm32::v128,
-                $method($($param: $ty),*) $($ret)*
-            );
+            return genericsimd::$method::<core::arch::wasm32::v128>($($param),*);
         }
 
         // If the libc feature is enabled then this will delegate to the
         // appropriate libc function for the `$method` specified, or it will do
         // nothing if libc doesn't have an equivalent.
+        #[cfg(memchr_libc)]
         maybe_delegate_libc!($method($($param),*));
 
         // If all else fails we use the in-Rust-written versions as a fallback.
@@ -117,26 +106,75 @@ macro_rules! delegate {
     })
 }
 
+// This is a helper macro to do something similar to "ifunc" but also works when
+// our ifunc mechanism, the `std` feature, is disabled.
 #[allow(unused_macros)] // this is used conditionally so just squelch this warning
-macro_rules! enable_target_feature_and_call {
-    ($feature:tt, $vector:ty, $method:ident($($param:ident: $ty:ty),*) $($ret:tt)*) => {
-        #[target_feature(enable = $feature)]
-        unsafe fn $method($($param: $ty),*) $($ret)* {
-            genericsimd::$method::<$vector>($($param),*)
+macro_rules! runtime_detect {
+    (
+        sig: $method:ident($($param:ident: $argty:ty),*) -> $ret:ty,
+        types: $( $(else)? if $mac:ident ! ($feat:tt) { $e:path } )*,
+    ) => ({
+        let dst: Option<unsafe fn($($argty),*) -> $ret> = {
+            // If `std` is disabled then all we can do is static dispatch. Use
+            // cfg!(target_feature) for this. If no target features are
+            // available then `None` is returned, meaning we'll fall through
+            // to other implementations like libc or the `fallback`.
+            #[cfg(not(feature = "std"))]
+            {
+                $(
+                    if cfg!(target_feature = $feat) {
+                        Some($e)
+                    }
+                )else*
+                else {
+                    None
+                }
+            }
+
+            // If the "std" feature is enabled then we rely on an
+            // ifunc-like-mechanism where an indirect function call is made
+            // where the first invocation will switch the target of future
+            // indirect calls to the appropriate implementaiton to skip the
+            // feature detection.
+            #[cfg(feature = "std")]
+            {
+                use std::sync::atomic::{AtomicPtr, Ordering};
+                use std::mem;
+
+                static FN: AtomicPtr<()> = AtomicPtr::new(detect as *mut());
+
+                unsafe fn detect($($param: $argty),*) -> $ret {
+                    let dst: unsafe fn($($argty),*) -> $ret =
+                        $(
+                            if $mac!($feat) {
+                                $e
+                            }
+                        )else*
+                        else {
+                            fallback::$method
+                        };
+                    FN.store(dst as *mut (), Ordering::Relaxed);
+                    dst($($param),*)
+                }
+
+                let ptr = FN.load(Ordering::Relaxed);
+                Some(unsafe {
+                    mem::transmute::<*mut (), unsafe fn($($argty),*) -> $ret>(ptr)
+                })
+            }
+        };
+        if let Some(dst) = dst {
+            unsafe {
+                return dst($($param),*);
+            }
         }
-        return unsafe { $method($($param),*) };
-    }
+    })
 }
 
+#[allow(unused_macros)] // this is used conditionally so just squelch this warning
 macro_rules! maybe_delegate_libc {
-    (memchr($($param:tt)*)) => (
-        #[cfg(memchr_libc)]
-        return c::memchr($($param)*);
-    );
-    (memrchr($($param:tt)*)) => (
-        #[cfg(memchr_libc)]
-        return c::memrchr($($param)*);
-    );
+    (memchr($($param:tt)*)) => (return c::memchr($($param)*););
+    (memrchr($($param:tt)*)) => (return c::memrchr($($param)*););
     ($($other:tt)*) => ();
 }
 
