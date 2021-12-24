@@ -82,9 +82,21 @@ macro_rules! delegate {
             runtime_detect! {
                 sig: $method($($param: $ty),*) -> $ret,
                 types: if is_x86_feature_detected!("avx2") {
-                    genericsimd::$method::<core::arch::x86_64::__m256i>
+                    {
+                        #[target_feature(enable = "avx2")]
+                        unsafe fn $method($($param: $ty),*) -> $ret {
+                            genericsimd::$method::<core::arch::x86_64::__m256i>($($param),*)
+                        }
+                        $method
+                    }
                 } else if is_x86_feature_detected!("sse2") {
-                    genericsimd::$method::<core::arch::x86_64::__m128i>
+                    {
+                        #[target_feature(enable = "sse2")]
+                        unsafe fn $method($($param: $ty),*) -> $ret {
+                            genericsimd::$method::<core::arch::x86_64::__m128i>($($param),*)
+                        }
+                        $method
+                    }
                 },
             }
 
@@ -114,7 +126,7 @@ macro_rules! delegate {
 macro_rules! runtime_detect {
     (
         sig: $method:ident($($param:ident: $argty:ty),*) -> $ret:ty,
-        types: $( $(else)? if $mac:ident ! ($feat:tt) { $e:path } )*,
+        types: $( $(else)? if $mac:ident ! ($feat:tt) { $e:expr } )*,
     ) => ({
         let dst: Option<unsafe fn($($argty),*) -> $ret> = {
             // If `std` is disabled then all we can do is static dispatch. Use
