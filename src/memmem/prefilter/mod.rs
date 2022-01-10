@@ -431,7 +431,7 @@ pub(crate) mod tests {
         /// (Currently, we take the approach of massaging tests to be valid
         /// instead of rejecting them outright.)
         fn new(
-            seed: &PrefilterTestSeed,
+            seed: PrefilterTestSeed,
             rare1i: usize,
             rare2i: usize,
             haystack_len: usize,
@@ -515,6 +515,7 @@ pub(crate) mod tests {
     ];
 
     /// Data that describes a single prefilter test seed.
+    #[derive(Clone, Copy)]
     struct PrefilterTestSeed {
         first: u8,
         rare1: u8,
@@ -523,47 +524,47 @@ pub(crate) mod tests {
 
     impl PrefilterTestSeed {
         /// Generate a series of prefilter tests from this seed.
-        fn generate(&self) -> Vec<PrefilterTest> {
-            let mut tests = vec![];
-            let mut push = |test: Option<PrefilterTest>| {
-                if let Some(test) = test {
-                    tests.push(test);
-                }
-            };
+        fn generate(self) -> impl Iterator<Item = PrefilterTest> {
             let len_start = 2;
-            // The loop below generates *a lot* of tests. The number of tests
-            // was chosen somewhat empirically to be "bearable" when running
-            // the test suite.
-            for needle_len in len_start..=40 {
+            // The iterator below generates *a lot* of tests. The number of
+            // tests was chosen somewhat empirically to be "bearable" when
+            // running the test suite.
+            //
+            // We use an iterator here because the collective haystacks of all
+            // these test cases add up to enough memory to OOM a conservative
+            // sandbox or a small laptop.
+            (len_start..=40).flat_map(move |needle_len| {
                 let rare_start = len_start - 1;
-                for rare1i in rare_start..needle_len {
-                    for rare2i in rare1i..needle_len {
-                        for haystack_len in needle_len..=66 {
-                            push(PrefilterTest::new(
+                (rare_start..needle_len).flat_map(move |rare1i| {
+                    (rare1i..needle_len).flat_map(move |rare2i| {
+                        (needle_len..=66).flat_map(move |haystack_len| {
+                            PrefilterTest::new(
                                 self,
                                 rare1i,
                                 rare2i,
                                 haystack_len,
                                 needle_len,
                                 None,
-                            ));
-                            // Test all possible match scenarios for this
-                            // needle and haystack.
-                            for output in 0..=(haystack_len - needle_len) {
-                                push(PrefilterTest::new(
-                                    self,
-                                    rare1i,
-                                    rare2i,
-                                    haystack_len,
-                                    needle_len,
-                                    Some(output),
-                                ));
-                            }
-                        }
-                    }
-                }
-            }
-            tests
+                            )
+                            .into_iter()
+                            .chain(
+                                (0..=(haystack_len - needle_len)).flat_map(
+                                    move |output| {
+                                        PrefilterTest::new(
+                                            self,
+                                            rare1i,
+                                            rare2i,
+                                            haystack_len,
+                                            needle_len,
+                                            Some(output),
+                                        )
+                                    },
+                                ),
+                            )
+                        })
+                    })
+                })
+            })
         }
     }
 }
