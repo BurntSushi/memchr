@@ -33,7 +33,7 @@ pub(crate) unsafe fn find(
 #[cfg(test)]
 mod tests {
     #[test]
-    #[cfg(not(miri))]
+    #[cfg(all(feature = "std", not(miri)))]
     fn prefilter_permutations() {
         use crate::memmem::prefilter::tests::PrefilterTest;
         if !is_x86_feature_detected!("avx2") {

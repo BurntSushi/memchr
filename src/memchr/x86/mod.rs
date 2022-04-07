@@ -1,8 +1,6 @@
 use super::fallback;
+use crate::x86_detect;
 
-// We only use AVX when we can detect at runtime whether it's available, which
-// requires std.
-#[cfg(feature = "std")]
 mod avx;
 mod sse2;
 
@@ -31,10 +29,9 @@ mod sse2;
 /// # Safety
 ///
 /// Callers must ensure that fnty is function pointer type.
-#[cfg(feature = "std")]
 macro_rules! unsafe_ifunc {
     ($fnty:ty, $name:ident, $haystack:ident, $($needle:ident),+) => {{
-        use std::{mem, sync::atomic::{AtomicPtr, Ordering}};
+        use core::{mem, sync::atomic::{AtomicPtr, Ordering}};
 
         type FnRaw = *mut ();
 
@@ -42,7 +39,7 @@ macro_rules! unsafe_ifunc {
 
         fn detect($($needle: u8),+, haystack: &[u8]) -> Option<usize> {
             let fun =
-                if cfg!(memchr_runtime_avx) && is_x86_feature_detected!("avx2") {
+                if cfg!(memchr_runtime_avx) && x86_detect::is_avx2_enabled() {
                     avx::$name as FnRaw
                 } else if cfg!(memchr_runtime_sse2) {
                     sse2::$name as FnRaw
@@ -66,27 +63,6 @@ macro_rules! unsafe_ifunc {
         unsafe {
             let fun = FN.load(Ordering::Relaxed);
             mem::transmute::<FnRaw, $fnty>(fun)($($needle),+, $haystack)
-        }
-    }}
-}
-
-/// When std isn't available to provide runtime CPU feature detection, or if
-/// runtime CPU feature detection has been explicitly disabled, then just
-/// call our optimized SSE2 routine directly. SSE2 is avalbale on all x86_64
-/// targets, so no CPU feature detection is necessary.
-///
-/// # Safety
-///
-/// There are no safety requirements for this definition of the macro. It is
-/// safe for all inputs since it is restricted to either the fallback routine
-/// or the SSE routine, which is always safe to call on x86_64.
-#[cfg(not(feature = "std"))]
-macro_rules! unsafe_ifunc {
-    ($fnty:ty, $name:ident, $haystack:ident, $($needle:ident),+) => {{
-        if cfg!(memchr_runtime_sse2) {
-            unsafe { sse2::$name($($needle),+, $haystack) }
-        } else {
-            fallback::$name($($needle),+, $haystack)
         }
     }}
 }

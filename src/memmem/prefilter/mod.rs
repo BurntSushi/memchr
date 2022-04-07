@@ -298,15 +298,10 @@ pub(crate) fn forward(
 
     #[cfg(all(not(miri), target_arch = "x86_64", memchr_runtime_simd))]
     {
-        #[cfg(feature = "std")]
-        {
-            if cfg!(memchr_runtime_avx) {
-                if is_x86_feature_detected!("avx2") {
-                    // SAFETY: x86::avx::find only requires the avx2 feature,
-                    // which we've just checked above.
-                    return unsafe { Some(PrefilterFn::new(x86::avx::find)) };
-                }
-            }
+        if cfg!(memchr_runtime_avx) && crate::x86_detect::is_avx2_enabled() {
+            // SAFETY: x86::avx::find only requires the avx2 feature,
+            // which we've just checked above.
+            return unsafe { Some(PrefilterFn::new(x86::avx::find)) };
         }
         if cfg!(memchr_runtime_sse2) {
             // SAFETY: x86::sse::find only requires the sse2 feature, which is

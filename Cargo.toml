@@ -22,10 +22,7 @@ bench = false
 [features]
 default = ["std"]
 
-# The 'std' feature permits the memchr crate to use the standard library. This
-# permits this crate to use runtime CPU feature detection to automatically
-# accelerate searching via vector instructions. Without the standard library,
-# this automatic detection is not possible.
+# The 'std' feature permits the memchr crate to use the standard library.
 std = []
 # The 'use_std' feature is DEPRECATED. It will be removed in memchr 3. Until
 # then, it is alias for the 'std' feature.
