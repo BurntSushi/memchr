@@ -95,7 +95,7 @@ fn detect_avx2_enabled() -> bool {
     // .bit 1 = SSE enable
     // .bit 2 = AVX enable
     let xcr0 = unsafe { _xgetbv(0) };
-    if xcr0 & 0b110 == 0 {
+    if xcr0 & 0b110 != 0b110 {
         return false;
     }
 
