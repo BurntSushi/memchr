@@ -6,7 +6,7 @@ authors = ["Andrew Gallant <jamslam@gmail.com>"]
 description = "Criterion benchmark suite for memchr."
 homepage = "https://github.com/BurntSushi/memchr"
 repository = "https://github.com/BurntSushi/memchr"
-license = "Unlicense/MIT"
+license = "Unlicense OR MIT"
 edition = "2018"
 
 [lib]
