@@ -8,7 +8,7 @@ homepage = "https://github.com/BurntSushi/memchr"
 repository = "https://github.com/BurntSushi/memchr"
 readme = "README.md"
 keywords = ["memchr", "char", "scan", "strchr", "string"]
-license = "Unlicense/MIT"
+license = "Unlicense OR MIT"
 exclude = ["/bench", "/.github", "/fuzz"]
 edition = "2018"
 
