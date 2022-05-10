@@ -1,0 +1,6 @@
+project: memchr
+target: memrchr
+duration: 90
+
+cmds:
+    - cmd: /memrchr

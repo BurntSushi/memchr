@@ -1,5 +1,3 @@
-cargo-features = ['named-profiles']
-
 [package]
 publish = false
 name = "memchr-fuzz"
@@ -71,9 +69,3 @@ doc = false
 [profile.release]
 opt-level = 3
 debug = true
-
-[profile.debug]
-inherits = "release"
-
-[profile.test]
-inherits = "release"
