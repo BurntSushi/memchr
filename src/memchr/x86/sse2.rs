@@ -77,10 +77,12 @@ pub unsafe fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
     //    search the first 16 bytes. We then start our primary loop at the
     //    smallest subsequent aligned address, which will actually overlap with
     //    previously searched bytes. But we're OK with that. We do a similar
-    //    dance at the end of our primary loop. Finally, to avoid a
-    //    byte-at-a-time loop at the end, we do a final 16 byte unaligned load
-    //    that may overlap with a previous load. This is OK because it converts
-    //    a loop into a small number of very fast vector instructions.
+    //    dance at the end of our primary loop. Finally, to avoid any loops at
+    //    the end, we do a final dance of 3 aligned and 1 unaligned load to
+    //    cover the remaining 0-63 bytes.
+    // 4. We have a special, branchless routine to handle the case of 16-63
+    //    bytes by doing some fancy address math to cover it in 4 16-byte-wide
+    //    checks.
     //
     // The primary downside of this algorithm is that it's effectively
     // completely unsafe. Therefore, we have to be super careful to avoid
@@ -112,12 +114,56 @@ pub unsafe fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
     let end_ptr = start_ptr.add(haystack.len());
     let mut ptr = start_ptr;
 
-    if haystack.len() < VECTOR_SIZE {
-        while ptr < end_ptr {
-            if *ptr == n1 {
-                return Some(sub(ptr, start_ptr));
+    if haystack.len() < LOOP_SIZE {
+        if haystack.len() < VECTOR_SIZE {
+            while ptr < end_ptr {
+                if *ptr == n1 {
+                    return Some(sub(ptr, start_ptr));
+                }
+                ptr = ptr.offset(1);
             }
-            ptr = ptr.offset(1);
+            return None;
+        }
+
+        // This is just a way of getting the number 16 if our length is above
+        // 32, and 0 otherwise. This just lets us avoid any branching but still
+        // cover a wide range of lengths.
+        const secret_sauce = (haystack.len() & (2 * VECTOR_SIZE)) / 2;
+        let ptr_a = ptr;
+        let ptr_b = ptr_a.add(secret_sauce);
+        let ptr_d = ptr.add(haystack.len() - VECTOR_SIZE);
+        let ptr_c = ptr_d.sub(secret_sauce);
+
+        let a = _mm_loadu_si128(ptr as *const __m128i);
+        let b = _mm_loadu_si128(ptr_b as *const __m128i);
+        let c = _mm_loadu_si128(ptr_c as *const __m128i);
+        let d = _mm_loadu_si128(ptr_d as *const __m128i);
+        let eqa = _mm_cmpeq_epi8(vn1, a);
+        let eqb = _mm_cmpeq_epi8(vn1, b);
+        let eqc = _mm_cmpeq_epi8(vn1, c);
+        let eqd = _mm_cmpeq_epi8(vn1, d);
+        let or1 = _mm_or_si128(eqa, eqb);
+        let or2 = _mm_or_si128(eqc, eqd);
+        let or3 = _mm_or_si128(or1, or2);
+        if _mm_movemask_epi8(or3) != 0 {
+            let mask = _mm_movemask_epi8(eqa);
+            if mask != 0 {
+                return Some(sub(ptr_a, start_ptr) + forward_pos(mask));
+            }
+
+            let mask = _mm_movemask_epi8(eqb);
+            if mask != 0 {
+                return Some(sub(ptr_b, start_ptr) + forward_pos(mask));
+            }
+
+            let mask = _mm_movemask_epi8(eqc);
+            if mask != 0 {
+                return Some(sub(ptr_c, start_ptr) + forward_pos(mask));
+            }
+
+            let mask = _mm_movemask_epi8(eqd);
+            debug_assert!(mask != 0);
+            return Some(sub(ptr_d, start_ptr) + forward_pos(mask));
         }
         return None;
     }
@@ -168,21 +214,53 @@ pub unsafe fn memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
         }
         ptr = ptr.add(loop_size);
     }
-    while ptr <= end_ptr.sub(VECTOR_SIZE) {
-        debug_assert!(sub(end_ptr, ptr) >= VECTOR_SIZE);
 
-        if let Some(i) = forward_search1(start_ptr, end_ptr, ptr, vn1) {
-            return Some(i);
+    // We are forced to do one unaligned load. However, there's no reason the
+    // rest have to be unaligned, and we can avoid any branching because we
+    // know we only get here if our original size was >= 64, so we can always
+    // do 48 bytes of aligned loads plus one 16-byte overlapping unaligned
+    // load. If our length is one more than what the main loop covered, then
+    // this means we'll do four loads just to pick up one byte. However, we
+    // probably avoided a branch mispredict in the process and thus may have
+    // actually saved time, and the situation only gets better for the
+    // less-overlapping cases.
+    const end_unalignment = end_ptr as usize & VECTOR_ALIGN;
+    let ptr_a = end_ptr.sub((3 * VECTOR_SIZE) + end_unalignment);
+    let ptr_b = ptr_a.add(VECTOR_SIZE);
+    let ptr_c = ptr_b.add(VECTOR_SIZE);
+    let ptr_d = end_ptr.sub(VECTOR_SIZE);
+    let a = _mm_load_si128(ptr_a as *const __m128i);
+    let b = _mm_load_si128(ptr_b as *const __m128i);
+    let c = _mm_load_si128(ptr_c as *const __m128i);
+    let d = _mm_loadu_si128(ptr_d as *const __m128i);
+    let eqa = _mm_cmpeq_epi8(vn1, a);
+    let eqb = _mm_cmpeq_epi8(vn1, b);
+    let eqc = _mm_cmpeq_epi8(vn1, c);
+    let eqd = _mm_cmpeq_epi8(vn1, d);
+    let or1 = _mm_or_si128(eqa, eqb);
+    let or2 = _mm_or_si128(eqc, eqd);
+    let or3 = _mm_or_si128(or1, or2);
+    if _mm_movemask_epi8(or3) != 0 {
+        let mask = _mm_movemask_epi8(eqa);
+        if mask != 0 {
+            return Some(sub(ptr_a, start_ptr) + forward_pos(mask));
         }
-        ptr = ptr.add(VECTOR_SIZE);
-    }
-    if ptr < end_ptr {
-        debug_assert!(sub(end_ptr, ptr) < VECTOR_SIZE);
-        ptr = ptr.sub(VECTOR_SIZE - sub(end_ptr, ptr));
-        debug_assert_eq!(sub(end_ptr, ptr), VECTOR_SIZE);
 
-        return forward_search1(start_ptr, end_ptr, ptr, vn1);
+        let mask = _mm_movemask_epi8(eqb);
+        if mask != 0 {
+            return Some(sub(ptr_b, start_ptr) + forward_pos(mask));
+        }
+
+        let mask = _mm_movemask_epi8(eqc);
+        if mask != 0 {
+            return Some(sub(ptr_c, start_ptr) + forward_pos(mask));
+        }
+
+        let mask = _mm_movemask_epi8(eqd);
+        debug_assert!(mask != 0);
+        return Some(sub(ptr_d, start_ptr) + forward_pos(mask));
     }
+
     None
 }
 
