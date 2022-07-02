@@ -2,6 +2,8 @@ use core::iter::Rev;
 
 pub use self::iter::{Memchr, Memchr2, Memchr3};
 
+#[cfg(all(not(miri), target_arch = "aarch64", memchr_runtime_neon))]
+mod aarch64;
 // N.B. If you're looking for the cfg knobs for libc, see build.rs.
 #[cfg(memchr_libc)]
 mod c;
@@ -107,9 +109,16 @@ pub fn memchr(needle: u8, haystack: &[u8]) -> Option<usize> {
         c::memchr(n1, haystack)
     }
 
+    #[cfg(all(target_arch = "aarch64", memchr_runtime_neon, not(miri)))]
+    #[inline(always)]
+    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
+        aarch64::memchr(n1, haystack)
+    }
+
     #[cfg(all(
         not(memchr_libc),
         not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(all(target_arch = "aarch64", memchr_runtime_neon)),
         not(miri),
     ))]
     #[inline(always)]
@@ -161,8 +170,15 @@ pub fn memchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
         x86::memchr2(n1, n2, haystack)
     }
 
+    #[cfg(all(target_arch = "aarch64", memchr_runtime_neon, not(miri)))]
+    #[inline(always)]
+    fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
+        aarch64::memchr2(n1, n2, haystack)
+    }
+
     #[cfg(all(
         not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(all(target_arch = "aarch64", memchr_runtime_neon)),
         not(miri),
     ))]
     #[inline(always)]
@@ -219,8 +235,15 @@ pub fn memchr3(
         x86::memchr3(n1, n2, n3, haystack)
     }
 
+    #[cfg(all(target_arch = "aarch64", memchr_runtime_neon, not(miri)))]
+    #[inline(always)]
+    fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
+        aarch64::memchr3(n1, n2, n3, haystack)
+    }
+
     #[cfg(all(
         not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(all(target_arch = "aarch64", memchr_runtime_neon)),
         not(miri),
     ))]
     #[inline(always)]
@@ -281,9 +304,16 @@ pub fn memrchr(needle: u8, haystack: &[u8]) -> Option<usize> {
         c::memrchr(n1, haystack)
     }
 
+    #[cfg(all(target_arch = "aarch64", memchr_runtime_neon, not(miri)))]
+    #[inline(always)]
+    fn imp(n1: u8, haystack: &[u8]) -> Option<usize> {
+        aarch64::memrchr(n1, haystack)
+    }
+
     #[cfg(all(
         not(all(memchr_libc, target_os = "linux")),
         not(all(target_arch = "x86_64", memchr_runtime_simd)),
+        not(all(target_arch = "aarch64", memchr_runtime_neon)),
         not(miri),
     ))]
     #[inline(always)]
@@ -335,7 +365,14 @@ pub fn memrchr2(needle1: u8, needle2: u8, haystack: &[u8]) -> Option<usize> {
         x86::memrchr2(n1, n2, haystack)
     }
 
+    #[cfg(all(target_arch = "aarch64", memchr_runtime_neon, not(miri)))]
+    #[inline(always)]
+    fn imp(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
+        aarch64::memrchr2(n1, n2, haystack)
+    }
+
     #[cfg(all(
+        not(all(target_arch = "aarch64", memchr_runtime_neon)),
         not(all(target_arch = "x86_64", memchr_runtime_simd)),
         not(miri),
     ))]
@@ -393,7 +430,14 @@ pub fn memrchr3(
         x86::memrchr3(n1, n2, n3, haystack)
     }
 
+    #[cfg(all(target_arch = "aarch64", memchr_runtime_neon, not(miri)))]
+    #[inline(always)]
+    fn imp(n1: u8, n2: u8, n3: u8, haystack: &[u8]) -> Option<usize> {
+        aarch64::memrchr3(n1, n2, n3, haystack)
+    }
+
     #[cfg(all(
+        not(all(target_arch = "aarch64", memchr_runtime_neon)),
         not(all(target_arch = "x86_64", memchr_runtime_simd)),
         not(miri),
     ))]

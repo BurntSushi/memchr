@@ -10,7 +10,7 @@ fn main() {
 // This can be disabled with RUSTFLAGS="--cfg memchr_disable_auto_simd", but
 // this is generally only intended for testing.
 //
-// On targets which don't feature SSE2, this is disabled, as LLVM wouln't know
+// On targets which don't feature SSE2, this is disabled, as LLVM wouldn't know
 // how to work with SSE2 operands. Enabling SSE4.2 and AVX on SSE2-only targets
 // is not a problem. In that case, the fastest option will be chosen at
 // runtime.
@@ -28,6 +28,12 @@ fn enable_simd_optimizations() {
             println!("cargo:rustc-cfg=memchr_runtime_sse2");
             println!("cargo:rustc-cfg=memchr_runtime_sse42");
             println!("cargo:rustc-cfg=memchr_runtime_avx");
+        }
+        "aarch64" => {
+            if !target_has_feature("neon") {
+                return;
+            }
+            println!("cargo:rustc-cfg=memchr_runtime_neon");
         }
         "wasm32" | "wasm64" => {
             if !target_has_feature("simd128") {
