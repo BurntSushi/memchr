@@ -133,9 +133,9 @@ library haven't quite been worked out yet.
 
 **NOTE:** Currently, only `x86_64` targets have highly accelerated
 implementations of substring search. For `memchr`, all targets have
-somewhat-accelerated implementations, while only `x86_64` targets have highly
-accelerated implementations. This limitation is expected to be lifted once the
-standard library exposes a platform independent SIMD API.
+somewhat-accelerated implementations, while `x86_64` and `aarch64` targets
+have highly accelerated implementations. This limitation is expected to be
+lifted once the standard library exposes a platform independent SIMD API.
 
 # Crate features
 
@@ -144,7 +144,7 @@ standard library exposes a platform independent SIMD API.
   from the standard library is runtime SIMD CPU feature detection. This means
   that this feature must be enabled to get AVX accelerated routines. When
   `std` is not enabled, this crate will still attempt to use SSE2 accelerated
-  routines on `x86_64`.
+  routines on `x86_64` and NEON accelerated routines on `aarch64`.
 * **libc** - When enabled (**not** the default), this library will use your
   platform's libc implementation of `memchr` (and `memrchr` on Linux). This
   can be useful on non-`x86_64` targets where the fallback implementation in
