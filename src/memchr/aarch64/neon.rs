@@ -54,7 +54,7 @@ pub unsafe fn memrchr2(n1: u8, n2: u8, haystack: &[u8]) -> Option<usize> {
 }
 
 #[target_feature(enable = "neon")]
-pub(crate) unsafe fn memrchr3(
+pub unsafe fn memrchr3(
     n1: u8,
     n2: u8,
     n3: u8,
