@@ -73,11 +73,9 @@ jobs:
       with:
         fetch-depth: 1
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@v1
       with:
         toolchain: ${{ matrix.rust }}
-        profile: minimal
-        override: true
     - name: Use Cross
       if: matrix.target != ''
       run: |
@@ -159,11 +157,9 @@ jobs:
       with:
         fetch-depth: 1
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@v1
       with:
         toolchain: nightly
-        profile: minimal
-        override: true
         components: rust-src
     - run: cargo build -Z build-std=core --target=src/tests/x86_64-soft_float.json --verbose --no-default-features
 
@@ -176,11 +172,9 @@ jobs:
       with:
         fetch-depth: 1
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@v1
       with:
         toolchain: nightly
-        profile: minimal
-        override: true
         components: miri
     - name: Show CPU info for debugging
       run: lscpu
@@ -197,11 +191,9 @@ jobs:
       with:
         fetch-depth: 1
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@v1
       with:
         toolchain: stable
-        override: true
-        profile: minimal
         components: rustfmt
     - name: Check formatting
       run: |
