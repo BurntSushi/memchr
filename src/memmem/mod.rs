@@ -66,7 +66,7 @@ assert_eq!(None, finder.find(b"quux baz bar"));
 ```
 */
 
-pub use self::prefilter::Prefilter;
+pub use self::{prefilter::Prefilter, rarebytes::set_byte_frequencies};
 
 use crate::{
     cow::CowBytes,

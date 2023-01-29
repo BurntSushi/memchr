@@ -60,19 +60,20 @@ impl RareNeedleBytes {
         }
 
         // Find the rarest two bytes. We make them distinct by construction.
+        let freq = byte_frequencies();
         let (mut rare1, mut rare1i) = (needle[0], 0);
         let (mut rare2, mut rare2i) = (needle[1], 1);
-        if rank(rare2) < rank(rare1) {
+        if rank(freq, rare2) < rank(freq, rare1) {
             core::mem::swap(&mut rare1, &mut rare2);
             core::mem::swap(&mut rare1i, &mut rare2i);
         }
         for (i, &b) in needle.iter().enumerate().skip(2) {
-            if rank(b) < rank(rare1) {
+            if rank(freq, b) < rank(freq, rare1) {
                 rare2 = rare1;
                 rare2i = rare1i;
                 rare1 = b;
                 rare1i = i as u8;
-            } else if b != rare1 && rank(b) < rank(rare2) {
+            } else if b != rare1 && rank(freq, b) < rank(freq, rare2) {
                 rare2 = b;
                 rare2i = i as u8;
             }
@@ -124,13 +125,96 @@ impl RareNeedleBytes {
     /// more frequency the byte is predicted to be. The needle given must be
     /// the same one given to the RareNeedleBytes constructor.
     pub(crate) fn as_ranks(&self, needle: &[u8]) -> (usize, usize) {
+        let freq = byte_frequencies();
         let (b1, b2) = self.as_rare_bytes(needle);
-        (rank(b1), rank(b2))
+        (rank(freq, b1), rank(freq, b2))
     }
 }
 
 /// Return the heuristical frequency rank of the given byte. A lower rank
 /// means the byte is believed to occur less frequently.
-fn rank(b: u8) -> usize {
-    crate::memmem::byte_frequencies::BYTE_FREQUENCIES[b as usize] as usize
+fn rank(freq: ByteFrequencies, b: u8) -> usize {
+    freq[b as usize] as usize
 }
+
+
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+type ByteTable = [u8; 256];
+type ByteFrequencies = &'static ByteTable;
+
+/// Set the byte frequency table used to construct `RareNeedleBytes`.
+/// 
+/// This setting can have a dramatic impact on performance depending on
+/// the type of data being searched. The frequency table defined in 
+/// `crate::memmem::byte_frequencies::BYTE_FREQUENCIES` is very good for most
+/// common data types, but can be sub-optimal when scanning specific kinds of data,
+/// such as binary executables. In a binary executable, the `\x00` byte is the most
+/// common byte by an order of magnitude, whereas in the default table it is not very frequent.
+/// 
+/// This is a `global` setting in order to minimize the impact on the rest
+/// of the API. Using a custom byte frequency table is a very nice use case
+/// and should not impact the speed or usability of the rest of the API.
+/// Also, the most common case for using a byte frequency table is where
+/// ALL searches are performed with the custom table, so we can get away
+/// with not implementing a per-search selection of frequency tables.
+/// 
+/// Example
+/// ```
+/// use memchr::memmem;
+/// 
+/// // The default table (good for most inputs)
+/// memmem::set_byte_frequencies(None);
+/// 
+/// // A table that is good for searching binary executables
+/// memmem::set_byte_frequencies(Some(&[
+///     255, 128, 61, 43, 50, 41, 27, 28, 57, 15, 21, 13, 24, 17, 17, 89, 58, 16, 11, 7, 14, 23, 7, 6, 24, 9, 6, 5, 9, 4, 7, 16,
+///     68, 11, 9, 6, 88, 7, 4, 4, 23, 9, 4, 8, 8, 5, 10, 4, 30, 11, 9, 24, 11, 5, 5, 5, 19, 11, 6, 17, 9, 9, 6, 8,
+///     48, 58, 11, 14, 53, 40, 9, 9, 254, 35, 3, 6, 52, 23, 6, 6, 27, 4, 7, 11, 14, 13, 10, 11, 11, 5, 2, 10, 16, 12, 6, 19,
+///     19, 20, 5, 14, 16, 31, 19, 7, 14, 20, 4, 4, 19, 8, 18, 20, 24, 1, 25, 19, 58, 29, 10, 5, 15, 20, 2, 2, 9, 4, 3, 5,
+///     51, 11, 4, 53, 23, 39, 6, 4, 13, 81, 4, 186, 5, 67, 3, 2, 15, 0, 0, 1, 3, 2, 0, 0, 5, 0, 0, 0, 2, 0, 0, 0,
+///     12, 2, 1, 1, 3, 1, 1, 1, 6, 1, 2, 1, 3, 1, 1, 2, 9, 1, 1, 0, 2, 2, 4, 4, 11, 6, 7, 3, 6, 9, 4, 5,
+///     46, 18, 8, 18, 17, 3, 8, 20, 16, 10, 3, 7, 175, 4, 6, 7, 13, 3, 7, 3, 3, 1, 3, 3, 10, 3, 1, 5, 2, 0, 1, 2,
+///     16, 3, 5, 1, 6, 1, 1, 2, 58, 20, 3, 14, 12, 2, 1, 3, 16, 3, 5, 8, 3, 1, 8, 6, 17, 6, 5, 3, 8, 6, 13, 175,
+/// ]));
+/// 
+/// let finder = memmem::Finder::new("foo");
+/// 
+/// assert_eq!(Some(4), finder.find(b"baz foo quux"));
+/// assert_eq!(None, finder.find(b"quux baz bar"));
+/// ```
+/// 
+pub fn set_byte_frequencies(frequencies: Option<ByteFrequencies>) {
+    let new_ptr = match frequencies {
+        None => 0,
+        Some(f) => f as *const ByteTable as usize
+    };
+    // SAFETY: `ByteFrequencies` is a static const reference, so the
+    // pointer must be valid for the entire program lifetime and can
+    // therefore be stored safely and dereferenced later at any time.
+    // Also, we only ever read the memory pointed at by `PTR_BYTE_FREQ`,
+    // so calling `byte_frequencies()/set_byte_frequencies()` is thread safe,
+    // provided that we atomically read/write the value of the pointer.
+    PTR_BYTE_FREQ.store(new_ptr, Ordering::SeqCst);
+}
+
+
+/// Return the global byte frequency table used to determine the 
+/// heuristical frequency rank of the given byte.
+fn byte_frequencies() -> ByteFrequencies {
+    let ptr = PTR_BYTE_FREQ.load(Ordering::SeqCst);
+    if ptr == 0 {
+        &crate::memmem::byte_frequencies::BYTE_FREQUENCIES
+    } else {
+        // SAFETY: If `PTR_BYTE_FREQ` != 0 then it was explicity set via
+        // `set_byte_frequencies`, so we can safely dereference the pointer and 
+        // transmute to a static reference (see `set_byte_frequencies` for more details).
+        unsafe { 
+            let deref: &ByteTable = &*(ptr as *const ByteTable);
+            std::mem::transmute(deref)
+        }
+    }
+}
+
+/// Global storage for the current byte frequency table in use
+static PTR_BYTE_FREQ: AtomicUsize = AtomicUsize::new(0);
