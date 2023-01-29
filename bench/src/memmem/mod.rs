@@ -106,6 +106,7 @@ pub fn all(c: &mut Criterion) {
     oneshot_iter(c);
     prebuilt_iter(c);
     sliceslice::all(c);
+    binary(c);
 }
 
 fn oneshot(c: &mut Criterion) {
@@ -379,5 +380,46 @@ fn prebuilt_iter(c: &mut Criterion) {
         for q in inp.common {
             def_all_impls!(inp, q, "common");
         }
+    }
+}
+
+fn binary(c: &mut Criterion) {
+    // Bytes we want to scan for that are rare in strings but common in executables
+    const NEEDLE: &[u8] = b"\x00\x00\xdd\xdd'";
+
+    // A byte-frequency table that is good for scanning binary executables
+    const TABLE: [u8; 256] = [
+        255, 128, 61, 43, 50, 41, 27, 28, 57, 15, 21, 13, 24, 17, 17, 89, 58, 16, 11, 7, 14, 23, 7, 6, 24, 9, 6, 5, 9, 4, 7, 16,
+        68, 11, 9, 6, 88, 7, 4, 4, 23, 9, 4, 8, 8, 5, 10, 4, 30, 11, 9, 24, 11, 5, 5, 5, 19, 11, 6, 17, 9, 9, 6, 8,
+        48, 58, 11, 14, 53, 40, 9, 9, 254, 35, 3, 6, 52, 23, 6, 6, 27, 4, 7, 11, 14, 13, 10, 11, 11, 5, 2, 10, 16, 12, 6, 19,
+        19, 20, 5, 14, 16, 31, 19, 7, 14, 20, 4, 4, 19, 8, 18, 20, 24, 1, 25, 19, 58, 29, 10, 5, 15, 20, 2, 2, 9, 4, 3, 5,
+        51, 11, 4, 53, 23, 39, 6, 4, 13, 81, 4, 186, 5, 67, 3, 2, 15, 0, 0, 1, 3, 2, 0, 0, 5, 0, 0, 0, 2, 0, 0, 0,
+        12, 2, 1, 1, 3, 1, 1, 1, 6, 1, 2, 1, 3, 1, 1, 2, 9, 1, 1, 0, 2, 2, 4, 4, 11, 6, 7, 3, 6, 9, 4, 5,
+        46, 18, 8, 18, 17, 3, 8, 20, 16, 10, 3, 7, 175, 4, 6, 7, 13, 3, 7, 3, 3, 1, 3, 3, 10, 3, 1, 5, 2, 0, 1, 2,
+        16, 3, 5, 1, 6, 1, 1, 2, 58, 20, 3, 14, 12, 2, 1, 3, 16, 3, 5, 8, 3, 1, 8, 6, 17, 6, 5, 3, 8, 6, 13, 175,
+    ];
+
+    // The input for the benchmark is the benchmark binary itself
+    let exe = std::env::args().next().unwrap();
+    let bin = std::fs::read(exe).unwrap();
+
+    for (name, table) in [
+        ("default-freq", None),
+        ("custom-freq", Some(&TABLE))
+    ] {
+        let corpus = bin.clone();
+        define(
+            c,
+            &format!("memmem/krate/binary/{name}"),
+            &bin,
+            Box::new(move |b| {
+                memchr::memmem::set_byte_frequencies(table);
+                let finder = memchr::memmem::Finder::new(NEEDLE);
+                b.iter(|| {
+                    assert_eq!(1, finder.find_iter(&corpus).count());
+                });
+                memchr::memmem::set_byte_frequencies(None);
+            }),
+        );
     }
 }
