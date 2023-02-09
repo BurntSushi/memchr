@@ -96,6 +96,7 @@ use criterion::Criterion;
 
 use crate::{define, memmem::inputs::INPUTS};
 
+mod byterank;
 mod imp;
 mod inputs;
 mod sliceslice;
@@ -106,6 +107,7 @@ pub fn all(c: &mut Criterion) {
     oneshot_iter(c);
     prebuilt_iter(c);
     sliceslice::all(c);
+    byterank::all(c);
 }
 
 fn oneshot(c: &mut Criterion) {

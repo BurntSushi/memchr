@@ -1,4 +1,6 @@
-use crate::memmem::{rarebytes::RareNeedleBytes, NeedleInfo};
+use crate::memmem::{
+    rarebytes::RareNeedleBytes, HeuristicFrequencyRank, NeedleInfo,
+};
 
 mod fallback;
 #[cfg(memchr_runtime_simd)]
@@ -287,9 +289,10 @@ impl PrefilterState {
 /// is the default). In general, we try to use an AVX prefilter, followed by
 /// SSE and then followed by a generic one based on memchr.
 #[inline(always)]
-pub(crate) fn forward(
+pub(crate) fn forward<R: HeuristicFrequencyRank>(
     config: &Prefilter,
     rare: &RareNeedleBytes,
+    ranker: R,
     needle: &[u8],
 ) -> Option<PrefilterFn> {
     if config.is_none() || needle.len() <= 1 {
@@ -327,7 +330,8 @@ pub(crate) fn forward(
     // Check that our rarest byte has a reasonably low rank. The main issue
     // here is that the fallback prefilter can perform pretty poorly if it's
     // given common bytes. So we try to avoid the worst cases here.
-    let (rare1_rank, _) = rare.as_ranks(needle);
+    let (rare1, _) = rare.as_rare_bytes(needle);
+    let rare1_rank = usize::from(ranker.rank(rare1));
     if rare1_rank <= MAX_FALLBACK_RANK {
         // SAFETY: fallback::find is safe to call in all environments.
         return unsafe { Some(PrefilterFn::new(fallback::find)) };

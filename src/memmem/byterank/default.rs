@@ -1,4 +1,4 @@
-pub const BYTE_FREQUENCIES: [u8; 256] = [
+pub const RANK: [u8; 256] = [
     55,  // '\x00'
     52,  // '\x01'
     51,  // '\x02'

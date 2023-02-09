@@ -66,11 +66,12 @@ assert_eq!(None, finder.find(b"quux baz bar"));
 ```
 */
 
-pub use self::prefilter::Prefilter;
+pub use self::{byterank::HeuristicFrequencyRank, prefilter::Prefilter};
 
 use crate::{
     cow::CowBytes,
     memmem::{
+        byterank::DefaultFrequencyRank,
         prefilter::{Pre, PrefilterFn, PrefilterState},
         rabinkarp::NeedleHash,
         rarebytes::RareNeedleBytes,
@@ -145,7 +146,7 @@ macro_rules! define_memmem_simple_tests {
     };
 }
 
-mod byte_frequencies;
+mod byterank;
 #[cfg(memchr_runtime_simd)]
 mod genericsimd;
 mod prefilter;
@@ -712,7 +713,24 @@ impl FinderBuilder {
         &self,
         needle: &'n B,
     ) -> Finder<'n> {
-        Finder { searcher: Searcher::new(self.config, needle.as_ref()) }
+        self.build_forward_with_ranker(DefaultFrequencyRank, needle)
+    }
+
+    /// Build a forward finder using the given needle and a custom heuristic for
+    /// determining the frequency of a given byte in the dataset.
+    /// See [`HeuristicFrequencyRank`] for more details.
+    pub fn build_forward_with_ranker<
+        'n,
+        R: HeuristicFrequencyRank,
+        B: ?Sized + AsRef<[u8]>,
+    >(
+        &self,
+        ranker: R,
+        needle: &'n B,
+    ) -> Finder<'n> {
+        Finder {
+            searcher: Searcher::new(self.config, ranker, needle.as_ref()),
+        }
     }
 
     /// Build a reverse finder using the given needle from the current
@@ -817,14 +835,19 @@ enum SearcherKind {
 }
 
 impl<'n> Searcher<'n> {
-    fn new(config: SearcherConfig, needle: &'n [u8]) -> Searcher<'n> {
+    fn new<R: HeuristicFrequencyRank>(
+        config: SearcherConfig,
+        ranker: R,
+        needle: &'n [u8],
+    ) -> Searcher<'n> {
         use self::SearcherKind::*;
 
-        let ninfo = NeedleInfo::new(needle);
+        let ninfo = NeedleInfo::new(&ranker, needle);
         let mk = |kind: SearcherKind| {
             let prefn = prefilter::forward(
                 &config.prefilter,
                 &ninfo.rarebytes,
+                ranker,
                 needle,
             );
             Searcher { needle: CowBytes::new(needle), ninfo, prefn, kind }
@@ -1010,9 +1033,12 @@ impl<'n> Searcher<'n> {
 }
 
 impl NeedleInfo {
-    pub(crate) fn new(needle: &[u8]) -> NeedleInfo {
+    pub(crate) fn new<R: HeuristicFrequencyRank>(
+        ranker: &R,
+        needle: &[u8],
+    ) -> NeedleInfo {
         NeedleInfo {
-            rarebytes: RareNeedleBytes::forward(needle),
+            rarebytes: RareNeedleBytes::forward(ranker, needle),
             nhash: NeedleHash::forward(needle),
         }
     }
