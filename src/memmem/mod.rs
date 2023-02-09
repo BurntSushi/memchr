@@ -454,7 +454,7 @@ impl<'n> Finder<'n> {
     /// Create a new finder for the given needle.
     #[inline]
     pub fn new<B: ?Sized + AsRef<[u8]>>(needle: &'n B) -> Finder<'n> {
-        FinderBuilder::new().build_forward(needle)
+        FinderBuilder::<DefaultHFR>::new().build_forward(needle)
     }
 
     /// Returns the index of the first occurrence of this needle in the given
@@ -581,7 +581,7 @@ impl<'n> FinderRev<'n> {
     /// Create a new reverse finder for the given needle.
     #[inline]
     pub fn new<B: ?Sized + AsRef<[u8]>>(needle: &'n B) -> FinderRev<'n> {
-        FinderBuilder::new().build_reverse(needle)
+        FinderBuilder::<DefaultHFR>::new().build_reverse(needle)
     }
 
     /// Returns the index of the last occurrence of this needle in the given
@@ -731,11 +731,8 @@ impl<'n> FinderRev<'n> {
 ///     }
 /// }
 /// // Create a new finder with the custom heuristic
-/// let finder = FinderBuilder::new().build_heuristic(b"\x00\x00\xdd\xdd", X86);
-/// // Read the current binary executable into a Vec<u8>
-/// let exe = std::fs::read(std::env::args().next().unwrap()).unwrap();
-/// // Find needle with custom heuristic
-/// assert!(finder.find(&exe).is_some());
+/// type T = FinderBuilder;
+/// let finder = T::new().heuristic(X86).build_forward(b"\x00\x00\xdd\xdd");
 /// ```
 pub trait HeuristicFrequencyRank {
     /// Return the heuristical frequency rank of the given byte. A lower rank
@@ -744,7 +741,7 @@ pub trait HeuristicFrequencyRank {
 }
 
 /// The default byte frequency heuristic that is good for most inputs
-pub(crate) struct DefaultHFR;
+pub struct DefaultHFR;
 impl HeuristicFrequencyRank for DefaultHFR {
     fn rank(&self, byte: u8) -> u8 {
         byte_frequencies::BYTE_FREQUENCIES[byte as usize]
@@ -766,12 +763,20 @@ where
 /// A builder is primarily useful for configuring a substring searcher.
 /// Currently, the only configuration exposed is the ability to disable
 /// heuristic prefilters used to speed up certain searches.
-#[derive(Clone, Debug, Default)]
-pub struct FinderBuilder {
+#[derive(Clone, Debug)]
+pub struct FinderBuilder<H: HeuristicFrequencyRank = DefaultHFR> {
     config: SearcherConfig,
+    // We use `Option<H>` to avoid `HeuristicFrequencyRank: Default`
+    heuristic: Option<H>,
 }
 
-impl FinderBuilder {
+impl<H: HeuristicFrequencyRank> Default for FinderBuilder<H> {
+    fn default() -> Self {
+        FinderBuilder{config: SearcherConfig::default(), heuristic: None}
+    }
+}
+
+impl<H: HeuristicFrequencyRank> FinderBuilder<H> {
     /// Create a new finder builder with default settings.
     pub fn new() -> FinderBuilder {
         FinderBuilder::default()
@@ -780,30 +785,15 @@ impl FinderBuilder {
     /// Build a forward finder using the given needle from the current
     /// settings.
     pub fn build_forward<'n, B: ?Sized + AsRef<[u8]>>(
-        &self,
+        self,
         needle: &'n B,
     ) -> Finder<'n> {
-        Finder { searcher: Searcher::new(self.config, needle.as_ref()) }
-    }
-
-    /// Build a forward finder using the given needle and a custom heuristic for
-    /// determining the frequency of a given byte in the dataset.
-    /// See [`HeuristicFrequencyRank`] for more details.
-    pub fn build_heuristic<
-        'n,
-        B: ?Sized + AsRef<[u8]>,
-        H: HeuristicFrequencyRank,
-    >(
-        &self,
-        needle: &'n B,
-        heuristic: H,
-    ) -> Finder<'n> {
-        Finder {
-            searcher: Searcher::new_heuristic(
-                self.config,
-                needle.as_ref(),
-                heuristic,
-            ),
+        // This can probably be improved but I stopped when I realized `FinderBuilder::new()...` was broken.
+        // Maybe you can figure something else out that is better.
+        if let Some(h) = self.heuristic {
+            Finder { searcher: Searcher::new_heuristic(self.config, needle.as_ref(), h) }
+        } else {
+            Finder { searcher: Searcher::new(self.config, needle.as_ref()) }
         }
     }
 
@@ -820,9 +810,17 @@ impl FinderBuilder {
     ///
     /// See the documentation for [`Prefilter`] for more discussion on why
     /// you might want to configure this.
-    pub fn prefilter(&mut self, prefilter: Prefilter) -> &mut FinderBuilder {
+    pub fn prefilter(mut self, prefilter: Prefilter) -> Self {
         self.config.prefilter = prefilter;
         self
+    }
+
+    /// Seta custom heuristic for determining the frequency of a given byte in the dataset.
+    ///
+    /// See the documentation for [`HeuristicFrequencyRank`] for more discussion on why
+    /// you might want to configure this.
+    pub fn heuristic<U: HeuristicFrequencyRank>(self, heuristic: U) -> FinderBuilder<U> {
+        FinderBuilder{config: self.config, heuristic: Some(heuristic)}
     }
 }
 
