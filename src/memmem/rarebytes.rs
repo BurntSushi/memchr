@@ -1,3 +1,5 @@
+use super::HeuristicFrequencyRank;
+
 /// A heuristic frequency based detection of rare bytes for substring search.
 ///
 /// This detector attempts to pick out two bytes in a needle that are predicted
@@ -44,7 +46,10 @@ impl RareNeedleBytes {
 
     /// Detect the leftmost offsets of the two rarest bytes in the given
     /// needle.
-    pub(crate) fn forward(needle: &[u8]) -> RareNeedleBytes {
+    pub(crate) fn forward<H: HeuristicFrequencyRank>(
+        needle: &[u8],
+        h: &H,
+    ) -> RareNeedleBytes {
         if needle.len() <= 1 || needle.len() > core::u8::MAX as usize {
             // For needles bigger than u8::MAX, our offsets aren't big enough.
             // (We make our offsets small to reduce stack copying.)
@@ -62,17 +67,17 @@ impl RareNeedleBytes {
         // Find the rarest two bytes. We make them distinct by construction.
         let (mut rare1, mut rare1i) = (needle[0], 0);
         let (mut rare2, mut rare2i) = (needle[1], 1);
-        if rank(rare2) < rank(rare1) {
+        if h.rank(rare2) < h.rank(rare1) {
             core::mem::swap(&mut rare1, &mut rare2);
             core::mem::swap(&mut rare1i, &mut rare2i);
         }
         for (i, &b) in needle.iter().enumerate().skip(2) {
-            if rank(b) < rank(rare1) {
+            if h.rank(b) < h.rank(rare1) {
                 rare2 = rare1;
                 rare2i = rare1i;
                 rare1 = b;
                 rare1i = i as u8;
-            } else if b != rare1 && rank(b) < rank(rare2) {
+            } else if b != rare1 && h.rank(b) < h.rank(rare2) {
                 rare2 = b;
                 rare2i = i as u8;
             }
@@ -119,18 +124,4 @@ impl RareNeedleBytes {
     pub(crate) fn as_rare_usize(&self) -> (usize, usize) {
         (self.rare1i as usize, self.rare2i as usize)
     }
-
-    /// Return the byte frequency rank of each byte. The higher the rank, the
-    /// more frequency the byte is predicted to be. The needle given must be
-    /// the same one given to the RareNeedleBytes constructor.
-    pub(crate) fn as_ranks(&self, needle: &[u8]) -> (usize, usize) {
-        let (b1, b2) = self.as_rare_bytes(needle);
-        (rank(b1), rank(b2))
-    }
-}
-
-/// Return the heuristical frequency rank of the given byte. A lower rank
-/// means the byte is believed to occur less frequently.
-fn rank(b: u8) -> usize {
-    crate::memmem::byte_frequencies::BYTE_FREQUENCIES[b as usize] as usize
 }
