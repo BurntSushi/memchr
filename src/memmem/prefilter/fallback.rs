@@ -93,7 +93,7 @@ mod tests {
     use super::*;
 
     fn freqy_find(haystack: &[u8], needle: &[u8]) -> Option<usize> {
-        let ninfo = NeedleInfo::new(needle);
+        let ninfo = NeedleInfo::new(needle, &crate::memmem::DefaultHFR);
         let mut prestate = PrefilterState::new();
         find(&mut prestate, &ninfo, haystack, needle)
     }
