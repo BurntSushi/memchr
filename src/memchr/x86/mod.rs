@@ -2,7 +2,7 @@ use super::fallback;
 
 // We only use AVX when we can detect at runtime whether it's available, which
 // requires std.
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", all(memchr_runtime_avx, target_feature = "avx2")))]
 mod avx;
 mod sse2;
 
@@ -83,11 +83,19 @@ macro_rules! unsafe_ifunc {
 #[cfg(not(feature = "std"))]
 macro_rules! unsafe_ifunc {
     ($fnty:ty, $name:ident, $haystack:ident, $($needle:ident),+) => {{
-        if cfg!(memchr_runtime_sse2) {
-            unsafe { sse2::$name($($needle),+, $haystack) }
-        } else {
-            fallback::$name($($needle),+, $haystack)
-        }
+        #[cfg(all(memchr_runtime_avx, target_feature = "avx2"))]
+        unsafe { avx::$name($($needle),+, $haystack) }
+        #[cfg(all(
+            memchr_runtime_sse2,
+            not(all(memchr_runtime_avx, target_feature = "avx2"))
+        ))]
+        unsafe { sse2::$name($($needle),+, $haystack) }
+        #[cfg(all(
+            not(memchr_runtime_sse2),
+            not(memchr_runtime_avx),
+            not(target_feature = "avx2"),
+        ))]
+        fallback::$name($($needle),+, $haystack)
     }}
 }
 
