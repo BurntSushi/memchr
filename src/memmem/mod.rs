@@ -349,20 +349,30 @@ impl<'h, 'n> Iterator for FindIter<'h, 'n> {
     type Item = usize;
 
     fn next(&mut self) -> Option<usize> {
-        if self.pos > self.haystack.len() {
-            return None;
-        }
-        let result = self
-            .finder
-            .searcher
-            .find(&mut self.prestate, &self.haystack[self.pos..]);
-        match result {
-            None => None,
-            Some(i) => {
-                let pos = self.pos + i;
-                self.pos = pos + core::cmp::max(1, self.finder.needle().len());
-                Some(pos)
-            }
+        let haystack = self.haystack.get(self.pos..)?;
+        let idx = self.finder.searcher.find(&mut self.prestate, haystack)?;
+
+        let pos = self.pos + idx;
+        self.pos = pos + self.finder.needle().len().max(1);
+
+        Some(pos)
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        // The largest possible number of non-overlapping matches is the
+        // quotient of the haystack and the needle (or the length of the
+        // haystack, if the needle is empty)
+        match self.haystack.len().checked_sub(self.pos) {
+            None => (0, Some(0)),
+            Some(haystack_len) => match self.finder.needle().len() {
+                // Empty needles always succeed and match at every point
+                // (including the very end)
+                0 => (
+                    haystack_len.saturating_add(1),
+                    haystack_len.checked_add(1),
+                ),
+                needle_len => (0, Some(haystack_len / needle_len)),
+            },
         }
     }
 }
