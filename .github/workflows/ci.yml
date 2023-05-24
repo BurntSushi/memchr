@@ -35,45 +35,43 @@ jobs:
         - win-gnu
         include:
         - build: pinned
-          os: ubuntu-18.04
+          os: ubuntu-latest
           rust: 1.41.1
         - build: stable
-          os: ubuntu-18.04
+          os: ubuntu-latest
           rust: stable
         - build: stable-32
-          os: ubuntu-18.04
+          os: ubuntu-latest
           rust: stable
           target: i686-unknown-linux-gnu
         - build: stable-mips
-          os: ubuntu-18.04
+          os: ubuntu-latest
           rust: stable
           target: mips64-unknown-linux-gnuabi64
         - build: beta
-          os: ubuntu-18.04
+          os: ubuntu-latest
           rust: beta
         - build: nightly
-          os: ubuntu-18.04
+          os: ubuntu-latest
           rust: nightly
         - build: macos
           os: macos-latest
           rust: stable
         - build: win-msvc
-          os: windows-2019
+          os: windows-latest
           rust: stable
         - build: win-gnu
-          os: windows-2019
+          os: windows-latest
           rust: stable-x86_64-gnu
         - build: wasm
-          os: ubuntu-18.04
+          os: ubuntu-latest
           rust: stable-x86_64-gnu
           wasm: true
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      uses: actions/checkout@v3
     - name: Install Rust
-      uses: dtolnay/rust-toolchain@v1
+      uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.rust }}
     - name: Use Cross
@@ -101,7 +99,7 @@ jobs:
         echo "cargo command is: ${{ env.CARGO }}"
         echo "target flag is: ${{ env.TARGET }}"
     - name: Show CPU info for debugging
-      if: matrix.os == 'ubuntu-18.04'
+      if: matrix.os == 'ubuntu-latest'
       run: lscpu
     - run: ${{ env.CARGO }} build --verbose $TARGET
     - run: ${{ env.CARGO }} build --verbose $TARGET --no-default-features
@@ -150,14 +148,12 @@ jobs:
 
   build-for-non_sse-target:
     name: build for non-SSE target
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      uses: actions/checkout@v3
     - name: Install Rust
-      uses: dtolnay/rust-toolchain@v1
+      uses: dtolnay/rust-toolchain@master
       with:
         toolchain: nightly
         components: rust-src
@@ -165,14 +161,12 @@ jobs:
 
   test-with-miri:
     name: test with miri
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      uses: actions/checkout@v3
     - name: Install Rust
-      uses: dtolnay/rust-toolchain@v1
+      uses: dtolnay/rust-toolchain@master
       with:
         toolchain: nightly
         components: miri
@@ -184,14 +178,12 @@ jobs:
 
   rustfmt:
     name: rustfmt
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      uses: actions/checkout@v3
     - name: Install Rust
-      uses: dtolnay/rust-toolchain@v1
+      uses: dtolnay/rust-toolchain@master
       with:
         toolchain: stable
         components: rustfmt
