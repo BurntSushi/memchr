@@ -30,7 +30,9 @@ jobs:
         - wasm
         - beta
         - nightly
-        - macos
+        - macos-13
+        - macos-12
+        - macos-11
         - win-msvc
         - win-gnu
         include:
@@ -54,8 +56,14 @@ jobs:
         - build: nightly
           os: ubuntu-latest
           rust: nightly
-        - build: macos
-          os: macos-latest
+        - build: macos-13
+          os: macos-13
+          rust: stable
+        - build: macos-12
+          os: macos-12
+          rust: stable
+        - build: macos-11
+          os: macos-11
           rust: stable
         - build: win-msvc
           os: windows-latest
