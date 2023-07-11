@@ -168,6 +168,9 @@ standard library exposes a platform independent SIMD API.
 )))]
 compile_error!("memchr currently not supported on non-{16,32,64}");
 
+#[cfg(feature = "alloc")]
+extern crate alloc;
+
 pub use crate::memchr::{
     memchr, memchr2, memchr2_iter, memchr3, memchr3_iter, memchr_iter,
     memrchr, memrchr2, memrchr2_iter, memrchr3, memrchr3_iter, memrchr_iter,

@@ -80,8 +80,8 @@ mod nostd {
 
     impl Forward {
         pub(crate) fn new(
-            ninfo: &NeedleInfo,
-            needle: &[u8],
+            _ninfo: &NeedleInfo,
+            _needle: &[u8],
         ) -> Option<Forward> {
             None
         }
@@ -92,8 +92,8 @@ mod nostd {
 
         pub(crate) fn find(
             &self,
-            haystack: &[u8],
-            needle: &[u8],
+            _haystack: &[u8],
+            _needle: &[u8],
         ) -> Option<usize> {
             unreachable!()
         }

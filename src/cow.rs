@@ -9,17 +9,17 @@ use core::ops;
 #[derive(Clone, Debug)]
 pub struct CowBytes<'a>(Imp<'a>);
 
-// N.B. We don't use std::borrow::Cow here since we can get away with a
+// N.B. We don't use alloc::borrow::Cow here since we can get away with a
 // Box<[u8]> for our use case, which is 1/3 smaller than the Vec<u8> that
 // a Cow<[u8]> would use.
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
 #[derive(Clone, Debug)]
 enum Imp<'a> {
     Borrowed(&'a [u8]),
-    Owned(Box<[u8]>),
+    Owned(alloc::boxed::Box<[u8]>),
 }
 
-#[cfg(not(feature = "std"))]
+#[cfg(not(feature = "alloc"))]
 #[derive(Clone, Debug)]
 struct Imp<'a>(&'a [u8]);
 
@@ -40,9 +40,9 @@ impl<'a> CowBytes<'a> {
     }
 
     /// Create a new owned CowBytes.
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     #[inline(always)]
-    pub fn new_owned(bytes: Box<[u8]>) -> CowBytes<'static> {
+    pub fn new_owned(bytes: alloc::boxed::Box<[u8]>) -> CowBytes<'static> {
         CowBytes(Imp::Owned(bytes))
     }
 
@@ -57,30 +57,32 @@ impl<'a> CowBytes<'a> {
     ///
     /// If this is already an owned byte string internally, then this is a
     /// no-op. Otherwise, the internal byte string is copied.
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     #[inline(always)]
     pub fn into_owned(self) -> CowBytes<'static> {
         match self.0 {
-            Imp::Borrowed(b) => CowBytes::new_owned(Box::from(b)),
+            Imp::Borrowed(b) => {
+                CowBytes::new_owned(alloc::boxed::Box::from(b))
+            }
             Imp::Owned(b) => CowBytes::new_owned(b),
         }
     }
 }
 
 impl<'a> Imp<'a> {
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     #[inline(always)]
     pub fn new(bytes: &'a [u8]) -> Imp<'a> {
         Imp::Borrowed(bytes)
     }
 
-    #[cfg(not(feature = "std"))]
+    #[cfg(not(feature = "alloc"))]
     #[inline(always)]
     pub fn new(bytes: &'a [u8]) -> Imp<'a> {
         Imp(bytes)
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     #[inline(always)]
     pub fn as_slice(&self) -> &[u8] {
         match self {
@@ -89,7 +91,7 @@ impl<'a> Imp<'a> {
         }
     }
 
-    #[cfg(not(feature = "std"))]
+    #[cfg(not(feature = "alloc"))]
     #[inline(always)]
     pub fn as_slice(&self) -> &[u8] {
         self.0
