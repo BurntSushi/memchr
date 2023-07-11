@@ -110,7 +110,11 @@ jobs:
       name: Show byte order for debugging
       run: ${{ env.CARGO }} test --verbose $TARGET byte_order -- --nocapture
     - if: matrix.build != 'pinned'
+      name: Run tests under default configuration
       run: ${{ env.CARGO }} test --verbose $TARGET
+    - if: matrix.build != 'pinned'
+      name: Run tests with just alloc feature
+      run: ${{ env.CARGO }} test --verbose --no-default-features --features alloc $TARGET
     - if: matrix.build == 'stable'
       name: Run under different SIMD configurations
       run: |

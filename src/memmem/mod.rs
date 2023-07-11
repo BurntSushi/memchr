@@ -332,8 +332,8 @@ impl<'h, 'n> FindIter<'h, 'n> {
     /// If this is already an owned iterator, then this is a no-op. Otherwise,
     /// this copies the needle.
     ///
-    /// This is only available when the `std` feature is enabled.
-    #[cfg(feature = "std")]
+    /// This is only available when the `alloc` feature is enabled.
+    #[cfg(feature = "alloc")]
     #[inline]
     pub fn into_owned(self) -> FindIter<'h, 'static> {
         FindIter {
@@ -526,8 +526,8 @@ impl<'n> Finder<'n> {
     /// If this is already an owned finder, then this is a no-op. Otherwise,
     /// this copies the needle.
     ///
-    /// This is only available when the `std` feature is enabled.
-    #[cfg(feature = "std")]
+    /// This is only available when the `alloc` feature is enabled.
+    #[cfg(feature = "alloc")]
     #[inline]
     pub fn into_owned(self) -> Finder<'static> {
         Finder { searcher: self.searcher.into_owned() }
@@ -921,7 +921,7 @@ impl<'n> Searcher<'n> {
         }
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     fn into_owned(self) -> Searcher<'static> {
         use self::SearcherKind::*;
 
