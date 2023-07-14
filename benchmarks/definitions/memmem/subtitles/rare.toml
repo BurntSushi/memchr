@@ -1,0 +1,352 @@
+[[bench]]
+model = "count"
+name = "huge-en-sherlock-holmes"
+regex = 'Sherlock Holmes'
+haystack = { path = "opensubtitles/en-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "huge-en-sherlock"
+regex = 'Sherlock'
+haystack = { path = "opensubtitles/en-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "huge-en-medium-needle"
+regex = 'homer, marge, bart, lisa, maggie'
+haystack = { path = "opensubtitles/en-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "huge-en-long-needle"
+regex = "I feel afraid of Mostafa\nHe is stronger and older than I am, and more experienced\nShould I turn back?\nDoc you're beginning to sound like Sherlock Holmes."
+haystack = { path = "opensubtitles/en-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "huge-en-huge-needle"
+regex = "Since we will meet anyway, then the sooner, the better\nTomorrow at 4:30 in front of the Horse-Riding Club\nNo, 4:30\nI am confused, almost lost\nAs if an invisible hand pushed me towards an unknown fate\nI needed someone by my side\nI needed someone to guide me to the path of security\nBut I had no one\nI couldn't ask my father's opinion, nor his wife's\nI felt just as lonely as I had before\nI feel afraid of Mostafa\nHe is stronger and older than I am, and more experienced\nShould I turn back?\nDoc you're beginning to sound like Sherlock Holmes."
+haystack = { path = "opensubtitles/en-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "teeny-en-sherlock-holmes"
+regex = 'Sherlock Holmes'
+haystack = { path = "opensubtitles/en-teeny.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "teeny-en-sherlock"
+regex = 'Sherlock'
+haystack = { path = "opensubtitles/en-teeny.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "huge-ru-sherlock-holmes"
+regex = 'Шерлок Холмс'
+haystack = { path = "opensubtitles/ru-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "huge-ru-sherlock"
+regex = 'Шерлок'
+haystack = { path = "opensubtitles/ru-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "teeny-ru-sherlock-holmes"
+regex = 'Шерлок Холмс'
+haystack = { path = "opensubtitles/ru-teeny.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "teeny-ru-sherlock"
+regex = 'Шерлок'
+haystack = { path = "opensubtitles/ru-teeny.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "huge-zh-sherlock-holmes"
+regex = '夏洛克·福尔摩斯'
+haystack = { path = "opensubtitles/zh-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "huge-zh-sherlock"
+regex = '夏洛克'
+haystack = { path = "opensubtitles/zh-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "teeny-zh-sherlock-holmes"
+regex = '夏洛克·福尔摩斯'
+haystack = { path = "opensubtitles/zh-teeny.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "teeny-zh-sherlock"
+regex = '夏洛克'
+haystack = { path = "opensubtitles/zh-teeny.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]

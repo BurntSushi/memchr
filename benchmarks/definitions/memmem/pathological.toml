@@ -1,0 +1,207 @@
+[[bench]]
+model = "count"
+name = "md5-huge-no-hash"
+regex = '61a1a40effcf97de24505f154a306597'
+haystack = { path = "pathological/md5-huge.txt" }
+count = 0
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "md5-huge-last-hash"
+regex = '831df319d8597f5bc793d690f08b159b'
+haystack = { path = "pathological/md5-huge.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rare-repeated-huge-tricky"
+regex = 'abczdef'
+haystack = { path = "pathological/repeated-rare-huge.txt" }
+count = 0
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rare-repeated-huge-match"
+regex = 'zzzzzzzzzz'
+haystack = { path = "pathological/repeated-rare-huge.txt" }
+count = 50_010
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rare-repeated-small-tricky"
+regex = 'abczdef'
+haystack = { path = "pathological/repeated-rare-small.txt" }
+count = 0
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rare-repeated-small-match"
+regex = 'zzzzzzzzzz'
+haystack = { path = "pathological/repeated-rare-small.txt" }
+count = 100
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "defeat-simple-vector-alphabet"
+regex = 'qbz'
+haystack = { path = "pathological/defeat-simple-vector.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "defeat-simple-vector-freq-alphabet"
+regex = 'qjaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaz'
+haystack = { path = "pathological/defeat-simple-vector-freq.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "defeat-simple-vector-repeated-alphabet"
+regex = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzaz'
+haystack = { path = "pathological/defeat-simple-vector-repeated.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]

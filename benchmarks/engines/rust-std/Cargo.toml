@@ -1,0 +1,23 @@
+[package]
+publish = false
+name = "main"
+version = "0.0.0"  # we get version from build script
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+anyhow = "1.0.72"
+
+[build-dependencies]
+regex-lite = "0.1"
+
+[dependencies.shared]
+path = "../../shared"
+
+[[bin]]
+name = "main"
+path = "main.rs"
+
+[profile.release]
+debug = true

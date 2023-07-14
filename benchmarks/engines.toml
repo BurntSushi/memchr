@@ -1,0 +1,854 @@
+# Engines from C's standard library, i.e., `memchr` and `memmem`.
+
+[[engine]]
+  name = "libc/memchr/oneshot"
+  cwd = "./engines/libc"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "libc/memmem/oneshot"
+  cwd = "./engines/libc"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+# Engines based on the `bytecount` Rust crate.
+#
+# Note that we call it a "memchr" engine, but all it can do is report the count
+# of matches and not individual offsets. So one needs to be careful when doing
+# comparisons. We include it here because the `memchr` crate has a similar
+# optimization when you call `Iterator::count`.
+
+[[engine]]
+  name = "rust/bytecount/memchr/oneshot"
+  cwd = "./engines/rust-bytecount"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/bytecount/memchr/oneshot/wasm32"
+  cwd = "./engines/rust-bytecount"
+  [engine.version]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "--version",
+    ]
+  [engine.run]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "memchr-oneshot",
+    ]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+
+# Engines based on the `jetscii` Rust crate.
+
+[[engine]]
+  name = "rust/jetscii/memmem/prebuilt"
+  cwd = "./engines/rust-jetscii"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/jetscii/memmem/oneshot"
+  cwd = "./engines/rust-jetscii"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+# Engines based on the `sliceslice` Rust crate.
+#
+# Note that this crate only supports "does the haystack match or not." It does
+# not report offsets at which a match occurs.
+
+[[engine]]
+  name = "rust/sliceslice/memmem/prebuilt"
+  cwd = "./engines/rust-sliceslice"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/sliceslice/memmem/oneshot"
+  cwd = "./engines/rust-sliceslice"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+# Engines based on the Rust standard library.
+
+[[engine]]
+  name = "rust/std/memmem/prebuilt"
+  cwd = "./engines/rust-std"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/std/memmem/oneshot"
+  cwd = "./engines/rust-std"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+# All of the engines from the `memchr` crate are below. There are a lot of them
+# because the `memchr` crate exposes a lot of different APIs.
+#
+# A lot of the engine names include qualifiers like 'oneshot' and 'prebuilt'.
+# The former means that the measurement includes both the construction of the
+# searcher and the search itself. The latter means that only the search itself
+# (to the extent possible) is measured. If an engine name doesn't have
+# 'oneshot' or 'prebuilt' in it, then that generally means it is 'prebuilt'.
+# The main utility of 'oneshot' engines is to make them comparable to other
+# implementations that only expose oneshot APIs. For example, libc's memchr and
+# memmem.
+
+[[engine]]
+  name = "rust/memchr/memchr/oneshot"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr/prebuilt"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr/onlycount"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr/fallback"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-fallback"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr/naive"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-naive"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr2"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr2/fallback"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2-fallback"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr2/naive"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2-naive"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr3"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr3/fallback"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3-fallback"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr3/naive"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3-naive"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memrchr"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memrchr"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memrchr2"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memrchr2"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memrchr3"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memrchr3"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memmem/prebuilt"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memmem/oneshot"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memmem/binary"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-binary"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memmem/twoway"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-twoway"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memmem/rabinkarp"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-rabinkarp"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memmem/shiftor"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-shiftor"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+# Engines that specifically target wasm32. These reuse the actual code from
+# existing engines in `rust/memchr`, but change the build configuration to
+# build for `wasm32-wasi` and use the `wasmtime` JIT to actually run it. We
+# don't define every possible engine for wasm32, but just a subset for basic
+# sanity checks. If it would be beneficial to be more exhaustive, please file
+# an issue.
+
+[[engine]]
+  name = "rust/memchr/memchr/wasm32"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "--version",
+    ]
+  [engine.run]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "memchr-prebuilt",
+    ]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+
+[[engine]]
+  name = "rust/memchr/memchr/onlycount/wasm32"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "--version",
+    ]
+  [engine.run]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "memchr-onlycount",
+    ]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+
+[[engine]]
+  name = "rust/memchr/memchr2/wasm32"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "--version",
+    ]
+  [engine.run]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "memchr2",
+    ]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+
+[[engine]]
+  name = "rust/memchr/memchr3/wasm32"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "--version",
+    ]
+  [engine.run]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "memchr3",
+    ]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+
+[[engine]]
+  name = "rust/memchr/memmem/wasm32"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "--version",
+    ]
+  [engine.run]
+    bin = "wasmtime"
+    args = [
+      "run", "--wasm-features", "simd", "--",
+      "./target/wasm32-wasi/release/main.wasm",
+      "memmem-prebuilt",
+    ]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+    envs = [
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
+    ]
+
+# Engines that specifically target memchr 2.5.0.
+
+[[engine]]
+  name = "rust/memchrold/memchr/oneshot"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memchr/prebuilt"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memchr/naive"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-naive"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memchr2"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memchr3"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memrchr"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memrchr"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memrchr2"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memrchr2"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memrchr3"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memrchr3"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memmem/prebuilt"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchrold/memmem/oneshot"
+  cwd = "./engines/rust-memchrold"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]

@@ -1,0 +1,167 @@
+[[bench]]
+model = "count-bytes"
+name = "huge1"
+regex = 'b'
+haystack = { path = "sherlock/huge.txt" }
+count = 6124
+engines = [
+  "libc/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot/wasm32",
+  "rust/memchr/memchr/onlycount",
+  "rust/memchr/memchr/onlycount/wasm32",
+  "rust/memchr/memchr/oneshot",
+  "rust/memchr/memchr/prebuilt",
+  "rust/memchr/memchr/fallback",
+  "rust/memchr/memchr/naive",
+  "rust/memchr/memchr/wasm32",
+  "rust/memchr/memrchr",
+  "rust/memchrold/memchr/oneshot",
+  "rust/memchrold/memchr/prebuilt",
+  "rust/memchrold/memchr/naive",
+  "rust/memchrold/memrchr",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge2"
+regex = ['b', 'p']
+haystack = { path = "sherlock/huge.txt" }
+count = 13_113
+engines = [
+  "rust/memchr/memchr2",
+  "rust/memchr/memchr2/fallback",
+  "rust/memchr/memchr2/naive",
+  "rust/memchr/memchr2/wasm32",
+  "rust/memchr/memrchr2",
+  "rust/memchrold/memchr2",
+  "rust/memchrold/memrchr2",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge3"
+regex = ['b', 'p', '.']
+haystack = { path = "sherlock/huge.txt" }
+count = 19_538
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr/memchr3/wasm32",
+  "rust/memchr/memrchr3",
+  "rust/memchrold/memchr3",
+  "rust/memchrold/memrchr3",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "small1"
+regex = 'b'
+haystack = { path = "sherlock/small.txt" }
+count = 8
+engines = [
+  "libc/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot/wasm32",
+  "rust/memchr/memchr/onlycount",
+  "rust/memchr/memchr/onlycount/wasm32",
+  "rust/memchr/memchr/oneshot",
+  "rust/memchr/memchr/prebuilt",
+  "rust/memchr/memchr/fallback",
+  "rust/memchr/memchr/naive",
+  "rust/memchr/memchr/wasm32",
+  "rust/memchr/memrchr",
+  "rust/memchrold/memchr/oneshot",
+  "rust/memchrold/memchr/prebuilt",
+  "rust/memchrold/memchr/naive",
+  "rust/memchrold/memrchr",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "small2"
+regex = ['b', 'g']
+haystack = { path = "sherlock/small.txt" }
+count = 16
+engines = [
+  "rust/memchr/memchr2",
+  "rust/memchr/memchr2/fallback",
+  "rust/memchr/memchr2/naive",
+  "rust/memchr/memchr2/wasm32",
+  "rust/memchr/memrchr2",
+  "rust/memchrold/memchr2",
+  "rust/memchrold/memrchr2",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "small3"
+regex = ['b', 'g', 'p']
+haystack = { path = "sherlock/small.txt" }
+count = 24
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr/memchr3/wasm32",
+  "rust/memchr/memrchr3",
+  "rust/memchrold/memchr3",
+  "rust/memchrold/memrchr3",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "tiny1"
+regex = 'l'
+haystack = { path = "sherlock/tiny.txt" }
+count = 5
+engines = [
+  "libc/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot/wasm32",
+  "rust/memchr/memchr/onlycount",
+  "rust/memchr/memchr/onlycount/wasm32",
+  "rust/memchr/memchr/oneshot",
+  "rust/memchr/memchr/prebuilt",
+  "rust/memchr/memchr/fallback",
+  "rust/memchr/memchr/naive",
+  "rust/memchr/memchr/wasm32",
+  "rust/memchr/memrchr",
+  "rust/memchrold/memchr/oneshot",
+  "rust/memchrold/memchr/prebuilt",
+  "rust/memchrold/memchr/naive",
+  "rust/memchrold/memrchr",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "tiny2"
+regex = ['l', 's']
+haystack = { path = "sherlock/tiny.txt" }
+count = 10
+engines = [
+  "rust/memchr/memchr2",
+  "rust/memchr/memchr2/fallback",
+  "rust/memchr/memchr2/naive",
+  "rust/memchr/memchr2/wasm32",
+  "rust/memchr/memrchr2",
+  "rust/memchrold/memchr2",
+  "rust/memchrold/memrchr2",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "tiny3"
+regex = ['l', 's', 'e']
+haystack = { path = "sherlock/tiny.txt" }
+count = 16
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr/memchr3/wasm32",
+  "rust/memchr/memrchr3",
+  "rust/memchrold/memchr3",
+  "rust/memchrold/memrchr3",
+]

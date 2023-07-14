@@ -8,46 +8,63 @@ on:
     - master
   schedule:
   - cron: '00 01 * * *'
+
+# The section is needed to drop write-all permissions that are granted on
+# `schedule` event. By specifying any permission explicitly all others are set
+# to none. By using the principle of least privilege the damage a compromised
+# workflow can do (because of an injection or compromised third party tool or
+# action) is restricted. Currently the worklow doesn't need any additional
+# permission except for pulling the code. Adding labels to issues, commenting
+# on pull-requests, etc. may need additional permissions:
+#
+# Syntax for this section:
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+#
+# Reference for how to assign permissions on a job-by-job basis:
+# https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+#
+# Reference for available permissions that we can enable if needed:
+# https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+permissions:
+  # to fetch code (actions/checkout)
+  contents: read
+
 jobs:
+  # Baseline testing across a number of different targets.
   test:
-    name: test
     env:
       # For some builds, we use cross to test on 32-bit and big-endian
       # systems.
       CARGO: cargo
       # When CARGO is set to CROSS, TARGET is set to `--target matrix.target`.
+      # Note that we only use cross on Linux, so setting a target on a
+      # different OS will just use normal cargo.
       TARGET:
+      # Bump this as appropriate. We pin to a version to make sure CI
+      # continues to work as cross releases in the past have broken things
+      # in subtle ways.
+      CROSS_VERSION: v0.2.5
       # Make quickcheck run more tests for hopefully better coverage.
       QUICKCHECK_TESTS: 100000
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         build:
-        - pinned
         - stable
-        - stable-32
-        - stable-mips
-        - wasm
         - beta
         - nightly
         - macos
         - win-msvc
         - win-gnu
+        - stable-x86
+        - stable-aarch64
+        - stable-powerpc64
+        - stable-s390x
         include:
-        - build: pinned
-          os: ubuntu-latest
-          rust: 1.41.1
         - build: stable
           os: ubuntu-latest
           rust: stable
-        - build: stable-32
-          os: ubuntu-latest
-          rust: stable
-          target: i686-unknown-linux-gnu
-        - build: stable-mips
-          os: ubuntu-latest
-          rust: stable
-          target: mips64-unknown-linux-gnuabi64
         - build: beta
           os: ubuntu-latest
           rust: beta
@@ -63,10 +80,24 @@ jobs:
         - build: win-gnu
           os: windows-latest
           rust: stable-x86_64-gnu
-        - build: wasm
+        - build: stable-x86
           os: ubuntu-latest
-          rust: stable-x86_64-gnu
-          wasm: true
+          rust: stable
+          target: i686-unknown-linux-gnu
+        # This is kind of a stand-in for Apple silicon since we can't currently
+        # use GitHub Actions with Apple silicon.
+        - build: stable-aarch64
+          os: ubuntu-latest
+          rust: stable
+          target: aarch64-unknown-linux-gnu
+        - build: stable-powerpc64
+          os: ubuntu-latest
+          rust: stable
+          target: powerpc64-unknown-linux-gnu
+        - build: stable-s390x
+          os: ubuntu-latest
+          rust: stable
+          target: s390x-unknown-linux-gnu
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -75,25 +106,19 @@ jobs:
       with:
         toolchain: ${{ matrix.rust }}
     - name: Use Cross
-      if: matrix.target != ''
+      if: matrix.os == 'ubuntu-latest' && matrix.target != ''
       run: |
-        # We used to install 'cross' from master, but it kept failing. So now
-        # we build from a known-good version until 'cross' becomes more stable
-        # or we find an alternative. Notably, between v0.2.1 and current
-        # master (2022-06-14), the number of Cross's dependencies has doubled.
-        cargo install --bins --git https://github.com/rust-embedded/cross --tag v0.2.1
+        # In the past, new releases of 'cross' have broken CI. So for now, we
+        # pin it. We also use their pre-compiled binary releases because cross
+        # has over 100 dependencies and takes a bit to compile.
+        dir="$RUNNER_TEMP/cross-download"
+        mkdir "$dir"
+        echo "$dir" >> $GITHUB_PATH
+        cd "$dir"
+        curl -LO "https://github.com/cross-rs/cross/releases/download/$CROSS_VERSION/cross-x86_64-unknown-linux-musl.tar.gz"
+        tar xf cross-x86_64-unknown-linux-musl.tar.gz
         echo "CARGO=cross" >> $GITHUB_ENV
         echo "TARGET=--target ${{ matrix.target }}" >> $GITHUB_ENV
-    - name: Download Wasmtime
-      if: matrix.wasm
-      run: |
-        rustup target add wasm32-wasi
-        echo "CARGO_BUILD_TARGET=wasm32-wasi" >> $GITHUB_ENV
-        echo "RUSTFLAGS=-Ctarget-feature=+simd128" >> $GITHUB_ENV
-        curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v0.32.0/wasmtime-v0.32.0-x86_64-linux.tar.xz
-        tar xvf wasmtime-v0.32.0-x86_64-linux.tar.xz
-        echo `pwd`/wasmtime-v0.32.0-x86_64-linux >> $GITHUB_PATH
-        echo "CARGO_TARGET_WASM32_WASI_RUNNER=wasmtime run --wasm-features simd --" >> $GITHUB_ENV
     - name: Show command used for Cargo
       run: |
         echo "cargo command is: ${{ env.CARGO }}"
@@ -101,57 +126,58 @@ jobs:
     - name: Show CPU info for debugging
       if: matrix.os == 'ubuntu-latest'
       run: lscpu
-    - run: ${{ env.CARGO }} build --verbose $TARGET
-    - run: ${{ env.CARGO }} build --verbose $TARGET --no-default-features
-    - run: ${{ env.CARGO }} doc --verbose $TARGET
-    # Our dev dependencies evolve more rapidly than we'd like, so only run
-    # tests when we aren't pinning the Rust version.
-    - if: matrix.build != 'pinned'
-      name: Show byte order for debugging
+    - name: Basic build
+      run: ${{ env.CARGO }} build --verbose $TARGET
+    - name: Build docs
+      run: ${{ env.CARGO }} doc --verbose $TARGET
+    - name: Show byte order for debugging
       run: ${{ env.CARGO }} test --verbose $TARGET byte_order -- --nocapture
-    - if: matrix.build != 'pinned'
-      name: Run tests under default configuration
-      run: ${{ env.CARGO }} test --verbose $TARGET
-    - if: matrix.build != 'pinned'
-      name: Run tests with just alloc feature
-      run: ${{ env.CARGO }} test --verbose --no-default-features --features alloc $TARGET
-    - if: matrix.build == 'stable'
-      name: Run under different SIMD configurations
+    - name: Run tests
+      run: cargo test --verbose
+    - name: Run with only 'alloc' enabled
+      run: cargo test --verbose --no-default-features --features alloc
+    - name: Run tests without any features enabled (core-only)
+      run: cargo test --verbose --no-default-features
+    - name: Run tests with miscellaneous features
+      run: cargo test --verbose --features logging
+
+  # Setup and run tests on the wasm32-wasi target via wasmtime.
+  wasm:
+    runs-on: ubuntu-latest
+    env:
+      # The version of wasmtime to download and install.
+      WASMTIME_VERSION: 12.0.1
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+    - name: Add wasm32-wasi target
+      run: rustup target add wasm32-wasi
+    - name: Download and install Wasmtime
       run: |
-        set -x
+        echo "CARGO_BUILD_TARGET=wasm32-wasi" >> $GITHUB_ENV
+        echo "RUSTFLAGS=-Ctarget-feature=+simd128" >> $GITHUB_ENV
+        curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v$WASMTIME_VERSION/wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
+        tar xvf wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
+        echo `pwd`/wasmtime-v$WASMTIME_VERSION-x86_64-linux >> $GITHUB_PATH
+        echo "CARGO_TARGET_WASM32_WASI_RUNNER=wasmtime run --wasm-features simd --" >> $GITHUB_ENV
+    - name: Basic build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
+    - name: Run with only 'alloc' enabled
+      run: cargo test --verbose --no-default-features --features alloc
+    - name: Run tests without any features enabled (core-only)
+      run: cargo test --verbose --no-default-features
 
-        # Enable libc while using SIMD, libc won't be used.
-        # (This is to ensure valid logic in the picking process.)
-        cargo test --verbose --features libc
-
-        preamble="--cfg memchr_disable_auto_simd"
-
-        # Force use of fallback without libc.
-        RUSTFLAGS="$preamble" cargo test --verbose
-
-        # Force use of libc.
-        RUSTFLAGS="$preamble" cargo test --verbose --features libc
-
-        preamble="$preamble --cfg memchr_runtime_simd"
-        # Force use of fallback even when SIMD is enabled.
-        RUSTFLAGS="$preamble" cargo test --verbose
-
-        # For some reason, cargo seems to get confused which results in
-        # link errors. So wipe the slate clean.
-        cargo clean
-        # Force use of sse2 only
-        RUSTFLAGS="$preamble --cfg memchr_runtime_sse2" cargo test --verbose
-
-        # ... and wipe it again. So weird.
-        cargo clean
-        # Force use of avx only
-        RUSTFLAGS="$preamble --cfg memchr_runtime_avx" cargo test --verbose
-    - if: matrix.build == 'nightly'
-      name: Run benchmarks as tests
-      run: cargo bench --manifest-path bench/Cargo.toml --verbose -- --test
-
-  build-for-non_sse-target:
-    name: build for non-SSE target
+  # This job uses a custom target file to build the memchr crate on x86-64
+  # but *without* SSE/AVX target features. This is a somewhat strange
+  # configuration, but it pops up now and then. Particularly in kernels that
+  # don't support SSE/AVX registers.
+  build-for-x86-64-but-non-sse-target:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -163,8 +189,15 @@ jobs:
         components: rust-src
     - run: cargo build -Z build-std=core --target=src/tests/x86_64-soft_float.json --verbose --no-default-features
 
-  test-with-miri:
-    name: test with miri
+  # This job runs a stripped down version of CI to test the MSRV. The specific
+  # reason for doing this is that dev-dependencies tend to evolve more quickly.
+  # There isn't as tight of a control on them because, well, they're only used
+  # in tests and their MSRV doesn't matter as much.
+  #
+  # It is a bit unfortunate that our MSRV test is basically just "build it"
+  # and pass if that works. But usually MSRV is broken by compilation problems
+  # and not runtime behavior. So this is in practice good enough.
+  msrv:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -172,16 +205,62 @@ jobs:
     - name: Install Rust
       uses: dtolnay/rust-toolchain@master
       with:
+        toolchain: 1.60.0
+    - name: Basic build
+      run: cargo build --verbose
+    - name: Build docs
+      run: cargo doc --verbose
+
+  # Runs miri on memchr's test suite. This doesn't quite cover everything. Some
+  # tests (especially quickcheck) are disabled when building with miri because
+  # of how slow miri runs. But it still gives us decent coverage.
+  miri:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        # We use nightly here so that we can use miri I guess?
         toolchain: nightly
         components: miri
-    - name: Show CPU info for debugging
-      run: lscpu
-    - run: cargo miri test --verbose
-    - run: cargo miri test --verbose --no-default-features
-    - run: cargo miri test --verbose --features libc
+    - name: Run full test suite
+      run: cargo miri test --verbose
 
+  # Tests that memchr's benchmark suite builds and passes all tests.
+  rebar:
+    runs-on: ubuntu-latest
+    env:
+      # The version of wasmtime to download and install.
+      WASMTIME_VERSION: 12.0.1
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+    - name: Add wasm32-wasi target
+      run: rustup target add wasm32-wasi
+    - name: Download and install Wasmtime
+      run: |
+        # Note that we don't have to set CARGO_BUILD_TARGET and other
+        # environment variables like we do for the `wasm` job. This is because
+        # `rebar` knows how to set them itself and only when running the wasm
+        # engines.
+        curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v$WASMTIME_VERSION/wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
+        tar xvf wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
+        echo `pwd`/wasmtime-v$WASMTIME_VERSION-x86_64-linux >> $GITHUB_PATH
+    - name: Install rebar
+      run: cargo install --git https://github.com/BurntSushi/rebar rebar
+    - name: Build all rebar engines
+      run: rebar build
+    - name: Run all benchmarks as tests
+      run: rebar measure --test
+
+  # Tests that everything is formatted correctly.
   rustfmt:
-    name: rustfmt
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -193,7 +272,4 @@ jobs:
         components: rustfmt
     - name: Check formatting
       run: |
-        cargo fmt -- --check
-    - name: Check formatting on benchmarks
-      run: |
-        cargo fmt --manifest-path bench/Cargo.toml -- --check
+        cargo fmt --all -- --check
