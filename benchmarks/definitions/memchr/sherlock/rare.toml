@@ -1,0 +1,166 @@
+[[bench]]
+model = "count-bytes"
+name = "huge1"
+regex = 'z'
+haystack = { path = "sherlock/huge.txt" }
+count = 151
+engines = [
+  "libc/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot/wasm32",
+  "rust/memchr/memchr/onlycount",
+  "rust/memchr/memchr/onlycount/wasm32",
+  "rust/memchr/memchr/oneshot",
+  "rust/memchr/memchr/prebuilt",
+  "rust/memchr/memchr/fallback",
+  "rust/memchr/memchr/naive",
+  "rust/memchr/memchr/wasm32",
+  "rust/memchr/memrchr",
+  "rust/memchrold/memchr/oneshot",
+  "rust/memchrold/memchr/prebuilt",
+  "rust/memchrold/memrchr",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge2"
+regex = ['z', 'R']
+haystack = { path = "sherlock/huge.txt" }
+count = 426
+engines = [
+  "rust/memchr/memchr2",
+  "rust/memchr/memchr2/fallback",
+  "rust/memchr/memchr2/naive",
+  "rust/memchr/memchr2/wasm32",
+  "rust/memchr/memrchr2",
+  "rust/memchrold/memchr2",
+  "rust/memchrold/memrchr2",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge3"
+regex = ['z', 'R', 'J']
+haystack = { path = "sherlock/huge.txt" }
+count = 546
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr/memchr3/wasm32",
+  "rust/memchr/memrchr3",
+  "rust/memchrold/memchr3",
+  "rust/memchrold/memrchr3",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "small1"
+regex = 'R'
+haystack = { path = "sherlock/small.txt" }
+count = 1
+engines = [
+  "libc/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot/wasm32",
+  "rust/memchr/memchr/onlycount",
+  "rust/memchr/memchr/onlycount/wasm32",
+  "rust/memchr/memchr/oneshot",
+  "rust/memchr/memchr/prebuilt",
+  "rust/memchr/memchr/fallback",
+  "rust/memchr/memchr/naive",
+  "rust/memchr/memchr/wasm32",
+  "rust/memchr/memrchr",
+  "rust/memchrold/memchr/oneshot",
+  "rust/memchrold/memchr/prebuilt",
+  "rust/memchrold/memchr/naive",
+  "rust/memchrold/memrchr",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "small2"
+regex = ['R', 'P']
+haystack = { path = "sherlock/small.txt" }
+count = 2
+engines = [
+  "rust/memchr/memchr2",
+  "rust/memchr/memchr2/fallback",
+  "rust/memchr/memchr2/naive",
+  "rust/memchr/memchr2/wasm32",
+  "rust/memchr/memrchr2",
+  "rust/memchrold/memchr2",
+  "rust/memchrold/memrchr2",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "small3"
+regex = ['R', 'P', 'T']
+haystack = { path = "sherlock/small.txt" }
+count = 3
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr/memchr3/wasm32",
+  "rust/memchr/memrchr3",
+  "rust/memchrold/memchr3",
+  "rust/memchrold/memrchr3",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "tiny1"
+regex = '.'
+haystack = { path = "sherlock/tiny.txt" }
+count = 1
+engines = [
+  "libc/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot",
+  "rust/bytecount/memchr/oneshot/wasm32",
+  "rust/memchr/memchr/onlycount",
+  "rust/memchr/memchr/onlycount/wasm32",
+  "rust/memchr/memchr/oneshot",
+  "rust/memchr/memchr/prebuilt",
+  "rust/memchr/memchr/fallback",
+  "rust/memchr/memchr/naive",
+  "rust/memchr/memchr/wasm32",
+  "rust/memchr/memrchr",
+  "rust/memchrold/memchr/oneshot",
+  "rust/memchrold/memchr/prebuilt",
+  "rust/memchrold/memchr/naive",
+  "rust/memchrold/memrchr",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "tiny2"
+regex = ['.', 'H']
+haystack = { path = "sherlock/tiny.txt" }
+count = 2
+engines = [
+  "rust/memchr/memchr2",
+  "rust/memchr/memchr2/fallback",
+  "rust/memchr/memchr2/naive",
+  "rust/memchr/memchr2/wasm32",
+  "rust/memchr/memrchr2",
+  "rust/memchrold/memchr2",
+  "rust/memchrold/memrchr2",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "tiny3"
+regex = ['.', 'H', 'M']
+haystack = { path = "sherlock/tiny.txt" }
+count = 3
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr/memchr3/wasm32",
+  "rust/memchr/memrchr3",
+  "rust/memchrold/memchr3",
+  "rust/memchrold/memrchr3",
+]

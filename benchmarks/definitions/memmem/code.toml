@@ -1,0 +1,182 @@
+[[bench]]
+model = "count"
+name = "rust-library-never-fn-strength"
+regex = 'fn strength'
+haystack = { path = "code/rust-library.rs" }
+count = 0
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rust-library-never-fn-strength-paren"
+regex = 'fn strength('
+haystack = { path = "code/rust-library.rs" }
+count = 0
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rust-library-never-fn-quux"
+regex = 'fn quux('
+haystack = { path = "code/rust-library.rs" }
+count = 0
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rust-library-rare-fn-from-str"
+regex = 'pub fn from_str('
+haystack = { path = "code/rust-library.rs" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rust-library-common-fn-is-empty"
+regex = 'fn is_empty'
+haystack = { path = "code/rust-library.rs" }
+count = 17
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rust-library-common-fn"
+regex = 'fn'
+haystack = { path = "code/rust-library.rs" }
+count = 2985
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rust-library-common-paren"
+regex = '('
+haystack = { path = "code/rust-library.rs" }
+count = 30_193
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]
+
+[[bench]]
+model = "count"
+name = "rust-library-common-let"
+regex = 'let'
+haystack = { path = "code/rust-library.rs" }
+count = 4737
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/std/memmem/oneshot",
+  "rust/std/memmem/prebuilt",
+]

@@ -1,0 +1,1014 @@
+name,model,rebar_version,engine,engine_version,err,haystack_len,iters,total,median,mad,mean,stddev,min,max
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,594933,6327,4.55s,472.71us,0.00ns,474.12us,4.09us,472.12us,522.71us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,594933,7830,4.56s,382.62us,0.00ns,383.09us,4.06us,379.83us,444.38us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,594933,8502,4.56s,351.88us,0.00ns,352.85us,3.69us,349.92us,386.58us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,594933,6165,4.56s,485.17us,0.00ns,486.61us,4.40us,484.50us,532.92us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,594933,7853,4.56s,380.46us,0.00ns,381.99us,3.94us,378.17us,413.92us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,594933,8213,4.56s,364.46us,0.00ns,365.26us,3.50us,363.38us,406.12us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,594933,5900,4.56s,506.87us,0.00ns,508.42us,4.27us,506.21us,556.88us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,594933,5883,4.56s,508.33us,0.00ns,509.94us,4.79us,507.21us,602.04us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,594933,7626,4.56s,391.88us,0.00ns,393.35us,4.08us,389.92us,442.92us
+memchr/sherlock/common/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,594933,5841,4.56s,511.96us,0.00ns,513.57us,4.37us,510.88us,571.62us
+memchr/sherlock/common/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,594933,5343,4.56s,559.75us,0.00ns,561.52us,4.90us,559.21us,654.92us
+memchr/sherlock/common/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,594933,3020,4.56s,0.99ms,0.00ns,0.99ms,6.39us,0.99ms,1.04ms
+memchr/sherlock/common/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,594933,4495,4.56s,665.71us,0.00ns,667.48us,4.75us,662.83us,699.08us
+memchr/sherlock/common/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,594933,5584,4.56s,535.54us,0.00ns,537.23us,4.46us,534.75us,586.42us
+memchr/sherlock/common/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,594933,3199,4.56s,936.25us,0.00ns,937.86us,5.99us,931.17us,0.99ms
+memchr/sherlock/common/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,594933,2923,4.56s,1.02ms,0.00ns,1.03ms,6.44us,1.02ms,1.12ms
+memchr/sherlock/common/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,594933,3800,4.56s,787.21us,0.00ns,789.58us,5.27us,787.00us,830.04us
+memchr/sherlock/common/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,594933,2085,4.56s,1.44ms,0.00ns,1.44ms,8.22us,1.43ms,1.49ms
+memchr/sherlock/common/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,594933,3162,4.56s,946.96us,0.00ns,948.72us,5.81us,940.71us,0.99ms
+memchr/sherlock/common/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,594933,3965,4.56s,754.33us,0.00ns,756.61us,5.11us,754.04us,795.08us
+memchr/sherlock/common/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,594933,2446,4.56s,1.22ms,0.00ns,1.23ms,8.23us,1.22ms,1.42ms
+memchr/sherlock/common/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,594933,2233,4.56s,1.34ms,0.00ns,1.34ms,7.00us,1.34ms,1.39ms
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,664,1000000,1.23s,292.00ns,0.00ns,297.00ns,73.00ns,208.00ns,25.17us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,664,1000000,1.23s,291.00ns,0.00ns,273.00ns,73.00ns,166.00ns,23.75us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,664,1000000,1.17s,250.00ns,0.00ns,246.00ns,66.00ns,125.00ns,24.54us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,664,1000000,1.10s,167.00ns,0.00ns,185.00ns,50.00ns,83.00ns,25.08us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,664,1000000,1.23s,250.00ns,0.00ns,233.00ns,74.00ns,125.00ns,25.21us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,664,1000000,1.23s,250.00ns,0.00ns,240.00ns,70.00ns,125.00ns,22.79us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,664,1000000,1.04s,208.00ns,0.00ns,206.00ns,71.00ns,83.00ns,29.88us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,664,1000000,1.17s,208.00ns,0.00ns,207.00ns,60.00ns,83.00ns,24.92us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,664,1000000,1.29s,291.00ns,0.00ns,275.00ns,80.00ns,166.00ns,24.92us
+memchr/sherlock/common/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,664,1000000,1.16s,209.00ns,0.00ns,223.00ns,67.00ns,125.00ns,24.04us
+memchr/sherlock/common/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,664,1000000,1.71s,459.00ns,0.00ns,478.00ns,93.00ns,333.00ns,24.58us
+memchr/sherlock/common/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,664,1000000,1.29s,291.00ns,0.00ns,278.00ns,77.00ns,166.00ns,29.79us
+memchr/sherlock/common/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,664,1000000,1.29s,292.00ns,0.00ns,291.00ns,78.00ns,166.00ns,24.92us
+memchr/sherlock/common/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,664,1000000,1.65s,458.00ns,0.00ns,460.00ns,105.00ns,333.00ns,52.00us
+memchr/sherlock/common/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,664,1000000,1.41s,333.00ns,0.00ns,324.00ns,81.00ns,208.00ns,25.42us
+memchr/sherlock/common/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,664,1000000,1.41s,333.00ns,0.00ns,334.00ns,78.00ns,250.00ns,25.08us
+memchr/sherlock/common/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,664,1000000,2.31s,791.00ns,0.00ns,775.00ns,124.00ns,625.00ns,29.71us
+memchr/sherlock/common/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,664,1000000,1.59s,417.00ns,0.00ns,415.00ns,105.00ns,291.00ns,25.54us
+memchr/sherlock/common/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,664,1000000,1.47s,333.00ns,0.00ns,339.00ns,80.00ns,250.00ns,25.71us
+memchr/sherlock/common/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,664,1000000,2.19s,708.00ns,0.00ns,720.00ns,119.00ns,583.00ns,25.92us
+memchr/sherlock/common/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,664,1000000,1.77s,500.00ns,0.00ns,507.00ns,108.00ns,416.00ns,32.62us
+memchr/sherlock/common/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,664,1000000,1.72s,458.00ns,0.00ns,467.00ns,85.00ns,375.00ns,30.33us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,69,1000000,810.12ms,42.00ns,0.00ns,49.00ns,32.00ns,1.00ns,14.12us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,69,1000000,812.37ms,42.00ns,0.00ns,44.00ns,15.00ns,1.00ns,6.79us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,69,1000000,810.25ms,42.00ns,0.00ns,38.00ns,35.00ns,1.00ns,21.00us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,69,1000000,745.94ms,41.00ns,0.00ns,31.00ns,28.00ns,1.00ns,16.88us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,69,1000000,747.23ms,41.00ns,0.00ns,28.00ns,33.00ns,1.00ns,16.75us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,69,1000000,749.99ms,42.00ns,0.00ns,32.00ns,26.00ns,1.00ns,14.12us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,69,1000000,803.52ms,42.00ns,0.00ns,43.00ns,17.00ns,1.00ns,9.33us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,69,1000000,804.60ms,42.00ns,0.00ns,43.00ns,28.00ns,1.00ns,15.38us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,69,1000000,746.98ms,41.00ns,0.00ns,30.00ns,35.00ns,1.00ns,21.25us
+memchr/sherlock/common/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,69,1000000,801.40ms,42.00ns,0.00ns,44.00ns,20.00ns,1.00ns,9.83us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,594933,238385,4.69s,12.50us,0.00ns,12.53us,502.00ns,12.38us,55.21us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,594933,396005,4.81s,7.50us,0.00ns,7.52us,366.00ns,7.38us,39.25us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,594933,396211,4.82s,7.50us,0.00ns,7.52us,369.00ns,7.38us,38.92us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,594933,132790,4.63s,21.79us,0.00ns,22.54us,1.49us,21.29us,53.58us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,594933,15494,4.56s,193.75us,0.00ns,193.56us,17.21us,169.75us,275.62us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,594933,396325,4.82s,7.50us,0.00ns,7.52us,359.00ns,7.38us,38.83us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,594933,130340,4.62s,22.29us,0.00ns,22.97us,1.63us,21.00us,56.58us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,594933,131843,4.63s,21.96us,0.00ns,22.70us,1.51us,21.00us,52.79us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,594933,15482,4.56s,193.75us,0.00ns,193.73us,17.87us,169.71us,267.58us
+memchr/sherlock/never/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,594933,126235,4.63s,23.88us,0.00ns,23.71us,1.42us,21.17us,59.29us
+memchr/sherlock/never/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,594933,249316,4.68s,11.96us,0.00ns,11.98us,494.00ns,11.83us,42.67us
+memchr/sherlock/never/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,594933,58803,4.56s,50.75us,0.00ns,50.97us,1.34us,50.33us,91.54us
+memchr/sherlock/never/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,594933,13208,4.56s,226.42us,0.00ns,227.10us,2.77us,226.29us,260.29us
+memchr/sherlock/never/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,594933,249366,4.68s,11.96us,0.00ns,11.98us,480.00ns,11.83us,42.33us
+memchr/sherlock/never/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,594933,58176,4.56s,51.17us,0.00ns,51.52us,1.47us,50.38us,87.25us
+memchr/sherlock/never/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,594933,62456,4.56s,47.83us,0.00ns,47.98us,1.28us,47.71us,82.79us
+memchr/sherlock/never/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,594933,172958,4.68s,17.25us,0.00ns,17.30us,597.00ns,17.17us,45.46us
+memchr/sherlock/never/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,594933,42086,4.56s,70.79us,0.00ns,71.23us,1.53us,68.79us,102.00us
+memchr/sherlock/never/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,594933,10306,4.56s,290.17us,0.00ns,291.04us,3.10us,289.96us,324.21us
+memchr/sherlock/never/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,594933,173008,4.63s,17.25us,0.00ns,17.29us,587.00ns,17.17us,48.96us
+memchr/sherlock/never/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,594933,44691,4.56s,66.67us,0.00ns,67.08us,1.71us,65.29us,105.71us
+memchr/sherlock/never/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,594933,47890,4.56s,62.29us,0.00ns,62.59us,1.64us,59.62us,102.79us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,664,1000000,740.32ms,41.00ns,0.00ns,22.00ns,27.00ns,1.00ns,12.21us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,664,1000000,749.36ms,1.00ns,0.00ns,19.00ns,21.00ns,1.00ns,6.62us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,664,1000000,751.20ms,1.00ns,0.00ns,19.00ns,24.00ns,1.00ns,9.92us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,664,1000000,750.78ms,42.00ns,0.00ns,34.00ns,21.00ns,1.00ns,6.96us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,664,1000000,1.16s,209.00ns,0.00ns,226.00ns,70.00ns,125.00ns,25.42us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,664,1000000,750.52ms,1.00ns,0.00ns,19.00ns,24.00ns,1.00ns,9.67us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,664,1000000,741.32ms,41.00ns,0.00ns,30.00ns,29.00ns,1.00ns,16.21us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,664,1000000,747.82ms,41.00ns,0.00ns,30.00ns,19.00ns,1.00ns,3.42us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,664,1000000,1.17s,209.00ns,0.00ns,226.00ns,69.00ns,125.00ns,22.67us
+memchr/sherlock/never/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,664,1000000,745.13ms,42.00ns,0.00ns,32.00ns,22.00ns,1.00ns,9.29us
+memchr/sherlock/never/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,664,1000000,749.43ms,1.00ns,0.00ns,20.00ns,26.00ns,1.00ns,9.88us
+memchr/sherlock/never/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,664,1000000,804.08ms,83.00ns,0.00ns,65.00ns,35.00ns,1.00ns,15.33us
+memchr/sherlock/never/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,664,1000000,1.30s,250.00ns,0.00ns,269.00ns,78.00ns,166.00ns,25.29us
+memchr/sherlock/never/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,664,1000000,754.19ms,1.00ns,0.00ns,20.00ns,24.00ns,1.00ns,9.46us
+memchr/sherlock/never/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,664,1000000,811.30ms,83.00ns,0.00ns,65.00ns,40.00ns,1.00ns,23.46us
+memchr/sherlock/never/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,664,1000000,803.09ms,83.00ns,0.00ns,64.00ns,43.00ns,1.00ns,22.67us
+memchr/sherlock/never/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,664,1000000,754.48ms,1.00ns,0.00ns,20.00ns,27.00ns,1.00ns,13.92us
+memchr/sherlock/never/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,664,1000000,862.20ms,83.00ns,0.00ns,89.00ns,35.00ns,1.00ns,16.46us
+memchr/sherlock/never/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,664,1000000,1.42s,333.00ns,0.00ns,342.00ns,88.00ns,250.00ns,25.33us
+memchr/sherlock/never/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,664,1000000,752.80ms,1.00ns,0.00ns,20.00ns,26.00ns,1.00ns,9.50us
+memchr/sherlock/never/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,664,1000000,874.82ms,83.00ns,0.00ns,85.00ns,33.00ns,1.00ns,23.25us
+memchr/sherlock/never/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,664,1000000,870.60ms,83.00ns,0.00ns,87.00ns,31.00ns,1.00ns,16.42us
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,69,1000000,754.49ms,1.00ns,0.00ns,16.00ns,23.00ns,1.00ns,9.21us
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,69,1000000,695.17ms,1.00ns,0.00ns,16.00ns,21.00ns,1.00ns,7.17us
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,69,1000000,748.37ms,1.00ns,0.00ns,16.00ns,23.00ns,1.00ns,9.50us
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,69,1000000,755.25ms,1.00ns,0.00ns,17.00ns,20.00ns,1.00ns,167.00ns
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,69,1000000,752.63ms,41.00ns,0.00ns,28.00ns,29.00ns,1.00ns,21.21us
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,69,1000000,690.60ms,1.00ns,0.00ns,16.00ns,20.00ns,1.00ns,541.00ns
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,69,1000000,691.58ms,1.00ns,0.00ns,17.00ns,35.00ns,1.00ns,21.04us
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,69,1000000,685.34ms,1.00ns,0.00ns,17.00ns,37.00ns,1.00ns,23.00us
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,69,1000000,741.63ms,41.00ns,0.00ns,28.00ns,23.00ns,1.00ns,8.00us
+memchr/sherlock/never/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,69,1000000,688.92ms,1.00ns,0.00ns,16.00ns,24.00ns,1.00ns,9.79us
+memchr/sherlock/never/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,69,1000000,743.09ms,1.00ns,0.00ns,16.00ns,30.00ns,1.00ns,21.42us
+memchr/sherlock/never/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,69,1000000,752.10ms,1.00ns,0.00ns,17.00ns,27.00ns,1.00ns,16.83us
+memchr/sherlock/never/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,69,1000000,751.64ms,42.00ns,0.00ns,37.00ns,31.00ns,1.00ns,14.38us
+memchr/sherlock/never/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,69,1000000,689.41ms,1.00ns,0.00ns,16.00ns,29.00ns,1.00ns,20.83us
+memchr/sherlock/never/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,69,1000000,753.12ms,1.00ns,0.00ns,17.00ns,26.00ns,1.00ns,9.71us
+memchr/sherlock/never/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,69,1000000,744.25ms,1.00ns,0.00ns,17.00ns,25.00ns,1.00ns,14.21us
+memchr/sherlock/never/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,69,1000000,746.18ms,1.00ns,0.00ns,16.00ns,29.00ns,1.00ns,16.79us
+memchr/sherlock/never/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,69,1000000,754.35ms,1.00ns,0.00ns,17.00ns,32.00ns,1.00ns,23.75us
+memchr/sherlock/never/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,69,1000000,753.20ms,42.00ns,0.00ns,44.00ns,25.00ns,1.00ns,16.46us
+memchr/sherlock/never/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,69,1000000,744.90ms,1.00ns,0.00ns,16.00ns,20.00ns,1.00ns,4.62us
+memchr/sherlock/never/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,69,1000000,690.71ms,1.00ns,0.00ns,17.00ns,21.00ns,1.00ns,7.00us
+memchr/sherlock/never/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,69,1000000,690.89ms,1.00ns,0.00ns,18.00ns,32.00ns,1.00ns,23.50us
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,,1000000,684.84ms,1.00ns,0.00ns,16.00ns,20.00ns,1.00ns,4.92us
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,,1000000,684.58ms,1.00ns,0.00ns,15.00ns,19.00ns,1.00ns,1.46us
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,,1000000,756.61ms,1.00ns,0.00ns,15.00ns,25.00ns,1.00ns,9.42us
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,,1000000,688.65ms,1.00ns,0.00ns,16.00ns,20.00ns,1.00ns,167.00ns
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,,1000000,687.21ms,1.00ns,0.00ns,15.00ns,32.00ns,1.00ns,21.29us
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,,1000000,754.45ms,1.00ns,0.00ns,15.00ns,37.00ns,1.00ns,21.42us
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,,1000000,689.20ms,1.00ns,0.00ns,15.00ns,22.00ns,1.00ns,7.12us
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,,1000000,686.32ms,1.00ns,0.00ns,15.00ns,19.00ns,1.00ns,125.00ns
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,,1000000,687.21ms,1.00ns,0.00ns,15.00ns,23.00ns,1.00ns,9.25us
+memchr/sherlock/never/empty1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,,1000000,686.91ms,1.00ns,0.00ns,15.00ns,25.00ns,1.00ns,9.75us
+memchr/sherlock/never/empty2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,,1000000,745.84ms,1.00ns,0.00ns,15.00ns,28.00ns,1.00ns,16.75us
+memchr/sherlock/never/empty2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,,1000000,679.14ms,1.00ns,0.00ns,16.00ns,22.00ns,1.00ns,7.54us
+memchr/sherlock/never/empty2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,,1000000,689.26ms,1.00ns,0.00ns,15.00ns,24.00ns,1.00ns,9.12us
+memchr/sherlock/never/empty2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,,1000000,684.86ms,1.00ns,0.00ns,15.00ns,22.00ns,1.00ns,6.75us
+memchr/sherlock/never/empty2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,,1000000,685.12ms,1.00ns,0.00ns,15.00ns,25.00ns,1.00ns,13.67us
+memchr/sherlock/never/empty2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,,1000000,689.70ms,1.00ns,0.00ns,15.00ns,19.00ns,1.00ns,125.00ns
+memchr/sherlock/never/empty3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,,1000000,689.50ms,1.00ns,0.00ns,15.00ns,21.00ns,1.00ns,6.54us
+memchr/sherlock/never/empty3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,,1000000,686.00ms,1.00ns,0.00ns,16.00ns,26.00ns,1.00ns,17.17us
+memchr/sherlock/never/empty3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,,1000000,681.29ms,1.00ns,0.00ns,15.00ns,21.00ns,1.00ns,6.92us
+memchr/sherlock/never/empty3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,,1000000,686.07ms,1.00ns,0.00ns,15.00ns,24.00ns,1.00ns,9.33us
+memchr/sherlock/never/empty3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,,1000000,687.16ms,1.00ns,0.00ns,15.00ns,30.00ns,1.00ns,20.75us
+memchr/sherlock/never/empty3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,,1000000,753.70ms,1.00ns,0.00ns,15.00ns,19.00ns,1.00ns,125.00ns
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,594933,205262,4.69s,14.54us,0.00ns,14.56us,555.00ns,14.38us,44.71us
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,594933,320383,4.75s,9.29us,0.00ns,9.31us,429.00ns,9.00us,40.67us
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,594933,326777,4.75s,9.12us,0.00ns,9.13us,417.00ns,8.96us,40.04us
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,594933,114292,4.63s,25.54us,0.00ns,26.20us,1.39us,25.17us,61.33us
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,594933,14835,4.56s,200.75us,0.00ns,202.18us,8.12us,180.92us,264.71us
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,594933,326275,4.74s,9.12us,0.00ns,9.14us,392.00ns,9.00us,39.71us
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,594933,111686,4.63s,26.75us,0.00ns,26.81us,807.00ns,26.12us,71.75us
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,594933,111803,4.62s,26.71us,0.00ns,26.78us,810.00ns,25.83us,58.25us
+memchr/sherlock/rare/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,594933,108732,4.63s,27.46us,0.00ns,27.54us,875.00ns,26.75us,64.08us
+memchr/sherlock/rare/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,594933,180341,4.63s,16.54us,0.00ns,16.58us,586.00ns,16.38us,56.08us
+memchr/sherlock/rare/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,594933,50472,4.56s,59.46us,0.00ns,59.39us,1.84us,56.46us,94.25us
+memchr/sherlock/rare/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,594933,11168,4.55s,267.88us,0.00ns,268.58us,3.24us,264.67us,304.46us
+memchr/sherlock/rare/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,594933,180119,4.68s,16.58us,0.00ns,16.60us,542.00ns,16.42us,46.04us
+memchr/sherlock/rare/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,594933,49497,4.56s,60.46us,0.00ns,60.56us,1.75us,58.04us,92.42us
+memchr/sherlock/rare/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,594933,49665,4.56s,60.25us,0.00ns,60.35us,3.75us,53.58us,91.75us
+memchr/sherlock/rare/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,594933,129834,4.62s,23.00us,0.00ns,23.06us,753.00ns,22.88us,76.58us
+memchr/sherlock/rare/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,594933,37384,4.55s,80.00us,0.00ns,80.20us,1.70us,78.54us,116.58us
+memchr/sherlock/rare/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,594933,10169,4.55s,294.08us,0.00ns,294.98us,3.24us,293.92us,340.04us
+memchr/sherlock/rare/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,594933,127139,4.63s,23.50us,0.00ns,23.54us,739.00ns,23.33us,70.88us
+memchr/sherlock/rare/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,594933,37761,4.56s,79.21us,0.00ns,79.40us,1.60us,77.83us,120.58us
+memchr/sherlock/rare/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,594933,38189,4.56s,78.38us,0.00ns,78.51us,2.05us,73.08us,116.00us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,664,1000000,743.49ms,41.00ns,0.00ns,22.00ns,26.00ns,1.00ns,10.54us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,664,1000000,749.82ms,1.00ns,0.00ns,20.00ns,23.00ns,1.00ns,6.96us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,664,1000000,754.84ms,1.00ns,0.00ns,20.00ns,21.00ns,1.00ns,4.79us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,664,1000000,750.66ms,42.00ns,0.00ns,38.00ns,22.00ns,1.00ns,9.62us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,664,1000000,1.24s,250.00ns,0.00ns,245.00ns,71.00ns,125.00ns,25.00us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,664,1000000,746.40ms,1.00ns,0.00ns,19.00ns,24.00ns,1.00ns,10.08us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,664,1000000,750.88ms,42.00ns,0.00ns,33.00ns,29.00ns,1.00ns,16.54us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,664,1000000,745.44ms,42.00ns,0.00ns,33.00ns,17.00ns,1.00ns,208.00ns
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,664,1000000,1.10s,250.00ns,0.00ns,244.00ns,64.00ns,125.00ns,20.71us
+memchr/sherlock/rare/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,664,1000000,751.47ms,42.00ns,0.00ns,33.00ns,26.00ns,1.00ns,15.38us
+memchr/sherlock/rare/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,664,1000000,755.01ms,1.00ns,0.00ns,20.00ns,23.00ns,1.00ns,6.92us
+memchr/sherlock/rare/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,664,1000000,806.94ms,83.00ns,0.00ns,69.00ns,42.00ns,1.00ns,23.29us
+memchr/sherlock/rare/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,664,1000000,1.29s,292.00ns,0.00ns,286.00ns,71.00ns,166.00ns,25.00us
+memchr/sherlock/rare/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,664,1000000,745.49ms,1.00ns,0.00ns,21.00ns,32.00ns,1.00ns,21.50us
+memchr/sherlock/rare/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,664,1000000,812.06ms,83.00ns,0.00ns,72.00ns,39.00ns,1.00ns,23.62us
+memchr/sherlock/rare/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,664,1000000,801.86ms,83.00ns,0.00ns,70.00ns,31.00ns,1.00ns,11.79us
+memchr/sherlock/rare/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,664,1000000,753.41ms,41.00ns,0.00ns,24.00ns,31.00ns,1.00ns,20.46us
+memchr/sherlock/rare/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,664,1000000,869.34ms,84.00ns,0.00ns,96.00ns,36.00ns,1.00ns,19.71us
+memchr/sherlock/rare/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,664,1000000,1.47s,375.00ns,0.00ns,362.00ns,82.00ns,250.00ns,23.83us
+memchr/sherlock/rare/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,664,1000000,750.88ms,41.00ns,0.00ns,25.00ns,25.00ns,1.00ns,10.12us
+memchr/sherlock/rare/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,664,1000000,863.29ms,84.00ns,0.00ns,97.00ns,41.00ns,1.00ns,16.79us
+memchr/sherlock/rare/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,664,1000000,931.15ms,84.00ns,0.00ns,100.00ns,48.00ns,1.00ns,23.62us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,69,1000000,745.21ms,1.00ns,0.00ns,17.00ns,20.00ns,1.00ns,4.38us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,69,1000000,690.03ms,1.00ns,0.00ns,16.00ns,31.00ns,1.00ns,23.96us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,69,1000000,752.45ms,1.00ns,0.00ns,16.00ns,20.00ns,1.00ns,4.67us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,69,1000000,681.71ms,1.00ns,0.00ns,18.00ns,21.00ns,1.00ns,6.75us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,69,1000000,741.29ms,41.00ns,0.00ns,28.00ns,22.00ns,1.00ns,9.58us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,69,1000000,753.87ms,1.00ns,0.00ns,16.00ns,20.00ns,1.00ns,167.00ns
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,69,1000000,751.38ms,1.00ns,0.00ns,18.00ns,24.00ns,1.00ns,9.33us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,69,1000000,690.40ms,1.00ns,0.00ns,18.00ns,20.00ns,1.00ns,4.54us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,69,1000000,740.67ms,41.00ns,0.00ns,28.00ns,23.00ns,1.00ns,9.62us
+memchr/sherlock/rare/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,69,1000000,755.48ms,1.00ns,0.00ns,17.00ns,24.00ns,1.00ns,9.33us
+memchr/sherlock/rare/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,69,1000000,746.18ms,1.00ns,0.00ns,17.00ns,23.00ns,1.00ns,9.88us
+memchr/sherlock/rare/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,69,1000000,745.09ms,1.00ns,0.00ns,18.00ns,25.00ns,1.00ns,9.71us
+memchr/sherlock/rare/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,69,1000000,743.65ms,42.00ns,0.00ns,37.00ns,25.00ns,1.00ns,19.46us
+memchr/sherlock/rare/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,69,1000000,690.85ms,1.00ns,0.00ns,18.00ns,21.00ns,1.00ns,6.96us
+memchr/sherlock/rare/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,69,1000000,752.60ms,1.00ns,0.00ns,18.00ns,20.00ns,1.00ns,1.54us
+memchr/sherlock/rare/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,69,1000000,753.01ms,1.00ns,0.00ns,18.00ns,20.00ns,1.00ns,167.00ns
+memchr/sherlock/rare/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,69,1000000,744.31ms,1.00ns,0.00ns,17.00ns,20.00ns,1.00ns,4.71us
+memchr/sherlock/rare/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,69,1000000,746.64ms,1.00ns,0.00ns,19.00ns,22.00ns,1.00ns,7.33us
+memchr/sherlock/rare/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,69,1000000,741.99ms,42.00ns,0.00ns,45.00ns,28.00ns,1.00ns,16.46us
+memchr/sherlock/rare/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,69,1000000,689.92ms,1.00ns,0.00ns,18.00ns,31.00ns,1.00ns,21.38us
+memchr/sherlock/rare/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,69,1000000,755.07ms,1.00ns,0.00ns,19.00ns,28.00ns,1.00ns,15.96us
+memchr/sherlock/rare/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,69,1000000,747.90ms,1.00ns,0.00ns,19.00ns,25.00ns,1.00ns,9.92us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,594933,29571,4.56s,101.08us,0.00ns,101.40us,1.83us,100.71us,159.62us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,594933,31802,4.56s,93.79us,0.00ns,94.28us,1.85us,93.29us,134.00us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,594933,30429,4.56s,105.33us,0.00ns,98.54us,11.93us,78.88us,136.58us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,594933,31466,4.56s,94.67us,0.00ns,95.29us,1.83us,94.25us,130.88us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,594933,12805,4.56s,233.04us,0.00ns,234.23us,3.72us,228.50us,268.21us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,594933,29529,4.56s,101.17us,0.00ns,101.55us,1.85us,100.29us,134.00us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,594933,26967,4.56s,110.88us,0.00ns,111.20us,1.91us,110.38us,146.42us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,594933,26802,4.56s,111.54us,0.00ns,111.88us,1.90us,111.08us,146.12us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,594933,12608,4.55s,236.71us,0.00ns,237.89us,4.04us,231.25us,286.79us
+memchr/sherlock/uncommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,594933,26420,4.55s,113.17us,0.00ns,113.50us,1.91us,112.38us,150.92us
+memchr/sherlock/uncommon/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,594933,14255,4.56s,209.71us,0.00ns,210.40us,2.73us,208.75us,243.00us
+memchr/sherlock/uncommon/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,594933,12843,4.56s,232.79us,0.00ns,233.55us,2.89us,232.46us,272.79us
+memchr/sherlock/uncommon/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,594933,9207,4.56s,324.83us,0.00ns,325.81us,3.49us,324.08us,367.38us
+memchr/sherlock/uncommon/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,594933,15741,4.56s,189.92us,0.00ns,190.54us,2.44us,189.04us,225.08us
+memchr/sherlock/uncommon/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,594933,11920,4.56s,250.92us,0.00ns,251.63us,3.00us,250.08us,300.12us
+memchr/sherlock/uncommon/huge2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,594933,12714,4.56s,235.25us,0.00ns,235.91us,3.01us,232.75us,296.29us
+memchr/sherlock/uncommon/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,594933,10215,4.56s,292.79us,0.00ns,293.66us,3.20us,291.96us,330.38us
+memchr/sherlock/uncommon/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,594933,8450,4.56s,354.04us,0.00ns,355.01us,3.60us,353.33us,388.21us
+memchr/sherlock/uncommon/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,594933,7285,4.56s,410.54us,0.00ns,411.78us,3.83us,409.92us,444.54us
+memchr/sherlock/uncommon/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,594933,10995,4.56s,272.12us,0.00ns,272.82us,3.11us,270.88us,342.33us
+memchr/sherlock/uncommon/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,594933,7657,4.56s,390.62us,0.00ns,391.77us,3.73us,389.71us,428.46us
+memchr/sherlock/uncommon/huge3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,594933,7871,4.56s,379.96us,0.00ns,381.10us,3.73us,379.08us,427.58us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,664,1000000,809.26ms,42.00ns,0.00ns,43.00ns,28.00ns,1.00ns,15.92us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,664,1000000,813.97ms,42.00ns,0.00ns,43.00ns,36.00ns,1.00ns,23.79us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,664,1000000,749.60ms,42.00ns,0.00ns,38.00ns,21.00ns,1.00ns,9.58us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,664,1000000,812.57ms,83.00ns,0.00ns,69.00ns,36.00ns,1.00ns,16.38us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,664,1000000,1.24s,250.00ns,0.00ns,238.00ns,92.00ns,125.00ns,24.50us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,664,1000000,744.07ms,42.00ns,0.00ns,40.00ns,20.00ns,1.00ns,16.33us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,664,1000000,813.34ms,83.00ns,0.00ns,65.00ns,40.00ns,1.00ns,16.62us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,664,1000000,813.46ms,83.00ns,0.00ns,66.00ns,37.00ns,1.00ns,20.54us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,664,1000000,1.30s,333.00ns,0.00ns,339.00ns,85.00ns,166.00ns,31.46us
+memchr/sherlock/uncommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,664,1000000,811.54ms,42.00ns,0.00ns,62.00ns,36.00ns,1.00ns,16.46us
+memchr/sherlock/uncommon/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,664,1000000,923.92ms,83.00ns,0.00ns,92.00ns,39.00ns,1.00ns,16.83us
+memchr/sherlock/uncommon/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,664,1000000,930.26ms,84.00ns,0.00ns,104.00ns,74.00ns,1.00ns,58.33us
+memchr/sherlock/uncommon/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,664,1000000,1.35s,333.00ns,0.00ns,314.00ns,86.00ns,166.00ns,25.25us
+memchr/sherlock/uncommon/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,664,1000000,932.72ms,84.00ns,0.00ns,104.00ns,54.00ns,1.00ns,23.58us
+memchr/sherlock/uncommon/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,664,1000000,930.04ms,125.00ns,0.00ns,119.00ns,52.00ns,1.00ns,23.67us
+memchr/sherlock/uncommon/small2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,664,1000000,0.99s,125.00ns,0.00ns,118.00ns,53.00ns,1.00ns,22.04us
+memchr/sherlock/uncommon/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,664,1000000,1.05s,166.00ns,0.00ns,153.00ns,56.00ns,41.00ns,25.71us
+memchr/sherlock/uncommon/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,664,1000000,1.05s,167.00ns,0.00ns,161.00ns,53.00ns,41.00ns,23.42us
+memchr/sherlock/uncommon/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,664,1000000,1.41s,333.00ns,0.00ns,338.00ns,77.00ns,250.00ns,25.54us
+memchr/sherlock/uncommon/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,664,1000000,1.05s,167.00ns,0.00ns,159.00ns,57.00ns,41.00ns,25.00us
+memchr/sherlock/uncommon/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,664,1000000,1.11s,167.00ns,0.00ns,187.00ns,58.00ns,83.00ns,23.04us
+memchr/sherlock/uncommon/small3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,664,1000000,1.04s,167.00ns,0.00ns,161.00ns,52.00ns,41.00ns,23.79us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,69,1000000,743.67ms,1.00ns,0.00ns,19.00ns,28.00ns,1.00ns,16.54us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,69,1000000,690.36ms,1.00ns,0.00ns,17.00ns,24.00ns,1.00ns,9.75us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,69,1000000,755.36ms,1.00ns,0.00ns,17.00ns,24.00ns,1.00ns,9.33us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,69,1000000,747.04ms,1.00ns,0.00ns,19.00ns,20.00ns,1.00ns,167.00ns
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,69,1000000,744.58ms,41.00ns,0.00ns,28.00ns,25.00ns,1.00ns,9.54us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,69,1000000,742.98ms,1.00ns,0.00ns,18.00ns,24.00ns,1.00ns,10.29us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,69,1000000,744.07ms,41.00ns,0.00ns,24.00ns,26.00ns,1.00ns,10.25us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,69,1000000,746.07ms,41.00ns,0.00ns,25.00ns,24.00ns,1.00ns,9.54us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,69,1000000,752.90ms,41.00ns,0.00ns,28.00ns,31.00ns,1.00ns,21.08us
+memchr/sherlock/uncommon/tiny1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,69,1000000,752.71ms,41.00ns,0.00ns,26.00ns,26.00ns,1.00ns,13.42us
+memchr/sherlock/uncommon/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2,2.5.0,,69,1000000,749.34ms,42.00ns,0.00ns,33.00ns,34.00ns,1.00ns,22.79us
+memchr/sherlock/uncommon/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/fallback,2.5.0,,69,1000000,750.71ms,42.00ns,0.00ns,33.00ns,28.00ns,1.00ns,16.58us
+memchr/sherlock/uncommon/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr2/naive,2.5.0,,69,1000000,806.88ms,42.00ns,0.00ns,37.00ns,39.00ns,1.00ns,29.83us
+memchr/sherlock/uncommon/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr2,2.5.0,,69,1000000,809.54ms,42.00ns,0.00ns,47.00ns,30.00ns,1.00ns,19.50us
+memchr/sherlock/uncommon/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr2,2.5.0,,69,1000000,748.18ms,42.00ns,0.00ns,40.00ns,32.00ns,1.00ns,15.92us
+memchr/sherlock/uncommon/tiny2,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr2,2.5.0,,69,1000000,748.05ms,42.00ns,0.00ns,41.00ns,46.00ns,1.00ns,29.71us
+memchr/sherlock/uncommon/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3,2.5.0,,69,1000000,863.94ms,83.00ns,0.00ns,71.00ns,35.00ns,1.00ns,15.96us
+memchr/sherlock/uncommon/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/fallback,2.5.0,,69,1000000,811.86ms,42.00ns,0.00ns,50.00ns,32.00ns,1.00ns,23.71us
+memchr/sherlock/uncommon/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr3/naive,2.5.0,,69,1000000,808.42ms,42.00ns,0.00ns,45.00ns,21.00ns,1.00ns,9.38us
+memchr/sherlock/uncommon/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr3,2.5.0,,69,1000000,868.86ms,83.00ns,0.00ns,82.00ns,37.00ns,1.00ns,16.38us
+memchr/sherlock/uncommon/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr3,2.5.0,,69,1000000,807.90ms,83.00ns,0.00ns,65.00ns,29.00ns,1.00ns,9.79us
+memchr/sherlock/uncommon/tiny3,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr3,2.5.0,,69,1000000,802.29ms,83.00ns,0.00ns,63.00ns,44.00ns,1.00ns,23.42us
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,594933,2833,4.56s,1.06ms,0.00ns,1.06ms,5.70us,1.04ms,1.11ms
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,594933,4618,4.56s,647.62us,0.00ns,649.57us,4.75us,647.46us,697.29us
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,594933,5153,4.56s,580.38us,0.00ns,582.13us,4.48us,580.08us,624.25us
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,594933,3672,4.56s,814.38us,0.00ns,817.14us,5.62us,813.83us,859.96us
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,594933,4293,4.56s,696.62us,0.00ns,698.77us,5.04us,695.88us,741.38us
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,594933,5393,4.56s,554.92us,0.00ns,556.25us,4.35us,554.62us,653.79us
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,594933,3280,4.56s,911.12us,0.00ns,914.73us,8.70us,909.25us,1.06ms
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,594933,3266,4.56s,915.62us,0.00ns,918.51us,6.14us,914.46us,0.97ms
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,594933,4222,4.56s,708.83us,0.00ns,710.64us,5.05us,706.58us,756.08us
+memchr/sherlock/verycommon/huge1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,594933,3112,4.56s,0.96ms,0.00ns,0.96ms,16.06us,0.96ms,1.17ms
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),libc/memchr/oneshot,unknown,,664,1000000,2.31s,750.00ns,0.00ns,772.00ns,122.00ns,666.00ns,26.04us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/oneshot,2.5.0,,664,1000000,2.07s,667.00ns,0.00ns,665.00ns,119.00ns,541.00ns,31.46us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/prebuilt,2.5.0,,664,1000000,1.94s,584.00ns,0.00ns,595.00ns,107.00ns,417.00ns,26.08us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/fallback,2.5.0,,664,1000000,1.41s,333.00ns,0.00ns,318.00ns,93.00ns,208.00ns,25.25us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memchr/naive,2.5.0,,664,1000000,1.29s,291.00ns,0.00ns,278.00ns,73.00ns,166.00ns,24.92us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchr/memrchr,2.5.0,,664,1000000,1.89s,542.00ns,0.00ns,563.00ns,108.00ns,417.00ns,30.96us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/oneshot,2.5.0,,664,1000000,1.58s,417.00ns,0.00ns,420.00ns,94.00ns,333.00ns,24.21us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/prebuilt,2.5.0,,664,1000000,1.59s,417.00ns,0.00ns,422.00ns,87.00ns,333.00ns,26.62us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memchr/naive,2.5.0,,664,1000000,1.29s,291.00ns,0.00ns,278.00ns,75.00ns,166.00ns,24.58us
+memchr/sherlock/verycommon/small1,count-bytes,0.0.1 (rev 45afe89f43),rust/memchrold/memrchr,2.5.0,,664,1000000,1.59s,417.00ns,0.00ns,414.00ns,86.00ns,291.00ns,26.00us
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,33335253,59,4.56s,50.84ms,0.00ns,51.00ms,316.45us,50.72ms,51.99ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,33335253,32,4.62s,94.91ms,105.00ns,94.92ms,60.48us,94.87ms,95.23ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,33335253,32,4.62s,94.85ms,709.00ns,94.86ms,26.57us,94.81ms,94.93ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,33335253,302,4.56s,9.94ms,104.00ns,9.94ms,38.92us,9.86ms,10.07ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,33335253,302,4.56s,9.93ms,63.00ns,9.94ms,42.35us,9.86ms,10.10ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/binary,2.5.0,,33335253,2904,4.56s,1.03ms,0.00ns,1.03ms,8.68us,1.03ms,1.09ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,33335253,254,4.56s,11.66ms,5.31us,11.84ms,615.82us,11.44ms,19.63ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,33335253,62,4.57s,47.86ms,708.00ns,48.63ms,3.45ms,47.79ms,72.86ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,33335253,151,4.56s,19.89ms,0.00ns,19.88ms,97.85us,19.64ms,20.06ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,33335253,211,4.56s,14.21ms,0.00ns,14.22ms,54.68us,14.13ms,14.42ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,33335253,211,4.56s,14.21ms,0.00ns,14.22ms,50.39us,14.14ms,14.37ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,33335253,150,4.56s,20.04ms,229.00ns,20.04ms,22.22us,19.99ms,20.12ms
+memmem/byterank/binary,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,33335253,150,4.56s,20.03ms,396.00ns,20.03ms,22.79us,19.99ms,20.11ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1648109,2523,4.56s,1.19ms,0.00ns,1.19ms,6.34us,1.19ms,1.26ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1648109,765,4.55s,3.92ms,0.00ns,3.93ms,15.29us,3.91ms,4.27ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1648109,765,4.55s,3.92ms,0.00ns,3.93ms,8.76us,3.91ms,3.96ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1648109,59045,4.56s,50.62us,0.00ns,50.76us,1.17us,50.46us,81.50us
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1648109,46030,4.59s,50.54us,0.00ns,65.12us,2.58ms,50.38us,553.56ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1648109,2882,4.56s,1.04ms,41.00ns,1.04ms,11.92us,1.02ms,1.10ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1648109,1269,4.56s,2.36ms,0.00ns,2.37ms,8.70us,2.35ms,2.43ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1648109,3037,4.56s,0.99ms,0.00ns,0.99ms,6.00us,0.98ms,1.03ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1648109,13491,4.56s,221.67us,0.00ns,222.33us,2.81us,220.46us,254.79us
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1648109,13606,4.56s,219.75us,0.00ns,220.44us,2.92us,219.08us,290.00us
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,1648109,31363,4.56s,95.33us,0.00ns,95.60us,1.67us,95.17us,129.29us
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,1648109,31385,4.56s,95.29us,0.00ns,95.54us,1.64us,95.12us,129.96us
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1648109,3084,4.56s,0.97ms,0.00ns,0.97ms,6.08us,0.96ms,1.03ms
+memmem/code/rust-library-never-fn-strength,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1648109,3086,4.56s,0.97ms,0.00ns,0.97ms,6.24us,0.96ms,1.03ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1648109,2515,4.56s,1.19ms,0.00ns,1.19ms,174.14us,1.19ms,9.92ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1648109,753,4.56s,3.92ms,0.00ns,3.99ms,730.60us,3.92ms,20.12ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1648109,765,4.56s,3.92ms,0.00ns,3.93ms,9.41us,3.91ms,3.99ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1648109,57887,4.56s,51.62us,0.00ns,51.77us,1.20us,51.46us,103.33us
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1648109,57923,4.56s,51.62us,0.00ns,51.75us,1.11us,51.46us,81.83us
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1648109,3100,4.56s,0.96ms,21.00ns,0.97ms,11.75us,0.95ms,1.02ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1648109,1269,4.56s,2.36ms,0.00ns,2.37ms,8.10us,2.35ms,2.41ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1648109,3037,4.56s,0.99ms,0.00ns,0.99ms,5.79us,0.98ms,1.03ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1648109,13429,4.56s,222.67us,0.00ns,223.36us,2.90us,222.12us,273.42us
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1648109,13416,4.56s,222.92us,0.00ns,223.56us,2.75us,222.25us,257.21us
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,1648109,30374,4.56s,98.42us,0.00ns,98.71us,1.70us,98.25us,132.42us
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,1648109,23711,4.57s,98.38us,0.00ns,126.47us,3.60ms,95.50us,554.85ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1648109,3316,4.55s,903.21us,0.00ns,904.92us,5.88us,897.96us,0.95ms
+memmem/code/rust-library-never-fn-strength-paren,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1648109,3316,4.56s,902.83us,0.00ns,904.69us,6.68us,897.58us,1.05ms
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1648109,2526,4.56s,1.18ms,0.00ns,1.19ms,6.19us,1.18ms,1.24ms
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1648109,765,4.56s,3.92ms,0.00ns,3.93ms,9.28us,3.91ms,3.97ms
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1648109,765,4.56s,3.92ms,0.00ns,3.93ms,9.53us,3.91ms,3.98ms
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1648109,60551,4.56s,49.38us,0.00ns,49.50us,1.12us,49.21us,80.83us
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1648109,60550,4.56s,49.33us,0.00ns,49.49us,1.16us,49.21us,78.29us
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1648109,3169,4.56s,936.33us,0.00ns,946.78us,22.77us,926.46us,1.03ms
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1648109,1266,4.54s,2.36ms,0.00ns,2.37ms,26.08us,2.35ms,2.68ms
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1648109,3027,4.55s,0.99ms,0.00ns,0.99ms,156.26us,0.97ms,9.52ms
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1648109,23132,4.53s,127.50us,0.00ns,129.64us,95.75us,125.08us,10.15ms
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1648109,23254,4.56s,128.50us,0.00ns,128.96us,2.05us,127.62us,161.75us
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,1648109,29558,4.56s,101.17us,0.00ns,101.45us,1.76us,100.96us,145.42us
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,1648109,29478,4.56s,101.42us,0.00ns,101.72us,1.86us,101.21us,135.42us
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1648109,3404,4.56s,881.33us,0.00ns,881.28us,8.56us,869.46us,924.17us
+memmem/code/rust-library-never-fn-quux,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1648109,3398,4.56s,882.67us,0.00ns,882.86us,8.66us,869.25us,929.79us
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1648109,2747,4.56s,1.09ms,0.00ns,1.09ms,6.02us,1.09ms,1.14ms
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1648109,1243,4.55s,2.41ms,0.00ns,2.41ms,8.05us,2.40ms,2.47ms
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1648109,1244,4.56s,2.41ms,0.00ns,2.41ms,8.69us,2.40ms,2.49ms
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1648109,56943,4.56s,52.50us,0.00ns,52.63us,1.20us,51.96us,85.96us
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1648109,44338,4.54s,52.58us,0.00ns,67.61us,2.61ms,51.92us,548.36ms
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1648109,3229,4.55s,926.04us,0.00ns,929.14us,9.99us,914.50us,1.10ms
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1648109,1269,4.56s,2.36ms,0.00ns,2.37ms,8.07us,2.36ms,2.42ms
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1648109,12629,4.56s,236.79us,0.00ns,237.50us,2.89us,236.00us,270.62us
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1648109,12563,4.56s,238.12us,0.00ns,238.76us,2.86us,236.50us,272.25us
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,1648109,107742,4.63s,27.71us,0.00ns,27.79us,810.00ns,27.58us,81.96us
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,1648109,107915,4.62s,27.67us,0.00ns,27.75us,799.00ns,27.54us,58.92us
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1648109,3376,4.56s,886.83us,0.00ns,888.81us,6.59us,878.50us,0.96ms
+memmem/code/rust-library-rare-fn-from-str,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1648109,3391,4.56s,882.67us,0.00ns,884.65us,6.19us,876.00us,929.00us
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1648109,2522,4.56s,1.19ms,0.00ns,1.19ms,6.54us,1.19ms,1.27ms
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1648109,763,4.56s,3.92ms,0.00ns,3.93ms,208.60us,3.91ms,9.67ms
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1648109,757,4.51s,3.92ms,0.00ns,3.97ms,713.81us,3.91ms,22.90ms
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1648109,56786,4.56s,52.62us,0.00ns,52.78us,1.20us,52.46us,88.04us
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1648109,57397,4.56s,52.00us,0.00ns,52.21us,1.40us,51.83us,132.96us
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1648109,2946,4.56s,1.01ms,0.00ns,1.02ms,10.02us,1.01ms,1.06ms
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1648109,1268,4.56s,2.36ms,0.00ns,2.37ms,8.64us,2.36ms,2.42ms
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1648109,2996,4.56s,1.00ms,0.00ns,1.00ms,5.76us,0.98ms,1.04ms
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1648109,14285,4.56s,209.33us,0.00ns,209.97us,2.71us,208.75us,246.92us
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1648109,14427,4.56s,207.33us,0.00ns,207.90us,2.60us,206.75us,246.54us
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1648109,3155,4.56s,949.33us,0.00ns,0.95ms,5.88us,943.17us,1.00ms
+memmem/code/rust-library-common-fn-is-empty,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1648109,3164,4.56s,946.50us,0.00ns,948.28us,5.99us,940.46us,0.99ms
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1648109,1959,4.54s,1.19ms,0.00ns,1.53ms,12.57ms,1.19ms,557.31ms
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1648109,765,4.56s,3.92ms,0.00ns,3.92ms,9.58us,3.91ms,4.00ms
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1648109,765,4.56s,3.92ms,0.00ns,3.92ms,11.00us,3.91ms,3.98ms
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1648109,29000,4.56s,103.08us,0.00ns,103.40us,1.81us,102.67us,145.33us
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1648109,34249,4.56s,87.29us,0.00ns,87.54us,1.60us,86.88us,120.54us
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1648109,3375,4.56s,872.54us,0.00ns,888.90us,32.53us,864.71us,1.05ms
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1648109,1233,4.56s,2.43ms,0.00ns,2.43ms,8.48us,2.42ms,2.48ms
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1648109,2895,4.55s,1.03ms,0.00ns,1.04ms,5.91us,1.02ms,1.08ms
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1648109,5889,4.56s,507.96us,0.00ns,509.42us,4.30us,506.33us,548.92us
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1648109,6225,4.56s,480.46us,0.00ns,481.89us,4.13us,479.75us,529.33us
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1648109,3528,4.56s,845.04us,0.00ns,850.43us,163.35us,835.75us,10.18ms
+memmem/code/rust-library-common-fn,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1648109,3594,4.51s,826.12us,0.00ns,834.67us,102.96us,813.88us,3.91ms
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1648109,6835,4.55s,437.42us,0.00ns,438.88us,4.14us,434.67us,481.75us
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1648109,747,4.56s,4.01ms,0.00ns,4.02ms,12.62us,4.01ms,4.18ms
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1648109,750,4.55s,4.00ms,21.00ns,4.00ms,33.96us,3.99ms,4.29ms
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1648109,5752,4.55s,520.21us,0.00ns,521.55us,4.37us,517.29us,562.50us
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1648109,6132,4.56s,489.00us,0.00ns,489.21us,4.49us,485.33us,527.62us
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1648109,2298,4.56s,1.30ms,0.00ns,1.31ms,7.57us,1.30ms,1.37ms
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1648109,1171,4.56s,2.56ms,0.00ns,2.56ms,8.99us,2.55ms,2.61ms
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1648109,2436,4.56s,1.23ms,20.00ns,1.23ms,9.39us,1.22ms,1.29ms
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1648109,4310,4.56s,694.38us,0.00ns,696.13us,4.93us,691.83us,741.79us
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1648109,4072,4.51s,574.62us,0.00ns,736.75us,8.61ms,557.79us,549.78ms
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1648109,2085,4.56s,1.44ms,0.00ns,1.44ms,8.69us,1.42ms,1.63ms
+memmem/code/rust-library-common-paren,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1648109,2342,4.56s,1.28ms,0.00ns,1.28ms,7.03us,1.27ms,1.33ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1648109,2127,4.56s,1.41ms,0.00ns,1.41ms,6.62us,1.41ms,1.45ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1648109,736,4.56s,4.08ms,0.00ns,4.08ms,9.68us,4.07ms,4.12ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1648109,737,4.55s,4.07ms,0.00ns,4.07ms,15.26us,4.06ms,4.39ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1648109,18262,4.56s,163.88us,0.00ns,164.22us,2.60us,159.21us,198.83us
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1648109,25000,4.56s,119.58us,0.00ns,119.95us,1.97us,119.25us,155.25us
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1648109,2837,4.56s,1.06ms,0.00ns,1.06ms,17.73us,1.03ms,1.13ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1648109,1221,4.56s,2.46ms,0.00ns,2.46ms,8.24us,2.45ms,2.51ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1648109,2844,4.56s,1.05ms,0.00ns,1.05ms,155.80us,1.04ms,9.30ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1648109,3465,4.57s,853.25us,0.00ns,865.76us,270.44us,850.71us,15.63ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1648109,3839,4.55s,780.67us,0.00ns,781.48us,5.61us,774.21us,819.04us
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1648109,2819,4.56s,1.06ms,0.00ns,1.06ms,6.76us,1.05ms,1.15ms
+memmem/code/rust-library-common-let,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1648109,2955,4.56s,1.01ms,0.00ns,1.02ms,6.68us,1.00ms,1.08ms
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,151305,20601,4.56s,145.17us,0.00ns,145.58us,2.11us,144.88us,176.08us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,151305,13722,4.56s,217.92us,0.00ns,218.58us,2.88us,217.62us,265.42us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,151305,13723,4.56s,217.92us,0.00ns,218.57us,2.75us,217.62us,274.17us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,151305,520511,4.88s,5.71us,0.00ns,5.71us,362.00ns,5.50us,35.08us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,151305,507520,4.81s,5.88us,0.00ns,5.86us,363.00ns,5.54us,37.12us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,151305,201970,4.69s,15.12us,0.00ns,14.80us,842.00ns,13.75us,47.92us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,151305,10744,4.52s,216.54us,0.00ns,279.18us,5.42ms,215.75us,561.50ms
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,151305,22771,4.56s,131.83us,0.00ns,131.70us,2.10us,130.17us,174.00us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,151305,22361,4.56s,135.96us,0.00ns,134.11us,3.83us,128.67us,186.79us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,151305,285335,4.75s,10.46us,0.00ns,10.46us,463.00ns,10.21us,49.00us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,151305,286342,4.75s,10.42us,0.00ns,10.43us,467.00ns,10.12us,47.00us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,151305,255422,4.69s,11.54us,0.00ns,11.70us,826.00ns,11.29us,45.12us
+memmem/pathological/md5-huge-no-hash,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,151305,247772,4.68s,11.54us,0.00ns,12.06us,792.00ns,11.29us,42.42us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,151305,20594,4.55s,145.21us,0.00ns,145.63us,2.04us,144.96us,184.33us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,151305,13356,4.56s,224.04us,0.00ns,224.57us,2.76us,217.71us,257.25us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,151305,13349,4.56s,224.04us,0.00ns,224.69us,2.65us,223.79us,259.67us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,151305,405915,4.82s,5.75us,0.00ns,7.34us,872.82us,5.54us,555.83ms
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,151305,534234,4.81s,5.54us,0.00ns,5.57us,350.00ns,5.33us,58.67us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,151305,248878,4.69s,11.12us,0.00ns,12.00us,1.39us,10.67us,63.37us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,151305,13813,4.56s,216.54us,0.00ns,217.14us,2.93us,215.79us,254.12us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,151305,22348,4.56s,133.79us,0.00ns,134.20us,2.07us,133.12us,168.00us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,151305,22575,4.56s,129.00us,0.00ns,132.84us,5.63us,127.04us,171.83us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,151305,285761,4.74s,10.42us,0.00ns,10.45us,460.00ns,10.17us,41.96us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,151305,284545,4.75s,10.46us,0.00ns,10.49us,470.00ns,10.21us,35.75us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,151305,260822,4.69s,11.42us,0.00ns,11.45us,507.00ns,11.17us,41.46us
+memmem/pathological/md5-huge-last-hash,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,151305,308224,4.75s,9.62us,0.00ns,9.68us,457.00ns,9.46us,39.54us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,500100,10437,4.55s,285.46us,0.00ns,287.39us,97.11us,285.38us,10.17ms
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,500100,2616,4.53s,1.14ms,0.00ns,1.15ms,19.92us,1.14ms,1.40ms
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,500100,2620,4.55s,1.14ms,0.00ns,1.15ms,6.04us,1.14ms,1.21ms
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,500100,193645,4.69s,15.42us,0.00ns,15.44us,588.00ns,15.29us,46.58us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,500100,193862,4.69s,15.38us,0.00ns,15.42us,577.00ns,15.25us,55.04us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,500100,10342,4.56s,286.67us,0.00ns,290.03us,7.11us,285.38us,343.33us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,500100,4178,4.56s,716.04us,0.00ns,718.00us,4.89us,713.50us,762.88us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,500100,10005,4.56s,299.12us,0.00ns,299.81us,3.24us,296.25us,336.71us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,500100,8376,4.56s,357.04us,0.00ns,358.15us,3.69us,356.92us,398.29us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,500100,8147,4.56s,367.08us,0.00ns,368.18us,3.52us,366.92us,403.58us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,500100,106232,4.63s,28.12us,0.00ns,28.19us,813.00ns,27.92us,61.00us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,500100,83070,4.56s,28.00us,0.00ns,36.06us,1.94ms,27.08us,557.96ms
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,500100,10473,4.56s,285.50us,0.00ns,286.41us,3.33us,285.38us,328.29us
+memmem/pathological/rare-repeated-huge-tricky,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,500100,10477,4.56s,285.50us,0.00ns,286.31us,3.08us,285.33us,336.08us
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,500100,8725,4.56s,342.79us,0.00ns,343.81us,3.38us,342.46us,381.21us
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,500100,8273,4.56s,364.29us,0.00ns,362.61us,4.85us,357.04us,404.83us
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,500100,8891,4.56s,338.25us,0.00ns,337.38us,4.84us,328.21us,399.92us
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,500100,2328,4.55s,1.29ms,20.00ns,1.29ms,6.26us,1.28ms,1.33ms
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,500100,11929,4.56s,250.54us,0.00ns,251.45us,3.35us,250.38us,296.12us
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,500100,10222,4.56s,292.58us,0.00ns,293.47us,3.25us,292.33us,355.00us
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,500100,11265,4.56s,264.17us,0.00ns,266.26us,5.51us,256.79us,312.79us
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,500100,13531,4.80s,196.29us,0.00ns,238.88us,4.78ms,191.00us,556.36ms
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,500100,973,4.55s,3.08ms,0.00ns,3.09ms,8.86us,3.07ms,3.13ms
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,500100,6638,4.56s,450.54us,0.00ns,451.96us,4.11us,450.12us,499.92us
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,500100,1174,4.56s,2.55ms,0.00ns,2.56ms,9.34us,2.55ms,2.68ms
+memmem/pathological/rare-repeated-huge-match,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,500100,9429,4.56s,317.17us,0.00ns,318.14us,3.26us,316.58us,363.38us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1001,1000000,1.89s,583.00ns,0.00ns,580.00ns,102.00ns,458.00ns,31.50us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1001,1000000,4.47s,2.29us,0.00ns,2.29us,202.00ns,2.17us,33.04us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1001,1000000,4.47s,2.29us,0.00ns,2.28us,206.00ns,2.17us,33.04us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1001,1000000,814.50ms,42.00ns,0.00ns,57.00ns,32.00ns,1.00ns,16.58us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1001,1000000,751.44ms,42.00ns,0.00ns,39.00ns,14.00ns,1.00ns,7.17us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1001,1000000,1.89s,584.00ns,0.00ns,605.00ns,103.00ns,500.00ns,25.46us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1001,1000000,3.52s,1.38us,0.00ns,1.40us,175.00ns,1.29us,33.79us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1001,1000000,1.89s,583.00ns,0.00ns,589.00ns,114.00ns,500.00ns,31.12us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1001,1000000,2.37s,833.00ns,0.00ns,837.00ns,122.00ns,750.00ns,25.71us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1001,1000000,2.31s,792.00ns,0.00ns,813.00ns,123.00ns,708.00ns,26.00us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,1001,1000000,818.17ms,83.00ns,0.00ns,66.00ns,39.00ns,1.00ns,18.96us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,1001,1000000,806.35ms,83.00ns,0.00ns,66.00ns,39.00ns,1.00ns,16.79us
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1001,1000000,1.94s,625.00ns,0.00ns,623.00ns,3.55us,500.00ns,2.79ms
+memmem/pathological/rare-repeated-small-tricky,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1001,1000000,2.56s,625.00ns,0.00ns,1.23us,555.42us,500.00ns,555.35ms
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,1001,1000000,2.13s,708.00ns,0.00ns,694.00ns,116.00ns,583.00ns,32.04us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,1001,1000000,2.12s,709.00ns,0.00ns,722.00ns,122.00ns,625.00ns,32.00us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,1001,1000000,2.01s,667.00ns,0.00ns,664.00ns,109.00ns,541.00ns,25.67us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,1001,1000000,4.71s,2.50us,0.00ns,2.49us,215.00ns,2.38us,42.17us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1001,1000000,1.76s,500.00ns,0.00ns,521.00ns,115.00ns,416.00ns,25.75us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,1001,1000000,1.95s,584.00ns,0.00ns,601.00ns,118.00ns,500.00ns,32.75us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,1001,1000000,1.76s,541.00ns,0.00ns,529.00ns,106.00ns,416.00ns,24.83us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,1001,1000000,1.53s,416.00ns,0.00ns,402.00ns,89.00ns,291.00ns,32.12us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,1001,506890,4.88s,5.88us,0.00ns,5.87us,346.00ns,5.71us,36.83us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1001,1000000,3.09s,1.17us,0.00ns,1.16us,145.00ns,1.04us,30.00us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,1001,578266,4.88s,5.12us,0.00ns,5.14us,326.00ns,5.00us,37.21us
+memmem/pathological/rare-repeated-small-match,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,1001,1000000,2.07s,667.00ns,0.00ns,677.00ns,118.00ns,583.00ns,25.67us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,550004,3240,4.56s,923.29us,0.00ns,925.95us,5.75us,921.83us,0.97ms
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,550004,2054,4.56s,1.46ms,0.00ns,1.46ms,7.27us,1.46ms,1.52ms
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,550004,2048,4.56s,1.46ms,21.00ns,1.47ms,217.78us,1.46ms,11.31ms
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,550004,17362,4.56s,170.00us,0.00ns,172.73us,89.20us,165.17us,10.09ms
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,550004,17587,4.56s,169.96us,0.00ns,170.53us,2.56us,169.62us,212.58us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,550004,23907,4.56s,119.08us,0.00ns,125.44us,11.62us,117.17us,174.71us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,550004,3811,4.56s,784.83us,0.00ns,787.24us,5.52us,784.67us,839.75us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,550004,9102,4.56s,328.75us,0.00ns,329.55us,3.36us,325.08us,365.33us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,550004,17722,4.56s,168.71us,0.00ns,169.23us,2.38us,168.58us,203.17us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,550004,17724,4.56s,168.71us,0.00ns,169.21us,2.33us,168.58us,204.83us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,550004,6351,4.56s,470.88us,0.00ns,472.32us,4.31us,470.62us,545.79us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,550004,6353,4.56s,470.79us,0.00ns,472.23us,4.10us,470.62us,520.08us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,550004,32603,4.56s,90.96us,0.00ns,91.97us,3.64us,87.12us,125.21us
+memmem/pathological/defeat-simple-vector-alphabet,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,550004,25235,4.54s,91.21us,0.00ns,118.83us,3.48ms,86.96us,552.16ms
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,720057,4475,4.55s,668.54us,0.00ns,670.42us,4.70us,668.38us,732.96us
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,720057,2889,4.56s,1.04ms,0.00ns,1.04ms,5.82us,1.04ms,1.08ms
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,720057,2809,4.56s,1.06ms,0.00ns,1.07ms,6.63us,1.06ms,1.13ms
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,720057,66587,4.56s,44.67us,0.00ns,45.00us,1.19us,44.50us,78.04us
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,720057,67235,4.56s,44.25us,0.00ns,44.57us,1.21us,43.92us,74.17us
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,720057,82687,4.55s,35.79us,0.00ns,36.23us,1.21us,35.50us,68.96us
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,720057,2902,4.56s,1.03ms,0.00ns,1.03ms,5.77us,1.03ms,1.09ms
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,720057,65934,4.56s,45.33us,0.00ns,45.45us,1.07us,45.17us,95.88us
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,720057,66429,4.56s,45.00us,0.00ns,45.11us,1.07us,44.83us,84.62us
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,720057,9758,4.56s,305.54us,0.00ns,307.39us,81.34us,299.04us,8.29ms
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,720057,9652,4.54s,305.54us,0.00ns,310.79us,167.73us,297.08us,12.55ms
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,720057,116201,4.63s,25.58us,0.00ns,25.77us,815.00ns,25.38us,57.00us
+memmem/pathological/defeat-simple-vector-freq-alphabet,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,720057,117983,4.63s,25.25us,0.00ns,25.38us,745.00ns,25.08us,59.00us
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,720057,760,4.56s,3.95ms,0.00ns,3.95ms,9.97us,3.94ms,4.01ms
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,720057,760,4.56s,3.95ms,0.00ns,3.95ms,9.68us,3.94ms,4.00ms
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,720057,760,4.56s,3.95ms,21.00ns,3.95ms,9.83us,3.94ms,4.01ms
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,720057,3634,4.56s,823.17us,0.00ns,825.55us,5.30us,822.96us,871.75us
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,720057,3638,4.56s,822.29us,0.00ns,824.75us,5.28us,822.12us,884.54us
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,720057,4835,4.56s,616.50us,0.00ns,620.44us,10.35us,616.33us,753.62us
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,720057,2903,4.55s,1.03ms,0.00ns,1.03ms,5.86us,1.03ms,1.07ms
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,720057,3186,4.56s,740.58us,0.00ns,941.70us,9.88ms,720.08us,558.15ms
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,720057,4157,4.55s,719.58us,0.00ns,721.74us,4.82us,719.46us,764.38us
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,720057,760,4.56s,3.95ms,21.00ns,3.95ms,10.42us,3.94ms,4.00ms
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,720057,759,4.56s,3.95ms,0.00ns,3.95ms,11.21us,3.94ms,4.03ms
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,720057,5653,4.56s,523.71us,0.00ns,530.64us,15.34us,478.96us,611.08us
+memmem/pathological/defeat-simple-vector-repeated-alphabet,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,720057,5619,4.56s,526.33us,0.00ns,533.86us,14.77us,487.58us,588.71us
+memmem/sliceslice/short,needles-in-needles,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,,421,4.56s,7.15ms,0.00ns,7.13ms,40.24us,7.05ms,7.20ms
+memmem/sliceslice/short,needles-in-needles,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,,162,4.56s,18.52ms,271.00ns,18.53ms,78.57us,18.41ms,19.04ms
+memmem/sliceslice/short,needles-in-needles,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,,80,4.56s,37.57ms,0.00ns,37.57ms,44.86us,37.51ms,37.91ms
+memmem/sliceslice/seemingly-random,needles-in-haystack,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,1000,18720,4.56s,159.75us,0.00ns,160.21us,2.14us,159.50us,193.83us
+memmem/sliceslice/seemingly-random,needles-in-haystack,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,1000,4549,4.56s,656.67us,0.00ns,659.57us,59.21us,646.75us,3.94ms
+memmem/sliceslice/seemingly-random,needles-in-haystack,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,1000,11097,4.54s,266.92us,0.00ns,270.30us,91.74us,258.88us,8.40ms
+memmem/sliceslice/i386,needles-in-haystack,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,806771,122,4.56s,24.78ms,188.00ns,24.78ms,19.69us,24.73ms,24.82ms
+memmem/sliceslice/i386,needles-in-haystack,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,806771,24,4.68s,128.88ms,729.00ns,128.88ms,42.94us,128.80ms,129.03ms
+memmem/sliceslice/i386,needles-in-haystack,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,806771,59,4.56s,51.00ms,0.00ns,51.05ms,211.94us,50.83ms,52.13ms
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,4309,4.56s,695.00us,0.00ns,696.20us,5.05us,690.04us,744.75us
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,1822,4.56s,1.64ms,0.00ns,1.65ms,7.20us,1.64ms,1.69ms
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,1824,4.56s,1.64ms,0.00ns,1.65ms,7.38us,1.64ms,1.69ms
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,60974,4.56s,48.96us,0.00ns,49.15us,1.15us,48.38us,84.29us
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,86229,4.56s,34.62us,0.00ns,34.74us,0.97us,34.08us,87.25us
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,13882,4.56s,214.92us,0.00ns,216.06us,9.46us,199.79us,268.62us
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,2645,4.54s,886.00us,0.00ns,1.13ms,10.76ms,885.33us,554.26ms
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,7830,4.56s,382.25us,0.00ns,383.09us,3.56us,378.33us,424.04us
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,6907,4.56s,432.83us,0.00ns,434.31us,4.36us,431.50us,480.79us
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,7275,4.56s,412.62us,0.00ns,412.33us,4.33us,409.04us,451.92us
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,14146,4.56s,209.62us,0.00ns,212.04us,8.03us,198.46us,250.62us
+memmem/subtitles/common/huge-en-that,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,14987,4.56s,197.50us,0.00ns,200.14us,8.06us,186.75us,259.75us
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,5941,4.56s,503.50us,0.00ns,504.92us,4.22us,502.50us,543.04us
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,1998,4.56s,1.50ms,0.00ns,1.50ms,6.75us,1.49ms,1.55ms
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,2007,4.56s,1.49ms,0.00ns,1.49ms,7.10us,1.49ms,1.61ms
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,23538,4.56s,126.96us,0.00ns,127.40us,2.05us,125.75us,166.04us
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,40721,4.56s,73.54us,0.00ns,73.62us,52.73us,72.00us,10.71ms
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,11943,4.57s,249.00us,0.00ns,251.15us,18.27us,232.75us,867.04us
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,3305,4.55s,903.54us,0.00ns,907.90us,11.96us,902.50us,1.09ms
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,7168,4.56s,417.38us,0.00ns,418.48us,4.20us,411.54us,512.08us
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,8613,4.56s,347.88us,0.00ns,348.30us,3.70us,344.21us,391.75us
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,11076,4.56s,270.04us,0.00ns,270.81us,3.08us,268.83us,313.12us
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,9999,4.56s,301.17us,0.00ns,300.00us,8.92us,285.96us,346.62us
+memmem/subtitles/common/huge-en-you,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,12125,4.56s,245.04us,0.00ns,247.37us,8.48us,234.00us,297.12us
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,2817,4.56s,1.06ms,0.00ns,1.07ms,6.08us,1.06ms,1.12ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,1367,4.56s,2.19ms,0.00ns,2.20ms,7.74us,2.19ms,2.25ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,1404,4.56s,2.14ms,0.00ns,2.14ms,7.73us,2.13ms,2.18ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,3544,4.56s,654.29us,1.00ns,846.54us,9.42ms,645.12us,560.77ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,3671,4.56s,815.08us,0.00ns,817.32us,5.36us,814.33us,858.62us
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,3210,4.56s,933.54us,0.00ns,934.67us,6.63us,920.67us,0.97ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,2015,4.56s,1.49ms,0.00ns,1.49ms,10.76us,1.47ms,1.54ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,3295,4.56s,908.88us,0.00ns,910.66us,6.02us,902.83us,0.97ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,1952,4.56s,1.53ms,0.00ns,1.54ms,9.16us,1.53ms,1.78ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,2580,4.56s,1.16ms,0.00ns,1.16ms,7.96us,1.14ms,1.23ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,1848,4.56s,1.62ms,0.00ns,1.62ms,8.56us,1.58ms,1.69ms
+memmem/subtitles/common/huge-en-one-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,2804,4.56s,1.07ms,0.00ns,1.07ms,5.99us,1.06ms,1.12ms
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613402,3018,4.56s,0.99ms,1.00ns,0.99ms,5.59us,0.99ms,1.04ms
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613402,1615,5.09s,1.84ms,0.00ns,2.19ms,13.79ms,1.83ms,556.10ms
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613402,1630,4.52s,1.84ms,0.00ns,1.84ms,6.92us,1.83ms,1.89ms
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613402,58178,4.56s,51.38us,0.00ns,51.52us,1.19us,51.08us,86.79us
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613402,94322,4.63s,31.67us,0.00ns,31.75us,872.00ns,31.46us,64.00us
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613402,6404,4.55s,466.04us,0.00ns,468.42us,9.24us,458.21us,556.79us
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613402,3389,4.56s,882.88us,0.00ns,885.38us,5.40us,882.33us,936.00us
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613402,7799,4.56s,383.83us,0.00ns,384.66us,3.52us,376.83us,430.75us
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613402,6645,4.56s,450.29us,0.00ns,451.46us,4.02us,446.00us,512.92us
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613402,7161,4.56s,417.62us,0.00ns,418.94us,4.44us,414.62us,467.21us
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613402,6390,4.56s,468.96us,0.00ns,469.45us,3.49us,464.62us,500.50us
+memmem/subtitles/common/huge-ru-that,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613402,6725,4.56s,445.79us,0.00ns,446.11us,3.23us,441.08us,474.67us
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613402,1713,4.56s,1.75ms,0.00ns,1.75ms,6.56us,1.74ms,1.81ms
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613402,1264,4.56s,2.37ms,0.00ns,2.37ms,8.30us,2.37ms,2.43ms
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613402,1265,4.56s,2.37ms,0.00ns,2.37ms,4.90us,2.37ms,2.42ms
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613402,32408,4.56s,92.33us,0.00ns,92.52us,0.95us,91.92us,146.83us
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613402,51735,4.56s,57.88us,0.00ns,57.94us,544.00ns,57.29us,83.21us
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613402,5852,4.56s,510.54us,0.00ns,512.66us,4.85us,506.54us,546.62us
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613402,3318,4.56s,903.46us,0.00ns,904.16us,3.30us,902.29us,0.97ms
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613402,7445,4.55s,401.83us,0.00ns,402.95us,3.96us,397.00us,444.00us
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613402,6715,4.56s,442.17us,0.00ns,446.75us,9.90us,438.25us,489.29us
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613402,7724,4.56s,388.12us,0.00ns,388.40us,4.05us,383.38us,451.29us
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613402,5792,4.56s,516.50us,0.00ns,517.98us,4.78us,513.21us,562.71us
+memmem/subtitles/common/huge-ru-not,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613402,6168,4.56s,485.12us,0.00ns,486.34us,4.23us,482.38us,530.79us
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613402,5175,4.55s,578.50us,0.00ns,579.69us,4.37us,573.33us,614.33us
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613402,1682,4.56s,1.78ms,1.00ns,1.78ms,7.17us,1.78ms,1.84ms
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613402,1335,4.53s,1.76ms,0.00ns,2.25ms,15.43ms,1.75ms,565.52ms
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613402,5797,4.56s,518.54us,0.00ns,517.47us,7.13us,499.92us,561.96us
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613402,5026,4.56s,595.08us,0.00ns,596.87us,4.57us,593.33us,646.17us
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613402,4667,4.56s,640.71us,0.00ns,642.86us,5.61us,639.17us,696.00us
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613402,2488,4.56s,1.20ms,1.00ns,1.21ms,7.66us,1.20ms,1.25ms
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613402,4428,4.56s,675.58us,0.00ns,677.55us,5.67us,671.96us,723.54us
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613402,3205,4.56s,935.12us,0.00ns,936.03us,7.30us,921.58us,0.99ms
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613402,4001,4.56s,748.21us,0.00ns,749.80us,5.19us,738.12us,794.29us
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613402,3181,4.56s,946.42us,0.00ns,943.29us,10.50us,919.54us,1.00ms
+memmem/subtitles/common/huge-ru-one-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613402,4414,4.56s,678.21us,0.00ns,679.66us,4.94us,673.04us,716.88us
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613427,6091,4.80s,436.50us,0.00ns,531.19us,7.15ms,436.17us,558.83ms
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613427,2064,4.55s,1.45ms,0.00ns,1.45ms,6.78us,1.45ms,1.64ms
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613427,2066,4.56s,1.45ms,0.00ns,1.45ms,3.48us,1.45ms,1.47ms
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613427,77576,4.56s,38.62us,0.00ns,38.62us,477.00ns,37.38us,62.79us
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613427,100253,4.63s,29.83us,0.00ns,29.88us,350.00ns,29.54us,47.83us
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613427,19852,4.56s,145.62us,0.00ns,151.07us,8.28us,142.54us,189.12us
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613427,3330,4.56s,900.46us,0.00ns,901.02us,2.87us,899.62us,921.92us
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613427,7812,4.56s,383.83us,0.00ns,384.00us,2.12us,377.50us,419.17us
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613427,37373,4.56s,80.12us,0.00ns,80.22us,1.71us,78.50us,118.17us
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613427,46856,4.56s,63.75us,0.00ns,63.98us,1.40us,62.96us,105.50us
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613427,21261,4.56s,140.00us,0.00ns,141.06us,66.04us,137.42us,9.73ms
+memmem/subtitles/common/huge-zh-that,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613427,17984,4.53s,130.00us,0.00ns,166.77us,4.13ms,126.75us,553.49ms
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613427,4394,4.56s,681.83us,0.00ns,682.77us,3.35us,681.12us,715.75us
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613427,1839,4.56s,1.63ms,0.00ns,1.63ms,25.69us,1.63ms,2.08ms
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613427,1841,4.56s,1.63ms,0.00ns,1.63ms,6.93us,1.62ms,1.67ms
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613427,40288,4.56s,74.33us,0.00ns,74.42us,838.00ns,73.67us,96.38us
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613427,59205,4.56s,50.58us,0.00ns,50.62us,606.00ns,50.21us,75.88us
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613427,13907,4.56s,214.29us,0.00ns,215.68us,7.90us,203.67us,259.12us
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613427,3328,4.56s,900.92us,0.00ns,901.45us,3.35us,899.62us,942.04us
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613427,7522,4.56s,397.88us,0.00ns,398.82us,3.70us,391.58us,446.54us
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613427,18213,4.56s,164.17us,0.00ns,164.67us,2.43us,163.04us,214.96us
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613427,19515,4.52s,120.54us,0.00ns,153.68us,3.98ms,119.83us,555.35ms
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613427,12860,4.54s,234.25us,0.00ns,233.24us,5.54us,225.08us,316.88us
+memmem/subtitles/common/huge-zh-do-not,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613427,15038,4.56s,200.12us,0.00ns,199.45us,4.83us,192.79us,233.75us
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613427,12800,4.56s,233.58us,0.00ns,234.34us,2.85us,232.25us,270.71us
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613427,1943,4.55s,1.54ms,0.00ns,1.54ms,6.51us,1.54ms,1.58ms
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613427,1955,4.56s,1.53ms,0.00ns,1.53ms,8.69us,1.53ms,1.76ms
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613427,14508,4.56s,206.00us,0.00ns,206.75us,2.72us,204.29us,254.46us
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613427,13401,4.56s,223.17us,0.00ns,223.82us,2.84us,222.38us,258.54us
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613427,5764,4.56s,518.92us,0.00ns,520.45us,4.65us,514.83us,560.42us
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613427,3018,4.56s,0.99ms,0.00ns,0.99ms,6.01us,0.99ms,1.03ms
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613427,6121,4.56s,486.79us,0.00ns,490.14us,146.76us,481.58us,11.96ms
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613427,8580,5.04s,335.96us,0.00ns,349.60us,254.28us,332.96us,19.35ms
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613427,11160,4.55s,267.83us,0.00ns,268.79us,3.26us,264.88us,305.29us
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613427,4919,4.56s,608.79us,0.00ns,609.93us,5.54us,602.21us,666.88us
+memmem/subtitles/common/huge-zh-one-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613427,5723,4.56s,523.12us,0.00ns,524.24us,4.41us,515.25us,567.67us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,8430,4.56s,354.88us,0.00ns,355.87us,3.40us,354.75us,395.50us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,2133,4.56s,1.40ms,0.00ns,1.41ms,6.62us,1.40ms,1.45ms
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,2133,4.56s,1.40ms,0.00ns,1.41ms,6.61us,1.40ms,1.45ms
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,160981,4.62s,18.54us,0.00ns,18.58us,679.00ns,18.42us,78.08us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,161289,4.63s,18.50us,0.00ns,18.55us,608.00ns,18.38us,48.92us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,11097,4.56s,270.83us,0.00ns,270.30us,11.59us,247.63us,318.21us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,2641,4.53s,878.29us,0.00ns,1.14ms,11.41ms,875.17us,587.06ms
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,8158,4.55s,366.88us,0.00ns,367.69us,3.55us,363.08us,408.71us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,100697,4.63s,29.67us,0.00ns,29.74us,839.00ns,28.62us,66.96us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,101187,4.62s,29.54us,0.00ns,29.60us,857.00ns,28.58us,60.33us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,86505,4.56s,34.54us,0.00ns,34.63us,907.00ns,34.38us,65.25us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,86617,4.56s,34.50us,0.00ns,34.58us,907.00ns,34.33us,65.17us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,11913,4.56s,254.42us,0.00ns,251.79us,11.65us,232.46us,299.42us
+memmem/subtitles/never/huge-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,11907,4.56s,254.33us,0.00ns,251.91us,11.55us,233.38us,303.58us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,5500,4.56s,543.83us,0.00ns,545.44us,4.38us,543.54us,594.67us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,1954,4.56s,1.53ms,0.00ns,1.54ms,6.82us,1.53ms,1.59ms
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,1947,4.55s,1.53ms,0.00ns,1.54ms,201.72us,1.53ms,10.39ms
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,115980,4.59s,25.21us,0.00ns,25.81us,33.69us,24.67us,7.32ms
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,119027,4.63s,25.08us,0.00ns,25.15us,765.00ns,24.79us,67.67us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,21241,4.56s,137.58us,0.00ns,141.19us,7.40us,131.88us,188.96us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,3408,4.56s,878.21us,0.00ns,880.36us,5.35us,875.21us,943.67us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,8158,4.56s,366.88us,0.00ns,367.69us,3.58us,363.29us,400.21us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,9249,4.56s,323.38us,0.00ns,324.34us,3.40us,322.79us,368.12us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,9255,4.56s,321.21us,0.00ns,324.12us,4.90us,320.62us,376.08us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,72698,4.56s,41.08us,0.00ns,41.21us,1.03us,40.92us,74.46us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,72404,4.56s,41.29us,0.00ns,41.38us,1.00us,41.08us,72.38us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,23017,4.56s,128.88us,0.00ns,130.29us,4.52us,124.25us,169.12us
+memmem/subtitles/never/huge-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,17899,4.53s,129.25us,0.00ns,167.56us,4.09ms,123.92us,547.35ms
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,8466,4.56s,353.25us,0.00ns,354.33us,3.50us,353.04us,392.71us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,2133,4.56s,1.41ms,0.00ns,1.41ms,8.48us,1.40ms,1.65ms
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,2134,4.56s,1.40ms,0.00ns,1.41ms,6.63us,1.40ms,1.44ms
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,165860,4.63s,18.00us,0.00ns,18.04us,611.00ns,17.88us,51.83us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,161290,4.63s,18.50us,0.00ns,18.55us,621.00ns,18.38us,49.79us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,20194,4.56s,144.46us,0.00ns,148.51us,10.63us,134.04us,197.67us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,3407,4.56s,878.33us,0.00ns,880.49us,5.32us,875.33us,934.96us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,8159,4.56s,366.83us,0.00ns,367.66us,3.51us,363.25us,401.38us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,101958,4.63s,29.29us,0.00ns,29.38us,836.00ns,28.75us,60.25us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,101962,4.62s,29.21us,0.00ns,29.37us,17.44us,28.67us,5.50ms
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,85752,4.56s,34.38us,0.00ns,34.93us,34.14us,33.33us,8.38ms
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,87036,4.56s,34.33us,0.00ns,34.42us,883.00ns,34.17us,65.12us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,22886,4.56s,129.71us,0.00ns,131.03us,5.05us,123.04us,217.38us
+memmem/subtitles/never/huge-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,22861,4.55s,129.79us,0.00ns,131.18us,5.15us,122.92us,194.08us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,2783,4.56s,1.08ms,0.00ns,1.08ms,7.41us,1.07ms,1.26ms
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,1560,4.55s,1.92ms,21.00ns,1.92ms,7.83us,1.91ms,1.98ms
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,1565,4.56s,1.92ms,0.00ns,1.92ms,8.16us,1.91ms,1.98ms
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,176289,4.63s,16.92us,0.00ns,16.96us,600.00ns,16.79us,49.79us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,176369,4.63s,16.92us,0.00ns,16.96us,588.00ns,16.79us,76.12us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,6926,4.55s,435.75us,0.00ns,433.16us,11.57us,401.62us,477.96us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,2660,4.54s,881.33us,0.00ns,1.13ms,10.64ms,878.38us,549.17ms
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,8156,4.55s,366.96us,0.00ns,367.80us,3.46us,360.17us,415.62us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,7022,4.56s,424.50us,0.00ns,427.22us,12.43us,402.25us,540.21us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,6961,4.56s,427.92us,0.00ns,430.96us,13.26us,402.88us,499.00us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,86949,4.56s,34.38us,0.00ns,34.45us,895.00ns,34.21us,64.42us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,87056,4.56s,34.33us,0.00ns,34.41us,894.00ns,34.17us,66.21us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,7203,4.56s,417.96us,0.00ns,416.47us,8.79us,394.08us,465.42us
+memmem/subtitles/never/huge-en-two-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,7189,4.56s,418.00us,0.00ns,417.30us,8.89us,392.42us,462.17us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,28,1000000,690.91ms,1.00ns,0.00ns,17.00ns,24.00ns,1.00ns,9.50us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,28,1000000,744.23ms,42.00ns,0.00ns,49.00ns,31.00ns,1.00ns,16.50us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,28,1000000,748.47ms,42.00ns,0.00ns,49.00ns,32.00ns,1.00ns,18.04us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,28,1000000,746.52ms,1.00ns,0.00ns,19.00ns,34.00ns,1.00ns,20.79us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,28,1000000,680.78ms,1.00ns,0.00ns,18.00ns,21.00ns,1.00ns,4.75us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,28,1000000,690.30ms,1.00ns,0.00ns,16.00ns,28.00ns,1.00ns,16.67us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,28,1000000,690.63ms,1.00ns,0.00ns,19.00ns,22.00ns,1.00ns,9.58us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,28,1000000,687.49ms,1.00ns,0.00ns,19.00ns,25.00ns,1.00ns,9.96us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,28,1000000,684.05ms,1.00ns,0.00ns,20.00ns,22.00ns,1.00ns,5.75us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,28,1000000,684.77ms,1.00ns,0.00ns,21.00ns,30.00ns,1.00ns,16.58us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,28,1000000,691.67ms,1.00ns,0.00ns,18.00ns,22.00ns,1.00ns,6.79us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,28,1000000,691.80ms,1.00ns,0.00ns,17.00ns,27.00ns,1.00ns,9.33us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,28,1000000,748.32ms,42.00ns,0.00ns,39.00ns,17.00ns,1.00ns,9.58us
+memmem/subtitles/never/teeny-en-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,28,1000000,752.48ms,42.00ns,0.00ns,39.00ns,30.00ns,1.00ns,16.50us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,28,1000000,689.61ms,1.00ns,0.00ns,17.00ns,24.00ns,1.00ns,9.25us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,28,1000000,746.12ms,42.00ns,0.00ns,54.00ns,34.00ns,1.00ns,23.75us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,28,1000000,746.64ms,42.00ns,0.00ns,53.00ns,36.00ns,1.00ns,16.83us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,28,1000000,748.12ms,1.00ns,0.00ns,19.00ns,31.00ns,1.00ns,21.00us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,28,1000000,631.47ms,1.00ns,0.00ns,18.00ns,25.00ns,1.00ns,13.62us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,28,1000000,1.32s,1.00ns,0.00ns,20.00ns,1.79us,1.00ns,1.79ms
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,28,1000000,690.67ms,1.00ns,0.00ns,19.00ns,28.00ns,1.00ns,15.54us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,28,1000000,681.50ms,1.00ns,0.00ns,19.00ns,21.00ns,1.00ns,6.96us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,28,1000000,684.73ms,1.00ns,0.00ns,20.00ns,23.00ns,1.00ns,7.17us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,28,1000000,685.86ms,1.00ns,0.00ns,21.00ns,28.00ns,1.00ns,8.58us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,28,1000000,694.29ms,1.00ns,0.00ns,18.00ns,25.00ns,1.00ns,10.29us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,28,1000000,696.15ms,1.00ns,0.00ns,17.00ns,23.00ns,1.00ns,6.75us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,28,1000000,753.80ms,42.00ns,0.00ns,34.00ns,27.00ns,1.00ns,13.21us
+memmem/subtitles/never/teeny-en-all-common-bytes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,28,1000000,748.80ms,42.00ns,0.00ns,34.00ns,46.00ns,1.00ns,31.88us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,28,1000000,682.87ms,1.00ns,0.00ns,17.00ns,23.00ns,1.00ns,7.67us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,28,1000000,753.57ms,42.00ns,0.00ns,61.00ns,30.00ns,1.00ns,9.79us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,28,1000000,745.94ms,42.00ns,0.00ns,60.00ns,40.00ns,1.00ns,19.12us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,28,1000000,682.85ms,1.00ns,0.00ns,20.00ns,26.00ns,1.00ns,13.83us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,28,1000000,691.40ms,1.00ns,0.00ns,18.00ns,23.00ns,1.00ns,9.58us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,28,1000000,686.44ms,1.00ns,0.00ns,16.00ns,34.00ns,1.00ns,23.12us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,28,1000000,683.44ms,1.00ns,0.00ns,19.00ns,27.00ns,1.00ns,9.25us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,28,1000000,680.18ms,1.00ns,0.00ns,19.00ns,21.00ns,1.00ns,6.88us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,28,1000000,691.18ms,1.00ns,0.00ns,21.00ns,36.00ns,1.00ns,21.50us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,28,1000000,690.54ms,1.00ns,0.00ns,21.00ns,27.00ns,1.00ns,12.17us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,28,1000000,692.97ms,1.00ns,0.00ns,18.00ns,22.00ns,1.00ns,6.96us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,28,1000000,692.90ms,1.00ns,0.00ns,17.00ns,28.00ns,1.00ns,16.88us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,28,1000000,691.18ms,1.00ns,0.00ns,21.00ns,32.00ns,1.00ns,13.75us
+memmem/subtitles/never/teeny-en-some-rare-bytes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,28,1000000,684.81ms,41.00ns,0.00ns,22.00ns,31.00ns,1.00ns,12.29us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,28,1000000,749.59ms,41.00ns,0.00ns,25.00ns,23.00ns,1.00ns,9.88us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,28,1000000,809.43ms,83.00ns,0.00ns,71.00ns,36.00ns,1.00ns,20.67us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,28,1000000,815.23ms,83.00ns,0.00ns,72.00ns,37.00ns,1.00ns,14.92us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,28,1000000,691.52ms,1.00ns,0.00ns,20.00ns,29.00ns,1.00ns,15.58us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,28,1000000,692.70ms,1.00ns,0.00ns,18.00ns,28.00ns,1.00ns,17.00us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,28,1000000,684.77ms,1.00ns,0.00ns,18.00ns,27.00ns,1.00ns,12.00us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,28,1000000,682.07ms,1.00ns,0.00ns,20.00ns,36.00ns,1.00ns,16.58us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,28,1000000,692.22ms,1.00ns,0.00ns,19.00ns,27.00ns,1.00ns,14.96us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,28,1000000,691.01ms,1.00ns,0.00ns,21.00ns,25.00ns,1.00ns,9.50us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,28,1000000,689.80ms,41.00ns,0.00ns,29.00ns,25.00ns,1.00ns,9.96us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,28,1000000,687.88ms,1.00ns,0.00ns,18.00ns,29.00ns,1.00ns,16.75us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,28,1000000,692.68ms,1.00ns,0.00ns,17.00ns,35.00ns,1.00ns,24.12us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,28,1000000,681.71ms,1.00ns,0.00ns,21.00ns,25.00ns,1.00ns,9.83us
+memmem/subtitles/never/teeny-en-two-space,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,28,1000000,687.07ms,1.00ns,0.00ns,21.00ns,25.00ns,1.00ns,9.42us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613402,2183,4.55s,1.37ms,0.00ns,1.37ms,7.36us,1.36ms,1.45ms
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613402,3298,4.56s,907.08us,0.00ns,909.59us,5.58us,906.92us,0.97ms
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613402,3298,4.56s,907.08us,0.00ns,909.72us,5.67us,906.92us,0.96ms
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613402,157856,4.63s,18.92us,0.00ns,18.95us,636.00ns,18.75us,44.04us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613402,124937,4.61s,18.83us,0.00ns,23.96us,1.57ms,18.17us,553.51ms
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613402,13266,4.56s,225.25us,0.00ns,226.10us,3.84us,219.67us,269.88us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613402,3411,4.56s,877.79us,0.00ns,879.52us,5.69us,875.12us,931.12us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613402,99066,4.63s,30.17us,0.00ns,30.23us,871.00ns,29.67us,76.62us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613402,99564,4.63s,30.00us,0.00ns,30.08us,863.00ns,29.54us,60.67us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613402,36833,4.56s,81.17us,0.00ns,81.40us,1.57us,80.62us,115.21us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613402,39138,4.56s,76.75us,0.00ns,76.60us,1.70us,74.88us,108.54us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613402,14037,4.56s,218.54us,0.00ns,213.67us,7.24us,204.79us,256.50us
+memmem/subtitles/never/huge-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613402,14096,4.56s,212.00us,0.00ns,212.78us,2.86us,210.67us,267.25us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,42,1000000,689.89ms,41.00ns,0.00ns,23.00ns,40.00ns,1.00ns,30.96us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,42,1000000,744.87ms,42.00ns,0.00ns,40.00ns,31.00ns,1.00ns,19.29us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,42,1000000,752.87ms,42.00ns,0.00ns,40.00ns,31.00ns,1.00ns,16.54us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,42,1000000,748.27ms,41.00ns,0.00ns,28.00ns,22.00ns,1.00ns,6.71us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,42,1000000,684.64ms,1.00ns,0.00ns,17.00ns,24.00ns,1.00ns,9.92us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,42,1000000,692.45ms,1.00ns,0.00ns,16.00ns,30.00ns,1.00ns,19.58us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,42,1000000,691.62ms,1.00ns,0.00ns,21.00ns,24.00ns,1.00ns,9.75us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,42,1000000,752.07ms,41.00ns,0.00ns,28.00ns,32.00ns,1.00ns,16.12us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,42,1000000,684.98ms,1.00ns,0.00ns,20.00ns,24.00ns,1.00ns,8.62us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,42,1000000,625.76ms,1.00ns,0.00ns,18.00ns,25.00ns,1.00ns,12.17us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,42,1000000,694.61ms,1.00ns,0.00ns,17.00ns,28.00ns,1.00ns,16.21us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,42,1000000,869.32ms,84.00ns,0.00ns,100.00ns,51.00ns,1.00ns,23.50us
+memmem/subtitles/never/teeny-ru-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,42,1000000,1.48s,84.00ns,0.00ns,99.00ns,46.00ns,1.00ns,19.58us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613427,5907,4.55s,506.33us,0.00ns,507.89us,4.26us,506.04us,549.71us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613427,1992,4.56s,1.50ms,0.00ns,1.51ms,6.54us,1.50ms,1.55ms
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613427,1992,4.55s,1.50ms,0.00ns,1.51ms,6.79us,1.50ms,1.56ms
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613427,156295,4.63s,19.08us,0.00ns,19.14us,647.00ns,18.96us,52.08us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613427,152300,4.63s,19.62us,0.00ns,19.65us,656.00ns,19.46us,50.67us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613427,35855,4.56s,80.75us,0.00ns,83.62us,4.33us,79.79us,117.79us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613427,3408,4.56s,878.21us,0.00ns,880.45us,5.47us,875.21us,928.12us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613427,8155,4.56s,367.00us,0.00ns,367.84us,3.48us,363.04us,406.75us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613427,42942,4.55s,69.96us,0.00ns,69.81us,2.19us,67.71us,118.79us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613427,43386,4.56s,68.83us,0.00ns,69.10us,1.46us,68.25us,105.92us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613427,64420,4.58s,35.83us,0.00ns,46.52us,2.19ms,34.67us,555.90ms
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613427,83515,4.56s,35.75us,0.00ns,35.87us,1.02us,35.62us,76.92us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613427,40085,4.56s,74.54us,0.00ns,74.79us,2.42us,70.79us,117.12us
+memmem/subtitles/never/huge-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613427,40800,4.55s,73.21us,0.00ns,73.48us,2.01us,70.12us,111.04us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,31,1000000,684.10ms,1.00ns,0.00ns,17.00ns,24.00ns,1.00ns,12.42us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,31,1000000,742.84ms,42.00ns,0.00ns,49.00ns,16.00ns,1.00ns,1.38us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,31,1000000,751.23ms,42.00ns,0.00ns,49.00ns,29.00ns,1.00ns,16.50us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,31,1000000,684.00ms,1.00ns,0.00ns,20.00ns,24.00ns,1.00ns,9.88us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,31,1000000,686.39ms,1.00ns,0.00ns,18.00ns,23.00ns,1.00ns,10.04us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,31,1000000,687.53ms,1.00ns,0.00ns,16.00ns,24.00ns,1.00ns,9.96us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,31,1000000,687.01ms,1.00ns,0.00ns,19.00ns,21.00ns,1.00ns,4.83us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,31,1000000,684.35ms,1.00ns,0.00ns,19.00ns,28.00ns,1.00ns,15.79us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,31,1000000,691.27ms,1.00ns,0.00ns,20.00ns,29.00ns,1.00ns,16.83us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,31,1000000,685.30ms,1.00ns,0.00ns,20.00ns,28.00ns,1.00ns,16.79us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,31,1000000,686.02ms,1.00ns,0.00ns,18.00ns,21.00ns,1.00ns,6.88us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,31,1000000,685.53ms,1.00ns,0.00ns,17.00ns,27.00ns,1.00ns,14.33us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,31,1000000,809.29ms,42.00ns,0.00ns,54.00ns,33.00ns,1.00ns,16.12us
+memmem/subtitles/never/teeny-zh-john-watson,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,31,1000000,752.94ms,42.00ns,0.00ns,54.00ns,38.00ns,1.00ns,16.58us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,8065,4.56s,370.83us,0.00ns,371.93us,3.54us,370.71us,410.21us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,2119,4.56s,1.41ms,0.00ns,1.42ms,6.60us,1.41ms,1.47ms
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,2120,4.56s,1.41ms,0.00ns,1.42ms,6.62us,1.41ms,1.46ms
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,157841,4.63s,18.92us,0.00ns,18.96us,628.00ns,18.79us,50.04us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,124631,4.63s,18.83us,0.00ns,24.02us,1.59ms,18.17us,560.23ms
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,18748,4.56s,157.79us,0.00ns,159.97us,7.01us,148.12us,204.17us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,3411,4.56s,878.08us,0.00ns,879.66us,5.99us,875.08us,0.98ms
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,8158,4.56s,366.96us,0.00ns,367.71us,3.55us,362.04us,419.42us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,74410,4.56s,40.12us,0.00ns,40.27us,1.00us,39.71us,71.75us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,73063,4.56s,40.88us,0.00ns,41.01us,1.01us,40.38us,71.62us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,85263,4.56s,35.04us,0.00ns,35.13us,931.00ns,34.88us,68.25us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,85358,4.56s,35.00us,0.00ns,35.10us,920.00ns,34.88us,64.71us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,20178,4.56s,146.71us,0.00ns,148.63us,5.58us,139.75us,193.71us
+memmem/subtitles/rare/huge-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,20144,4.56s,146.92us,0.00ns,148.88us,5.53us,139.75us,198.33us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,8044,4.56s,370.83us,0.00ns,372.90us,38.90us,370.71us,3.36ms
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,2093,4.52s,1.41ms,0.00ns,1.43ms,464.21us,1.41ms,20.19ms
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,2119,4.56s,1.41ms,0.00ns,1.42ms,6.64us,1.41ms,1.47ms
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,163825,4.63s,18.21us,0.00ns,18.26us,593.00ns,18.08us,48.42us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,159779,4.63s,18.67us,0.00ns,18.72us,650.00ns,18.54us,71.25us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,17382,4.56s,172.42us,0.00ns,172.54us,9.82us,156.04us,218.38us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,3406,4.56s,878.62us,0.00ns,880.81us,5.25us,875.42us,926.33us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613345,8161,4.56s,366.79us,0.00ns,367.56us,3.51us,363.17us,419.71us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,36102,4.56s,82.83us,0.00ns,83.05us,1.51us,82.33us,119.00us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,36313,4.56s,82.33us,0.00ns,82.56us,1.54us,81.79us,118.04us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,86550,4.56s,34.54us,0.00ns,34.61us,909.00ns,34.38us,65.50us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,67573,4.57s,34.46us,0.00ns,44.34us,2.12ms,33.42us,549.93ms
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,18927,4.56s,158.00us,0.00ns,158.46us,7.27us,146.04us,232.79us
+memmem/subtitles/rare/huge-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,18702,4.56s,159.83us,0.00ns,160.36us,7.45us,146.54us,202.54us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,5910,4.56s,506.04us,0.00ns,507.65us,4.35us,505.54us,557.00us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,3262,4.55s,917.50us,0.00ns,919.76us,5.13us,915.79us,0.97ms
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,3262,4.55s,917.29us,0.00ns,919.71us,5.42us,915.33us,0.96ms
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,147046,4.63s,20.29us,0.00ns,20.35us,667.00ns,20.17us,55.33us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,147839,4.63s,20.21us,0.00ns,20.24us,673.00ns,20.04us,51.00us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,29923,4.56s,99.83us,0.00ns,100.21us,1.84us,98.79us,139.50us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,3409,4.56s,878.04us,0.00ns,880.08us,5.55us,875.08us,928.92us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,33348,4.56s,89.92us,0.00ns,89.91us,40.37us,88.21us,7.45ms
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,33815,4.54s,87.33us,0.00ns,88.67us,106.16us,85.88us,19.53ms
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,64750,4.55s,46.12us,0.00ns,46.28us,1.05us,45.83us,81.38us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,65127,4.56s,45.88us,0.00ns,46.01us,1.05us,45.58us,75.42us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,35686,4.56s,83.75us,0.00ns,84.02us,1.59us,83.08us,121.29us
+memmem/subtitles/rare/huge-en-medium-needle,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,35518,4.56s,84.12us,0.00ns,84.41us,1.63us,83.42us,131.96us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,7610,4.56s,392.96us,0.00ns,394.18us,3.89us,392.79us,431.67us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,3243,4.56s,922.96us,0.00ns,925.13us,5.54us,919.83us,0.98ms
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,3243,4.56s,922.96us,0.00ns,925.15us,5.53us,919.88us,0.97ms
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,158117,4.63s,18.88us,0.00ns,18.92us,639.00ns,18.75us,52.79us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,169150,4.63s,17.42us,0.00ns,17.68us,783.00ns,17.25us,48.38us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,33885,4.55s,68.83us,0.00ns,88.48us,3.01ms,67.79us,554.21ms
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,3408,4.56s,878.04us,0.00ns,880.40us,5.56us,875.17us,919.04us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,38890,4.56s,77.00us,0.00ns,77.09us,1.59us,75.54us,123.67us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,39061,4.56s,76.46us,0.00ns,76.75us,1.57us,75.79us,119.42us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,82323,4.56s,36.29us,0.00ns,36.39us,926.00ns,36.12us,65.50us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,82321,4.56s,36.29us,0.00ns,36.39us,0.96us,36.17us,77.54us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,58813,4.55s,50.75us,0.00ns,50.96us,1.22us,50.08us,85.08us
+memmem/subtitles/rare/huge-en-long-needle,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,59574,4.56s,50.08us,0.00ns,50.31us,1.32us,49.21us,81.04us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613345,8230,4.56s,363.42us,0.00ns,364.50us,3.54us,363.29us,398.21us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613345,3254,4.56s,919.67us,0.00ns,921.94us,5.38us,917.79us,0.97ms
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613345,3197,5.08s,919.88us,0.00ns,1.10ms,9.88ms,894.96us,559.62ms
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613345,139929,4.62s,21.29us,0.00ns,21.39us,767.00ns,20.83us,52.25us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613345,168933,4.63s,17.46us,0.00ns,17.71us,688.00ns,17.29us,48.46us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613345,44897,4.56s,66.58us,0.00ns,66.77us,1.35us,65.96us,98.62us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613345,3410,4.56s,877.67us,0.00ns,879.93us,5.25us,874.71us,919.62us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613345,62359,4.56s,47.92us,0.00ns,48.06us,1.10us,47.42us,79.67us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613345,66427,4.56s,45.00us,0.00ns,45.11us,1.11us,44.42us,78.38us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613345,83943,4.56s,35.58us,0.00ns,35.69us,0.98us,35.46us,87.92us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613345,83961,4.56s,35.58us,0.00ns,35.68us,0.98us,35.42us,71.79us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613345,49952,4.56s,59.75us,0.00ns,60.01us,1.31us,59.08us,100.25us
+memmem/subtitles/rare/huge-en-huge-needle,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613345,52660,4.56s,56.62us,0.00ns,56.92us,28.43us,54.29us,6.08ms
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,28,1000000,687.07ms,1.00ns,0.00ns,19.00ns,30.00ns,1.00ns,21.33us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,28,1000000,755.58ms,42.00ns,0.00ns,40.00ns,28.00ns,1.00ns,16.71us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,28,1000000,804.57ms,42.00ns,0.00ns,40.00ns,12.00ns,1.00ns,1.54us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,28,1000000,748.61ms,41.00ns,0.00ns,31.00ns,837.00ns,1.00ns,479.92us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,28,1000000,691.81ms,1.00ns,0.00ns,18.00ns,23.00ns,1.00ns,9.79us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,28,1000000,680.23ms,41.00ns,0.00ns,22.00ns,22.00ns,1.00ns,6.96us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,28,1000000,750.66ms,1.00ns,0.00ns,19.00ns,21.00ns,1.00ns,5.12us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,28,1000000,682.48ms,1.00ns,0.00ns,19.00ns,22.00ns,1.00ns,7.46us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,28,1000000,747.86ms,41.00ns,0.00ns,26.00ns,22.00ns,1.00ns,10.08us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,28,1000000,690.08ms,41.00ns,0.00ns,28.00ns,26.00ns,1.00ns,9.79us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,28,1000000,755.43ms,1.00ns,0.00ns,19.00ns,24.00ns,1.00ns,9.00us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,28,1000000,685.63ms,1.00ns,0.00ns,19.00ns,32.00ns,1.00ns,20.17us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,28,1000000,1.00s,166.00ns,0.00ns,147.00ns,53.00ns,41.00ns,23.58us
+memmem/subtitles/rare/teeny-en-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,28,1000000,813.11ms,83.00ns,0.00ns,76.00ns,31.00ns,1.00ns,10.46us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,28,1000000,691.74ms,1.00ns,0.00ns,19.00ns,24.00ns,1.00ns,9.46us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,28,1000000,756.19ms,42.00ns,0.00ns,44.00ns,27.00ns,1.00ns,13.54us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,28,1000000,747.89ms,42.00ns,0.00ns,43.00ns,14.00ns,1.00ns,9.33us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,28,1000000,745.47ms,1.00ns,0.00ns,21.00ns,28.00ns,1.00ns,16.42us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,28,1000000,690.83ms,1.00ns,0.00ns,20.00ns,25.00ns,1.00ns,9.42us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,28,1000000,690.89ms,1.00ns,0.00ns,18.00ns,25.00ns,1.00ns,12.25us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,28,1000000,691.90ms,1.00ns,0.00ns,19.00ns,21.00ns,1.00ns,4.96us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,28,1000000,690.66ms,1.00ns,0.00ns,19.00ns,24.00ns,1.00ns,9.29us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,28,1000000,744.48ms,1.00ns,0.00ns,21.00ns,28.00ns,1.00ns,16.50us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,28,1000000,687.96ms,41.00ns,0.00ns,26.00ns,25.00ns,1.00ns,9.04us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,28,1000000,684.76ms,1.00ns,0.00ns,18.00ns,21.00ns,1.00ns,6.75us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,28,1000000,692.08ms,1.00ns,0.00ns,18.00ns,32.00ns,1.00ns,21.25us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,28,1000000,812.98ms,83.00ns,0.00ns,66.00ns,41.00ns,1.00ns,22.42us
+memmem/subtitles/rare/teeny-en-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,28,1000000,746.59ms,42.00ns,0.00ns,34.00ns,24.00ns,1.00ns,9.62us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613402,2186,4.55s,1.37ms,0.00ns,1.37ms,7.57us,1.36ms,1.49ms
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613402,3298,4.56s,907.08us,0.00ns,909.75us,5.37us,906.92us,0.95ms
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613402,3298,4.56s,907.08us,0.00ns,909.73us,5.56us,906.96us,0.97ms
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613402,157518,4.63s,18.96us,0.00ns,18.99us,646.00ns,18.83us,45.88us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613402,158316,4.63s,18.88us,0.00ns,18.90us,643.00ns,18.75us,77.75us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613402,16012,4.56s,186.08us,0.00ns,187.31us,3.42us,182.25us,235.04us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613402,3412,4.56s,877.92us,0.00ns,879.38us,5.77us,875.12us,934.46us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613402,109430,4.63s,27.29us,0.00ns,27.36us,822.00ns,26.29us,58.54us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613402,113474,4.62s,26.33us,0.00ns,26.39us,841.00ns,25.33us,74.71us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613402,46715,4.56s,64.08us,0.00ns,64.17us,1.34us,63.04us,97.62us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613402,44691,4.56s,66.92us,0.00ns,67.08us,1.36us,66.38us,94.88us
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613402,13959,4.57s,169.62us,0.00ns,214.87us,4.67ms,157.88us,551.45ms
+memmem/subtitles/rare/huge-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613402,17375,4.55s,173.00us,0.00ns,172.62us,3.76us,164.46us,217.08us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613402,1784,4.56s,1.68ms,1.00ns,1.68ms,25.98us,1.67ms,2.01ms
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613402,1299,4.56s,2.31ms,0.00ns,2.31ms,7.90us,2.30ms,2.35ms
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613402,1301,4.56s,2.30ms,0.00ns,2.31ms,10.91us,2.30ms,2.47ms
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613402,157619,4.63s,18.96us,0.00ns,18.98us,643.00ns,18.83us,52.08us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613402,157855,4.62s,18.92us,0.00ns,18.95us,631.00ns,18.79us,49.62us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613402,10010,4.56s,298.46us,0.00ns,299.67us,4.97us,293.29us,334.67us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613402,3412,4.56s,877.83us,0.00ns,879.19us,5.85us,875.12us,934.33us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613402,8161,4.56s,366.75us,0.00ns,367.59us,3.57us,362.92us,405.96us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613402,110838,4.62s,26.92us,0.00ns,27.02us,10.18us,25.42us,2.83ms
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613402,109922,4.58s,26.42us,0.00ns,27.24us,46.59us,25.58us,11.60ms
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613402,55974,4.55s,53.38us,0.00ns,53.54us,1.21us,53.04us,93.58us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613402,54409,4.56s,54.88us,0.00ns,55.09us,1.39us,53.92us,93.04us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613402,10696,4.56s,279.62us,0.00ns,280.43us,4.21us,274.42us,409.83us
+memmem/subtitles/rare/huge-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613402,10765,4.56s,278.25us,0.00ns,278.63us,3.64us,275.29us,327.79us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,42,1000000,690.81ms,41.00ns,0.00ns,24.00ns,24.00ns,1.00ns,11.00us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,42,1000000,690.55ms,42.00ns,0.00ns,35.00ns,21.00ns,1.00ns,9.46us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,42,1000000,684.95ms,42.00ns,0.00ns,34.00ns,21.00ns,1.00ns,9.79us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,42,1000000,749.67ms,42.00ns,0.00ns,35.00ns,25.00ns,1.00ns,9.42us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,42,1000000,691.26ms,1.00ns,0.00ns,19.00ns,26.00ns,1.00ns,9.50us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,42,1000000,688.08ms,41.00ns,0.00ns,32.00ns,32.00ns,1.00ns,16.46us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,42,1000000,690.93ms,1.00ns,0.00ns,20.00ns,23.00ns,1.00ns,6.92us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,42,1000000,749.13ms,42.00ns,0.00ns,38.00ns,18.00ns,1.00ns,9.50us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,42,1000000,753.66ms,42.00ns,0.00ns,33.00ns,28.00ns,1.00ns,16.42us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,42,1000000,684.07ms,1.00ns,0.00ns,19.00ns,23.00ns,1.00ns,9.75us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,42,1000000,693.59ms,1.00ns,0.00ns,19.00ns,25.00ns,1.00ns,7.42us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,42,1000000,1.23s,250.00ns,0.00ns,256.00ns,77.00ns,125.00ns,25.04us
+memmem/subtitles/rare/teeny-ru-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,42,1000000,0.99s,125.00ns,0.00ns,132.00ns,59.00ns,41.00ns,17.17us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,42,1000000,755.38ms,42.00ns,0.00ns,43.00ns,25.00ns,1.00ns,13.71us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,42,1000000,755.62ms,42.00ns,0.00ns,62.00ns,42.00ns,1.00ns,21.12us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,42,1000000,809.92ms,42.00ns,0.00ns,61.00ns,44.00ns,1.00ns,23.38us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,42,1000000,691.63ms,41.00ns,0.00ns,27.00ns,34.00ns,1.00ns,22.62us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,42,1000000,684.02ms,1.00ns,0.00ns,20.00ns,37.00ns,1.00ns,29.04us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,42,1000000,683.19ms,1.00ns,0.00ns,19.00ns,22.00ns,1.00ns,7.00us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,42,1000000,691.95ms,1.00ns,0.00ns,20.00ns,24.00ns,1.00ns,9.58us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,42,1000000,693.04ms,1.00ns,0.00ns,20.00ns,21.00ns,1.00ns,6.75us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,42,1000000,686.12ms,41.00ns,0.00ns,30.00ns,30.00ns,1.00ns,16.62us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,42,1000000,686.04ms,41.00ns,0.00ns,29.00ns,19.00ns,1.00ns,375.00ns
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,42,1000000,689.29ms,1.00ns,0.00ns,19.00ns,37.00ns,1.00ns,22.96us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,42,1000000,693.31ms,1.00ns,0.00ns,19.00ns,20.00ns,1.00ns,1.46us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,42,1000000,930.59ms,125.00ns,0.00ns,115.00ns,40.00ns,1.00ns,16.62us
+memmem/subtitles/rare/teeny-ru-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,42,1000000,816.77ms,42.00ns,0.00ns,57.00ns,36.00ns,1.00ns,15.96us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613427,4873,4.54s,612.08us,0.00ns,615.65us,93.00us,610.83us,6.98ms
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613427,3237,4.53s,913.08us,0.00ns,926.95us,338.52us,886.46us,17.25ms
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613427,3278,4.56s,913.00us,0.00ns,915.33us,5.57us,911.17us,0.97ms
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613427,149593,4.63s,19.96us,0.00ns,20.00us,652.00ns,19.83us,70.50us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613427,149677,4.63s,19.96us,0.00ns,19.99us,624.00ns,19.79us,50.17us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613427,32454,4.56s,91.12us,0.00ns,92.39us,2.69us,89.75us,128.88us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613427,3411,4.56s,877.96us,0.00ns,879.48us,5.80us,875.21us,921.96us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613427,21494,4.56s,137.83us,0.00ns,139.52us,3.86us,137.12us,175.50us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613427,21373,4.56s,140.46us,0.00ns,140.31us,2.65us,137.38us,211.71us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613427,77073,4.56s,38.79us,0.00ns,38.87us,0.98us,38.58us,100.25us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613427,77248,4.56s,38.71us,0.00ns,38.79us,0.96us,38.54us,69.42us
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613427,26273,4.55s,88.42us,0.00ns,114.13us,3.43ms,86.25us,555.25ms
+memmem/subtitles/rare/huge-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613427,33733,4.56s,88.62us,0.00ns,88.89us,1.80us,87.17us,135.04us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,613427,4363,4.56s,685.50us,0.00ns,687.54us,5.54us,684.96us,809.46us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,613427,1840,4.56s,1.63ms,0.00ns,1.63ms,6.76us,1.62ms,1.67ms
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,613427,1838,4.56s,1.63ms,0.00ns,1.63ms,6.71us,1.62ms,1.68ms
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,613427,154252,4.62s,19.38us,0.00ns,19.40us,641.00ns,19.21us,44.38us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,613427,154424,4.62s,19.33us,0.00ns,19.38us,602.00ns,19.21us,50.54us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,613427,22368,4.55s,130.04us,0.00ns,134.07us,6.15us,128.92us,172.71us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,613427,3416,4.56s,875.38us,0.00ns,878.38us,5.83us,875.25us,919.42us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,613427,8014,4.56s,373.58us,0.00ns,374.32us,3.18us,367.00us,407.42us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,613427,32866,4.55s,90.83us,0.00ns,91.23us,54.73us,89.33us,9.94ms
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,613427,32705,4.55s,87.96us,0.00ns,91.68us,75.18us,86.71us,10.18ms
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,613427,72750,4.56s,41.08us,0.00ns,41.19us,1.00us,40.88us,80.71us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,613427,72832,4.56s,41.04us,0.00ns,41.14us,0.99us,40.83us,78.58us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,613427,24077,4.56s,123.33us,0.00ns,124.55us,2.98us,121.67us,178.42us
+memmem/subtitles/rare/huge-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,613427,24016,4.56s,124.21us,0.00ns,124.87us,2.91us,121.08us,165.33us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,31,1000000,693.18ms,1.00ns,0.00ns,19.00ns,25.00ns,1.00ns,14.17us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,31,1000000,692.07ms,41.00ns,0.00ns,22.00ns,25.00ns,1.00ns,9.79us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,31,1000000,686.54ms,41.00ns,0.00ns,22.00ns,27.00ns,1.00ns,9.88us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,31,1000000,684.56ms,41.00ns,0.00ns,29.00ns,25.00ns,1.00ns,9.71us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,31,1000000,692.84ms,1.00ns,0.00ns,20.00ns,37.00ns,1.00ns,16.54us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,31,1000000,691.71ms,41.00ns,0.00ns,24.00ns,25.00ns,1.00ns,9.33us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,31,1000000,692.75ms,1.00ns,0.00ns,18.00ns,27.00ns,1.00ns,16.71us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,31,1000000,683.67ms,42.00ns,0.00ns,32.00ns,22.00ns,1.00ns,9.25us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,31,1000000,684.30ms,41.00ns,0.00ns,30.00ns,33.00ns,1.00ns,21.58us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,31,1000000,693.46ms,1.00ns,0.00ns,18.00ns,26.00ns,1.00ns,16.83us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,31,1000000,685.92ms,1.00ns,0.00ns,18.00ns,26.00ns,1.00ns,16.00us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,31,1000000,1.16s,250.00ns,0.00ns,236.00ns,72.00ns,125.00ns,25.25us
+memmem/subtitles/rare/teeny-zh-sherlock-holmes,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,31,1000000,929.74ms,125.00ns,0.00ns,119.00ns,43.00ns,1.00ns,22.75us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),libc/memmem/oneshot,unknown,,31,1000000,754.26ms,41.00ns,0.00ns,22.00ns,25.00ns,1.00ns,9.92us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/oneshot,0.5.3,,31,1000000,746.87ms,42.00ns,0.00ns,44.00ns,26.00ns,1.00ns,16.58us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/jetscii/memmem/prebuilt,0.5.3,,31,1000000,745.82ms,42.00ns,0.00ns,42.00ns,20.00ns,1.00ns,16.33us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/oneshot,2.5.0,,31,1000000,684.75ms,1.00ns,0.00ns,20.00ns,28.00ns,1.00ns,16.50us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/prebuilt,2.5.0,,31,1000000,691.96ms,1.00ns,0.00ns,20.00ns,31.00ns,1.00ns,18.54us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/twoway,2.5.0,,31,1000000,693.54ms,1.00ns,0.00ns,19.00ns,26.00ns,1.00ns,12.04us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/rabinkarp,2.5.0,,31,1000000,686.71ms,1.00ns,0.00ns,19.00ns,24.00ns,1.00ns,13.21us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchr/memmem/shiftor,2.5.0,,31,1000000,686.42ms,1.00ns,0.00ns,19.00ns,22.00ns,1.00ns,6.92us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/oneshot,2.5.0,,31,1000000,684.25ms,41.00ns,0.00ns,23.00ns,28.00ns,1.00ns,16.50us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/memchrold/memmem/prebuilt,2.5.0,,31,1000000,685.00ms,41.00ns,0.00ns,27.00ns,26.00ns,1.00ns,16.58us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/oneshot,2.5.0,,31,1000000,694.62ms,1.00ns,0.00ns,18.00ns,22.00ns,1.00ns,8.46us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/sliceslice/memmem/prebuilt,2.5.0,,31,1000000,685.84ms,1.00ns,0.00ns,18.00ns,30.00ns,1.00ns,19.46us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/oneshot,1.73.0-nightly 07438b092,,31,1000000,877.87ms,83.00ns,0.00ns,83.00ns,34.00ns,1.00ns,16.33us
+memmem/subtitles/rare/teeny-zh-sherlock,count,0.0.1 (rev 45afe89f43),rust/std/memmem/prebuilt,1.73.0-nightly 07438b092,,31,1000000,750.93ms,42.00ns,0.00ns,44.00ns,29.00ns,1.00ns,19.58us

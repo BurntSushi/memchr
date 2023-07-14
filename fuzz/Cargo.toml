@@ -18,7 +18,6 @@ path = ".."
 
 # Prevent this from interfering with workspaces
 [workspace]
-members = ["."]
 
 [[bin]]
 name = "memchr"
@@ -72,8 +71,10 @@ doc = false
 opt-level = 3
 debug = true
 
-[profile.debug]
-inherits = "release"
+[profile.dev]
+opt-level = 3
+debug = true
 
 [profile.test]
-inherits = "release"
+opt-level = 3
+debug = true

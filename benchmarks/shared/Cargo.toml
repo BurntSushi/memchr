@@ -1,0 +1,14 @@
+[package]
+name = "shared"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+anyhow = "1.0.69"
+bstr = { version = "1.6.0", default-features = false, features = ["std"] }
+
+[lib]
+name = "shared"
+path = "lib.rs"

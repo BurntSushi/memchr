@@ -1,0 +1,35 @@
+[[bench]]
+model = "count"
+name = "binary"
+regex = '\x00\x00\xDD\xDD\x00'
+haystack = { path = "rg-13.0.0.txt" }
+count = 1
+engines = [
+  "libc/memmem/oneshot",
+  "rust/jetscii/memmem/oneshot",
+  "rust/jetscii/memmem/prebuilt",
+  "rust/memchr/memmem/oneshot",
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchr/memmem/binary",
+  "rust/memchr/memmem/twoway",
+  "rust/memchr/memmem/rabinkarp",
+  "rust/memchr/memmem/shiftor",
+  "rust/memchr/memmem/wasm32",
+  "rust/memchrold/memmem/oneshot",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/oneshot",
+  "rust/sliceslice/memmem/prebuilt",
+]
+analysis = '''
+This benchmark demonstrates the utility of using one's own heuristic ranking
+function for the background frequency of bytes. In this case, the needle has
+NUL bytes which are quite uncommon in plain text but common in binary data.
+Since the heuristics in the `memchr` crate are more or less targeted at plain
+text, the NUL byte is chosen as a predicate because it is believed to be rare.
+But since the haystack is an executable, i.e. binary data, this choice is poor.
+
+So this measures a separate engine, `rust/memchr/memmem/binary`, which is like
+`rust/memchr/memmem/prebuilt`, except it uses a ranking function tuned from
+binary data. In this case, the NUL byte is considered common and thus not used
+as a predicate. This leads to a dramatic improvement in throughput.
+'''

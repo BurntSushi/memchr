@@ -4,8 +4,9 @@ use core::ops;
 ///
 /// The purpose of this type is to permit usage of a "borrowed or owned
 /// byte string" in a way that keeps std/no-std compatibility. That is, in
-/// no-std mode, this type devolves into a simple &[u8] with no owned variant
-/// available. We can't just use a plain Cow because Cow is not in core.
+/// no-std/alloc mode, this type devolves into a simple &[u8] with no owned
+/// variant available. We can't just use a plain Cow because Cow is not in
+/// core.
 #[derive(Clone, Debug)]
 pub struct CowBytes<'a>(Imp<'a>);
 
@@ -35,21 +36,21 @@ impl<'a> ops::Deref for CowBytes<'a> {
 impl<'a> CowBytes<'a> {
     /// Create a new borrowed CowBytes.
     #[inline(always)]
-    pub fn new<B: ?Sized + AsRef<[u8]>>(bytes: &'a B) -> CowBytes<'a> {
+    pub(crate) fn new<B: ?Sized + AsRef<[u8]>>(bytes: &'a B) -> CowBytes<'a> {
         CowBytes(Imp::new(bytes.as_ref()))
     }
 
     /// Create a new owned CowBytes.
     #[cfg(feature = "alloc")]
     #[inline(always)]
-    pub fn new_owned(bytes: alloc::boxed::Box<[u8]>) -> CowBytes<'static> {
+    fn new_owned(bytes: alloc::boxed::Box<[u8]>) -> CowBytes<'static> {
         CowBytes(Imp::Owned(bytes))
     }
 
     /// Return a borrowed byte string, regardless of whether this is an owned
     /// or borrowed byte string internally.
     #[inline(always)]
-    pub fn as_slice(&self) -> &[u8] {
+    pub(crate) fn as_slice(&self) -> &[u8] {
         self.0.as_slice()
     }
 
@@ -59,7 +60,7 @@ impl<'a> CowBytes<'a> {
     /// no-op. Otherwise, the internal byte string is copied.
     #[cfg(feature = "alloc")]
     #[inline(always)]
-    pub fn into_owned(self) -> CowBytes<'static> {
+    pub(crate) fn into_owned(self) -> CowBytes<'static> {
         match self.0 {
             Imp::Borrowed(b) => {
                 CowBytes::new_owned(alloc::boxed::Box::from(b))
@@ -70,24 +71,31 @@ impl<'a> CowBytes<'a> {
 }
 
 impl<'a> Imp<'a> {
-    #[cfg(feature = "alloc")]
     #[inline(always)]
     pub fn new(bytes: &'a [u8]) -> Imp<'a> {
-        Imp::Borrowed(bytes)
-    }
-
-    #[cfg(not(feature = "alloc"))]
-    #[inline(always)]
-    pub fn new(bytes: &'a [u8]) -> Imp<'a> {
-        Imp(bytes)
+        #[cfg(feature = "alloc")]
+        {
+            Imp::Borrowed(bytes)
+        }
+        #[cfg(not(feature = "alloc"))]
+        {
+            Imp(bytes)
+        }
     }
 
     #[cfg(feature = "alloc")]
     #[inline(always)]
     pub fn as_slice(&self) -> &[u8] {
-        match self {
-            Imp::Owned(ref x) => x,
-            Imp::Borrowed(x) => x,
+        #[cfg(feature = "alloc")]
+        {
+            match self {
+                Imp::Owned(ref x) => x,
+                Imp::Borrowed(x) => x,
+            }
+        }
+        #[cfg(not(feature = "alloc"))]
+        {
+            self.0
         }
     }
 

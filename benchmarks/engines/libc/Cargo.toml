@@ -1,0 +1,21 @@
+[package]
+publish = false
+name = "main"
+version = "0.0.0"  # unclear how to get libc version in portable way
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+anyhow = "1.0.72"
+libc = "0.2.147"
+
+[dependencies.shared]
+path = "../../shared"
+
+[[bin]]
+name = "main"
+path = "main.rs"
+
+[profile.release]
+debug = true

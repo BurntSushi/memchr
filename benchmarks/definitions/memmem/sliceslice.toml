@@ -1,0 +1,62 @@
+analysis = '''
+These benchmarks were lifted almost verbtaim out of the sliceslice crate. The
+reason why we have these benchmarks is because they were the primary thing
+that motivated me to write the memmem implementation in the `memchr` crate. In
+particular, my existing substring search implementation in the `bstr` crate
+did quite poorly on these particular benchmarks. Moreover, while the benchmark
+setup is a little weird, these benchmarks do reflect cases that I think are
+somewhat common:
+
+* In the sliceslice-words/words case, the benchmark is primarily about
+searching very short haystacks using common English words.
+* In the sliceslice-words/i386 case, the benchmark is primarily about searching
+a longer haystack with common English words.
+
+N.B. In the sliceslice crate, the benchmarks are called "short" and "long."
+Here, we call them sliceslice-words/words and sliceslice-i386/words,
+respectively. The name change was made to be consistent with the naming
+convention used for other benchmarks.
+
+The main thing that's "weird" about these benchmarks is that each iteration
+involves a lot of work. All of the other benchmarks in this crate focus on one
+specific needle with one specific haystack, and each iteration is a single
+search or iteration. But in these benchmarks, each iteration involves searching
+with many needles against potentially many haystacks. Nevertheless, these have
+proven useful targets for optimization.
+'''
+
+[[bench]]
+model = "needles-in-needles"
+name = "short"
+regex = { path = "sliceslice/words-by-length-desc.txt", per-line = "pattern" }
+haystack = ''  # not used in this model
+count = 4585
+engines = [
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/prebuilt",
+]
+
+[[bench]]
+model = "needles-in-haystack"
+name = "seemingly-random"
+regex = { path = "sliceslice/words-by-length-desc.txt", per-line = "pattern" }
+haystack = { path = "sliceslice/haystack.txt" }
+count = 106
+engines = [
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/prebuilt",
+]
+
+[[bench]]
+model = "needles-in-haystack"
+name = "i386"
+regex = { path = "sliceslice/words-by-length-desc.txt", per-line = "pattern" }
+haystack = { path = "sliceslice/i386.txt" }
+count = 4585
+engines = [
+  "rust/memchr/memmem/prebuilt",
+  "rust/memchrold/memmem/prebuilt",
+  "rust/sliceslice/memmem/prebuilt",
+]
