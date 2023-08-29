@@ -336,7 +336,7 @@ impl<'h, 'n> FindRevIter<'h, 'n> {
     /// this copies the needle.
     ///
     /// This is only available when the `std` feature is enabled.
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     #[inline]
     pub fn into_owned(self) -> FindRevIter<'h, 'static> {
         FindRevIter {
@@ -606,7 +606,7 @@ impl<'n> FinderRev<'n> {
     /// this copies the needle.
     ///
     /// This is only available when the `std` feature is enabled.
-    #[cfg(feature = "std")]
+    #[cfg(feature = "alloc")]
     #[inline]
     pub fn into_owned(self) -> FinderRev<'static> {
         FinderRev {
