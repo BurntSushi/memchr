@@ -12,7 +12,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.72"
-memchr = "=2.6.1", path = "../../../" }
+memchr = "=2.6.1"
 
 [dependencies.shared]
 path = "../../shared"
