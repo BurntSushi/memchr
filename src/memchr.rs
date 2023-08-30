@@ -884,4 +884,20 @@ mod tests {
             },
         )
     }
+
+    // Prior to memchr 2.6, the memchr iterators both implemented Send and
+    // Sync. But in memchr 2.6, the iterator changed to use raw pointers
+    // internally and I didn't add explicit Send/Sync impls. This ended up
+    // regressing the API. This test ensures we don't do that again.
+    //
+    // See: https://github.com/BurntSushi/memchr/issues/133
+    #[test]
+    fn sync_regression() {
+        use core::panic::{RefUnwindSafe, UnwindSafe};
+
+        fn assert_send_sync<T: Send + Sync + UnwindSafe + RefUnwindSafe>() {}
+        assert_send_sync::<Memchr>();
+        assert_send_sync::<Memchr2>();
+        assert_send_sync::<Memchr3>()
+    }
 }

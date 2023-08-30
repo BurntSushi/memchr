@@ -1011,6 +1011,16 @@ pub(crate) struct Iter<'h> {
     haystack: core::marker::PhantomData<&'h [u8]>,
 }
 
+// SAFETY: Iter contains no shared references to anything that performs any
+// interior mutations. Also, the lifetime guarantees that Iter will not outlive
+// the haystack.
+unsafe impl<'h> Send for Iter<'h> {}
+
+// SAFETY: Iter perform no interior mutations, therefore no explicit
+// synchronization is necessary. Also, the lifetime guarantees that Iter will
+// not outlive the haystack.
+unsafe impl<'h> Sync for Iter<'h> {}
+
 impl<'h> Iter<'h> {
     /// Create a new generic memchr iterator.
     #[inline(always)]
