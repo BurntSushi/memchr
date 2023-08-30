@@ -305,3 +305,11 @@ impl Seed {
         more.into_iter()
     }
 }
+
+fn sync_regression() {
+    use crate::{Memchr, Memchr2, Memchr3};
+    fn assert_send_sync<T: Send + Send>() {}
+    assert_send_sync::<Memchr>();
+    assert_send_sync::<Memchr2>();
+    assert_send_sync::<Memchr3>()
+}
