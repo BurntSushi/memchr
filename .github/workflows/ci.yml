@@ -50,17 +50,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build:
-        - stable
-        - beta
-        - nightly
-        - macos
-        - win-msvc
-        - win-gnu
-        - stable-x86
-        - stable-aarch64
-        - stable-powerpc64
-        - stable-s390x
         include:
         - build: stable
           os: ubuntu-latest
