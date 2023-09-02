@@ -11,7 +11,7 @@ keywords = ["memchr", "char", "scan", "strchr", "string"]
 license = "Unlicense OR MIT"
 exclude = ["/bench", "/benchmarks", "/.github", "/fuzz", "/scripts", "/tmp"]
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.61"
 
 [lib]
 name = "memchr"
