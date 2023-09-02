@@ -257,32 +257,14 @@ impl One {
         if start >= end {
             return 0;
         }
-        let confirm = |b| self.confirm(b);
-        let len = end.distance(start);
-        if len < USIZE_BYTES {
-            return generic::count_byte_by_byte(start, end, confirm);
+        // Sadly I couldn't get the SWAR approach to work here, so we just do
+        // one byte at a time for now. PRs to improve this are welcome.
+        let mut ptr = start;
+        let mut count = 0;
+        while ptr < end {
+            count += (ptr.read() == self.s1) as usize;
+            ptr = ptr.offset(1);
         }
-
-        // And now we start our search at a guaranteed aligned position.
-        let mut cur =
-            start.add(USIZE_BYTES - (start.as_usize() & USIZE_ALIGN));
-        debug_assert!(cur > start);
-        // Count any bytes that start before the first aligned boundary.
-        let mut count = generic::count_byte_by_byte(start, cur, confirm);
-        if len <= One::LOOP_BYTES {
-            return count + generic::count_byte_by_byte(cur, end, confirm);
-        }
-        debug_assert!(end.sub(One::LOOP_BYTES) >= start);
-        while cur <= end.sub(One::LOOP_BYTES) {
-            debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
-
-            let a = cur.cast::<usize>().read();
-            let b = cur.add(USIZE_BYTES).cast::<usize>().read();
-            count += self.count_bytes(a);
-            count += self.count_bytes(b);
-            cur = cur.add(One::LOOP_BYTES);
-        }
-        count += generic::count_byte_by_byte(cur, end, confirm);
         count
     }
 
@@ -298,11 +280,6 @@ impl One {
     #[inline(always)]
     fn has_needle(&self, chunk: usize) -> bool {
         has_zero_byte(self.v1 ^ chunk)
-    }
-
-    #[inline(always)]
-    fn count_bytes(&self, chunk: usize) -> usize {
-        count_bytes(self.v1 ^ chunk)
     }
 
     #[inline(always)]
@@ -907,14 +884,6 @@ fn has_zero_byte(x: usize) -> bool {
     (x.wrapping_sub(LO) & !x & HI) != 0
 }
 
-#[inline(always)]
-fn count_bytes(chunk: usize) -> usize {
-    const LO: usize = splat(0x01);
-    const HI: usize = splat(0x80);
-
-    (chunk.wrapping_sub(LO) & !chunk & HI).count_ones() as usize
-}
-
 /// Repeat the given byte into a word size number. That is, every 8 bits
 /// is equivalent to the given byte. For example, if `b` is `\x4E` or
 /// `01001110` in binary, then the returned value on a 32-bit system would be:
@@ -1011,5 +980,17 @@ mod tests {
         let mut it = finder.iter(haystack.as_bytes());
         assert_eq!(Some(0), it.next());
         assert_eq!(None, it.next_back());
+    }
+
+    // This regression test was caught by ripgrep's test suite on i686 when
+    // upgrading to memchr 2.6. Namely, something about the \x0B bytes here
+    // screws with the SWAR counting approach I was using. This regression test
+    // prompted me to remove the SWAR counting approach and just replace it
+    // with a byte-at-a-time loop.
+    #[test]
+    fn regression_count_new_lines() {
+        let haystack = "01234567\x0b\n\x0b\n\x0b\n\x0b\nx";
+        let count = One::new(b'\n').count(haystack.as_bytes());
+        assert_eq!(4, count);
     }
 }
