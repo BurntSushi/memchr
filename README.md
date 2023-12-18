@@ -173,8 +173,24 @@ Still though, this crate does accelerate substring search even when only SSE2
 is available. The standard library could therefore adopt the techniques in this
 crate just for SSE2. The reason why that hasn't happened yet isn't totally
 clear to me. It likely needs a champion to push it through. The standard
-library tends to be more conservative in these things.
+library tends to be more conservative in these things. With that said, the
+standard library does use some [SSE2 acceleration on `x86-64`][std-sse2] added
+in [this PR][std-sse2-pr]. However, at the time of writing, it is only used
+for short needles and doesn't use the frequency based heuristics found in this
+crate.
+
+**NOTE:** Another thing worth mentioning is that the standard library's
+substring search routine requires that both the needle and haystack have type
+`&str`. Unless you can assume that your data is valid UTF-8, building a `&str`
+will come with the overhead of UTF-8 validation. This may in turn result in
+overall slower searching depending on your workload. In contrast, the `memchr`
+crate permits both the needle and the haystack to have type `&[u8]`, where
+`&[u8]` can be created from a `&str` with zero cost. Therefore, the substring
+search in this crate is strictly more flexible than what the standard library
+provides.
 
 [burntsushi-bstr-blog]: https://blog.burntsushi.net/bstr/#motivation-based-on-performance
 [dynamic-cpu]: https://doc.rust-lang.org/std/arch/index.html#dynamic-cpu-feature-detection
 [core-feature]: https://github.com/rust-lang/rfcs/pull/3469
+[std-sse2]: https://github.com/rust-lang/rust/blob/bf9229a2e366b4c311f059014a4aa08af16de5d8/library/core/src/str/pattern.rs#L1719-L1857
+[std-sse2-pr]: https://github.com/rust-lang/rust/pull/103779
