@@ -108,26 +108,8 @@ pub fn is_equal(x: &[u8], y: &[u8]) -> bool {
 pub unsafe fn is_equal_raw(
     mut x: *const u8,
     mut y: *const u8,
-    n: usize,
+    mut n: usize,
 ) -> bool {
-    // If we don't have enough bytes to do 4-byte at a time loads, then
-    // handle each possible length specially. Note that I used to have a
-    // byte-at-a-time loop here and that turned out to be quite a bit slower
-    // for the memmem/pathological/defeat-simple-vector-alphabet benchmark.
-    if n < 4 {
-        return match n {
-            0 => true,
-            1 => x.read() == y.read(),
-            2 => {
-                x.cast::<u16>().read_unaligned()
-                    == y.cast::<u16>().read_unaligned()
-            }
-            // I also tried copy_nonoverlapping here and it looks like the
-            // codegen is the same.
-            3 => x.cast::<[u8; 3]>().read() == y.cast::<[u8; 3]>().read(),
-            _ => unreachable!(),
-        };
-    }
     // When we have 4 or more bytes to compare, then proceed in chunks of 4 at
     // a time using unaligned loads.
     //
@@ -143,9 +125,7 @@ pub unsafe fn is_equal_raw(
     // valid and readable for at least `n` bytes. We also do unaligned loads,
     // so there's no need to ensure we're aligned. (This is justified by this
     // routine being specifically for short strings.)
-    let xend = x.add(n.wrapping_sub(4));
-    let yend = y.add(n.wrapping_sub(4));
-    while x < xend {
+    while n >= 4 {
         let vx = x.cast::<u32>().read_unaligned();
         let vy = y.cast::<u32>().read_unaligned();
         if vx != vy {
@@ -153,10 +133,28 @@ pub unsafe fn is_equal_raw(
         }
         x = x.add(4);
         y = y.add(4);
+        n -= 4;
     }
-    let vx = xend.cast::<u32>().read_unaligned();
-    let vy = yend.cast::<u32>().read_unaligned();
-    vx == vy
+    // If we don't have enough bytes to do 4-byte at a time loads, then
+    // do partial loads. Note that I used to have a byte-at-a-time
+    // loop here and that turned out to be quite a bit slower for the
+    // memmem/pathological/defeat-simple-vector-alphabet benchmark.
+    if n >= 2 {
+        let vx = x.cast::<u16>().read_unaligned();
+        let vy = y.cast::<u16>().read_unaligned();
+        if vx != vy {
+            return false;
+        }
+        x = x.add(2);
+        y = y.add(2);
+        n -= 2;
+    }
+    if n > 0 {
+        if x.read() != y.read() {
+            return false;
+        }
+    }
+    true
 }
 
 #[cfg(test)]
