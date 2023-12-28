@@ -12,7 +12,7 @@ repository = "https://github.com/BurntSushi/memchr"
 readme = "README.md"
 keywords = ["memchr", "memmem", "substring", "find", "search"]
 license = "Unlicense OR MIT"
-exclude = ["/bench", "/benchmarks", "/.github", "/fuzz", "/scripts", "/tmp"]
+exclude = ["/.github", "/benchmarks", "/fuzz", "/scripts", "/tmp"]
 edition = "2021"
 rust-version = "1.61"
 
