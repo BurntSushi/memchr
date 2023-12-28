@@ -135,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # The version of wasmtime to download and install.
-      WASMTIME_VERSION: 12.0.1
+      WASMTIME_VERSION: 15.0.1
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -222,7 +222,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # The version of wasmtime to download and install.
-      WASMTIME_VERSION: 12.0.1
+      WASMTIME_VERSION: 15.0.1
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
