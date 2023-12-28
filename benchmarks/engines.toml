@@ -61,14 +61,14 @@
   [engine.version]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "memchr-oneshot",
     ]
@@ -537,14 +537,14 @@
   [engine.version]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "memchr-prebuilt",
     ]
@@ -569,14 +569,14 @@
   [engine.version]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "memchr-onlycount",
     ]
@@ -601,14 +601,14 @@
   [engine.version]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "memchr2",
     ]
@@ -633,14 +633,14 @@
   [engine.version]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "memchr3",
     ]
@@ -665,14 +665,14 @@
   [engine.version]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
-      "run", "--wasm-features", "simd", "--",
+      "run", "--wasm", "simd", "--",
       "./target/wasm32-wasi/release/main.wasm",
       "memmem-prebuilt",
     ]
