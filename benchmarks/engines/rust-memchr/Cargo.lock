@@ -20,10 +20,10 @@ dependencies = [
 
 [[package]]
 name = "main"
-version = "2.7.0"
+version = "2.7.1"
 dependencies = [
  "anyhow",
- "memchr 2.7.0",
+ "memchr 2.7.1",
  "shared",
 ]
 
@@ -35,7 +35,7 @@ checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
 
 [[package]]
 name = "memchr"
-version = "2.7.0"
+version = "2.7.1"
 
 [[package]]
 name = "serde"
