@@ -310,7 +310,7 @@ impl<'h, 'n> Iterator for FindIter<'h, 'n> {
 ///
 /// `'h` is the lifetime of the haystack while `'n` is the lifetime of the
 /// needle.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FindRevIter<'h, 'n> {
     haystack: &'h [u8],
     finder: FinderRev<'n>,
