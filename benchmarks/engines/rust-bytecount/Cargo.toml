@@ -1,14 +1,34 @@
 [package]
 publish = false
 name = "main"
-version = "0.6.7"
+version = "0.6.4"
 edition = "2021"
 
 [workspace]
 
 [dependencies]
 anyhow = "1.0.72"
-bytecount = "=0.6.7"
+# Note that with bytecount 0.6.7, it seems to fail on wasm32:
+#
+#     $ rebar measure -f '^memchr/sherlock/rare/huge1$' -e '^rust/bytecount/memchr/oneshot/wasm32$' -t
+#     Error: failed to run main module `./target/wasm32-wasi/release/main.wasm`
+#
+#     Caused by:
+#         0: failed to invoke command default
+#         1: error while executing at wasm backtrace:
+#                0: 0x7683 - <unknown>!bytecount::count::he2da8fc82662651b
+#                1: 0x4887 - <unknown>!main::main::he4a1bcea0da067f8
+#                2:  0x4fe - <unknown>!std::sys_common::backtrace::__rust_begin_short_backtrace::h3d2add2c8c259792
+#                3: 0x7f2f - <unknown>!__main_void
+#                4:  0x4d9 - <unknown>!_start
+#            note: using the `WASMTIME_BACKTRACE_DETAILS=1` environment variable may show more debugging information
+#         2: memory fault at wasm address 0x3a0000 in linear memory of size 0x3a0000
+#         3: wasm trap: out of bounds memory access
+#     memchr/sherlock/rare/huge1,count-bytes,rust/bytecount/memchr/oneshot/wasm32,0.6.7,failed to run command for 'rust/bytecount/memchr/oneshot/wasm32'
+#     some benchmarks failed
+#
+# It's not clear what's happening here, but 0.6.4 works.
+bytecount = "=0.6.4"
 
 [dependencies.shared]
 path = "../../shared"
