@@ -1,14 +1,14 @@
 [package]
 publish = false
 name = "main"
-version = "0.5.3"
+version = "0.6.7"
 edition = "2021"
 
 [workspace]
 
 [dependencies]
 anyhow = "1.0.72"
-bytecount = "=0.6.3"
+bytecount = "=0.6.7"
 
 [dependencies.shared]
 path = "../../shared"
@@ -19,3 +19,5 @@ path = "main.rs"
 
 [profile.release]
 debug = true
+codegen-units = 1
+lto = "fat"

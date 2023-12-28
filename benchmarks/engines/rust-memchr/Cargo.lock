@@ -14,24 +14,28 @@ version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6798148dccfbff0fae41c7574d2fa8f1ef3492fba0face179de5d8d447d67b05"
 dependencies = [
- "memchr",
+ "memchr 2.6.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
 ]
 
 [[package]]
 name = "main"
-version = "2.6.1"
+version = "2.6.4"
 dependencies = [
  "anyhow",
- "memchr",
+ "memchr 2.6.4",
  "shared",
 ]
 
 [[package]]
 name = "memchr"
-version = "2.6.1"
+version = "2.6.4"
+
+[[package]]
+name = "memchr"
+version = "2.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f478948fd84d9f8e86967bf432640e46adfb5a4bd4f14ef7e864ab38220534ae"
+checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
 
 [[package]]
 name = "serde"
