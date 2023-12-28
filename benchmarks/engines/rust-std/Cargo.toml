@@ -21,3 +21,5 @@ path = "main.rs"
 
 [profile.release]
 debug = true
+codegen-units = 1
+lto = "fat"

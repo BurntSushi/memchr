@@ -1,18 +1,14 @@
 [package]
 publish = false
 name = "main"
-version = "2.6.1"  # should match 'memchr' version below
+version = "2.6.4"  # should match current 'memchr' version
 edition = "2021"
 
 [workspace]
 
-# Uncomment to benchmark changes.
-# [patch.crates-io]
-# memchr = { path = "../../../" }
-
 [dependencies]
 anyhow = "1.0.72"
-memchr = "=2.6.1"
+memchr = { version = "*", path = "../../../" }
 
 [dependencies.shared]
 path = "../../shared"
@@ -23,3 +19,5 @@ path = "main.rs"
 
 [profile.release]
 debug = true
+codegen-units = 1
+lto = "fat"
