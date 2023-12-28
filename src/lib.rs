@@ -146,7 +146,7 @@ will also use AVX2 accelerated routines when the `avx2` feature is enabled at
 compile time. In general, enable this feature if you can.
 * **alloc** - When enabled (the default), APIs in this crate requiring some
 kind of allocation will become available. For example, the
-[`memmem::Finder::into_ownedd`](crate::memmem::Finder::into_owned) API and the
+[`memmem::Finder::into_owned`](crate::memmem::Finder::into_owned) API and the
 [`arch::all::shiftor`](crate::arch::all::shiftor) substring search
 implementation. Otherwise, this crate is designed from the ground up to be
 usable in core-only contexts, so the `alloc` feature doesn't add much
