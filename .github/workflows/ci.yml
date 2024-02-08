@@ -152,7 +152,7 @@ jobs:
         curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v$WASMTIME_VERSION/wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
         tar xvf wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
         echo `pwd`/wasmtime-v$WASMTIME_VERSION-x86_64-linux >> $GITHUB_PATH
-        echo "CARGO_TARGET_WASM32_WASI_RUNNER=wasmtime run --wasm-features simd --" >> $GITHUB_ENV
+        echo "CARGO_TARGET_WASM32_WASI_RUNNER=wasmtime run --wasm simd --" >> $GITHUB_ENV
     - name: Basic build
       run: cargo build --verbose
     - name: Run tests
