@@ -158,6 +158,26 @@
     bin = "cargo"
     args = ["clean"]
 
+# Engines based on the `stringzilla` library.
+#
+# See: https://github.com/ashvardanian/StringZilla
+
+[[engine]]
+  name = "stringzilla/memmem/oneshot"
+  cwd = "./engines/stringzilla"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
 # Engines based on the Rust standard library.
 
 [[engine]]

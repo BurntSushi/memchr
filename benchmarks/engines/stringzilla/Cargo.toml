@@ -1,0 +1,23 @@
+[package]
+publish = false
+name = "main"
+version = "3.3.0"  # should match 'stringzilla' version below
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+anyhow = "1.0.72"
+stringzilla = "3.3.0"
+
+[dependencies.shared]
+path = "../../shared"
+
+[[bin]]
+name = "main"
+path = "main.rs"
+
+[profile.release]
+debug = true
+codegen-units = 1
+lto = "fat"
