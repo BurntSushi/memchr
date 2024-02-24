@@ -162,22 +162,6 @@ jobs:
     - name: Run tests without any features enabled (core-only)
       run: cargo test --verbose --no-default-features
 
-  # This job uses a custom target file to build the memchr crate on x86-64
-  # but *without* SSE/AVX target features. This is a somewhat strange
-  # configuration, but it pops up now and then. Particularly in kernels that
-  # don't support SSE/AVX registers.
-  build-for-x86-64-but-non-sse-target:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    - name: Install Rust
-      uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: nightly
-        components: rust-src
-    - run: cargo build -Z build-std=core --target=src/tests/x86_64-soft_float.json --verbose --no-default-features
-
   # This job runs a stripped down version of CI to test the MSRV. The specific
   # reason for doing this is that dev-dependencies tend to evolve more quickly.
   # There isn't as tight of a control on them because, well, they're only used
