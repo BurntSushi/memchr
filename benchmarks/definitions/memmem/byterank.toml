@@ -19,6 +19,7 @@ engines = [
   "rust/memchrold/memmem/prebuilt",
   "rust/sliceslice/memmem/oneshot",
   "rust/sliceslice/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 analysis = '''
 This benchmark demonstrates the utility of using one's own heuristic ranking

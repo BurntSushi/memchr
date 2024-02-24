@@ -20,6 +20,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -44,6 +45,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -68,6 +70,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -92,6 +95,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -116,6 +120,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -140,6 +145,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -164,6 +170,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -188,6 +195,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -211,6 +219,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -234,6 +243,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -258,6 +268,7 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
 
 [[bench]]
@@ -282,4 +293,5 @@ engines = [
   "rust/sliceslice/memmem/prebuilt",
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
+  "stringzilla/memmem/oneshot",
 ]
