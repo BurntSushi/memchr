@@ -162,6 +162,29 @@ jobs:
     - name: Run tests without any features enabled (core-only)
       run: cargo test --verbose --no-default-features
 
+  # This job uses a target to build the memchr crate on x86-64 but *without*
+  # SSE/AVX target features. This is relevant for virtually all OS kernels.
+  build-for-x86-64-but-non-sse-target:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+        targets: x86_64-unknown-none
+    - name: Build for x86_64-unknown-none with only 'alloc' enabled
+      run: cargo build --verbose --no-default-features --features alloc --target x86_64-unknown-none
+    - name: Run tests for x86_64-unknown-linux-gnu without SSE
+      run: cargo test --verbose
+      env:
+        RUSTFLAGS: -C target-feature=-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-3dnow,-3dnowa,-avx,-avx2,+soft-float
+    - name: Run tests for x86_64-unknown-linux-gnu without SSE with only 'alloc' enabled
+      run: cargo test --verbose --no-default-features --features alloc
+      env:
+        RUSTFLAGS: -C target-feature=-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-3dnow,-3dnowa,-avx,-avx2,+soft-float
+
   # This job runs a stripped down version of CI to test the MSRV. The specific
   # reason for doing this is that dev-dependencies tend to evolve more quickly.
   # There isn't as tight of a control on them because, well, they're only used
