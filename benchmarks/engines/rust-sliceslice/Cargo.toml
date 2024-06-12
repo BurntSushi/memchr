@@ -1,14 +1,14 @@
 [package]
 publish = false
 name = "main"
-version = "0.4.1"  # should match 'sliceslice' version below
+version = "0.4.2"  # should match 'sliceslice' version below
 edition = "2021"
 
 [workspace]
 
 [dependencies]
 anyhow = "1.0.72"
-sliceslice = { version = "0.4.1", features = ["aarch64"] }
+sliceslice = "0.4.2"
 
 [dependencies.shared]
 path = "../../shared"
