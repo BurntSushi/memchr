@@ -122,13 +122,13 @@ jobs:
     - name: Show byte order for debugging
       run: ${{ env.CARGO }} test --verbose $TARGET byte_order -- --nocapture
     - name: Run tests
-      run: cargo test --verbose
+      run: ${{ env.CARGO }} test --verbose
     - name: Run with only 'alloc' enabled
-      run: cargo test --verbose --no-default-features --features alloc
+      run: ${{ env.CARGO }} test --verbose --no-default-features --features alloc
     - name: Run tests without any features enabled (core-only)
-      run: cargo test --verbose --no-default-features
+      run: ${{ env.CARGO }} test --verbose --no-default-features
     - name: Run tests with miscellaneous features
-      run: cargo test --verbose --features logging
+      run: ${{ env.CARGO }} test --verbose --features logging
 
   # Setup and run tests on the wasm32-wasi target via wasmtime.
   wasm:
