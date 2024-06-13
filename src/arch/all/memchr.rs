@@ -1160,6 +1160,15 @@ mod tests {
         assert_eq!(One::new(b':').find(b"1:23"), Some(1));
     }
 
+    // Interestingly, I couldn't get `regression_big_endian1` to fail for me
+    // on the `powerpc64-unknown-linux-gnu` target. But I found another case
+    // through quickcheck that does.
+    #[test]
+    fn regression_big_endian2() {
+        let data = [0, 0, 0, 0, 0, 0, 0, 0];
+        assert_eq!(One::new(b'\x00').find(&data), Some(0));
+    }
+
     // Generate 500K values.
     fn special_values() -> impl Iterator<Item = usize> {
         fn all_bytes() -> impl Iterator<Item = u8> {
