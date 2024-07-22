@@ -20,6 +20,7 @@ engines = [
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
   "stringzilla/memmem/oneshot",
+  "rust/quick-strings/memmem/oneshot",
 ]
 
 [[bench]]
@@ -44,6 +45,7 @@ engines = [
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
   "stringzilla/memmem/oneshot",
+  "rust/quick-strings/memmem/oneshot",
 ]
 
 [[bench]]
@@ -69,6 +71,7 @@ engines = [
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
   "stringzilla/memmem/oneshot",
+  "rust/quick-strings/memmem/oneshot",
 ]
 
 [[bench]]
@@ -117,6 +120,7 @@ engines = [
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
   "stringzilla/memmem/oneshot",
+  "rust/quick-strings/memmem/oneshot",
 ]
 
 [[bench]]
@@ -165,6 +169,7 @@ engines = [
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
   "stringzilla/memmem/oneshot",
+  "rust/quick-strings/memmem/oneshot",
 ]
 
 [[bench]]
@@ -189,6 +194,7 @@ engines = [
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
   "stringzilla/memmem/oneshot",
+  "rust/quick-strings/memmem/oneshot",
 ]
 
 [[bench]]
@@ -213,4 +219,5 @@ engines = [
   "rust/std/memmem/oneshot",
   "rust/std/memmem/prebuilt",
   "stringzilla/memmem/oneshot",
+  "rust/quick-strings/memmem/oneshot",
 ]
