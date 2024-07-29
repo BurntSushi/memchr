@@ -130,7 +130,7 @@ jobs:
     - name: Run tests with miscellaneous features
       run: ${{ env.CARGO }} test --verbose --features logging
 
-  # Setup and run tests on the wasm32-wasi target via wasmtime.
+  # Setup and run tests on the wasm32-wasip1 target via wasmtime.
   wasm:
     runs-on: ubuntu-latest
     env:
@@ -143,16 +143,16 @@ jobs:
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: stable
-    - name: Add wasm32-wasi target
-      run: rustup target add wasm32-wasi
+    - name: Add wasm32-wasip1 target
+      run: rustup target add wasm32-wasip1
     - name: Download and install Wasmtime
       run: |
-        echo "CARGO_BUILD_TARGET=wasm32-wasi" >> $GITHUB_ENV
+        echo "CARGO_BUILD_TARGET=wasm32-wasip1" >> $GITHUB_ENV
         echo "RUSTFLAGS=-Ctarget-feature=+simd128" >> $GITHUB_ENV
         curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v$WASMTIME_VERSION/wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
         tar xvf wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
         echo `pwd`/wasmtime-v$WASMTIME_VERSION-x86_64-linux >> $GITHUB_PATH
-        echo "CARGO_TARGET_WASM32_WASI_RUNNER=wasmtime run --wasm simd --" >> $GITHUB_ENV
+        echo "CARGO_TARGET_WASM32_WASIP1_RUNNER=wasmtime run --wasm simd --" >> $GITHUB_ENV
     - name: Basic build
       run: cargo build --verbose
     - name: Run tests
@@ -162,7 +162,7 @@ jobs:
     - name: Run tests without any features enabled (core-only)
       run: cargo test --verbose --no-default-features
 
-  # Setup and run tests on the wasm32-wasi target via wasmtime, but without
+  # Setup and run tests on the wasm32-wasip1 target via wasmtime, but without
   # simd128 enabled.
   wasm-no-simd128:
     runs-on: ubuntu-latest
@@ -176,16 +176,16 @@ jobs:
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: stable
-    - name: Add wasm32-wasi target
-      run: rustup target add wasm32-wasi
+    - name: Add wasm32-wasip1 target
+      run: rustup target add wasm32-wasip1
     - name: Download and install Wasmtime
       run: |
-        echo "CARGO_BUILD_TARGET=wasm32-wasi" >> $GITHUB_ENV
+        echo "CARGO_BUILD_TARGET=wasm32-wasip1" >> $GITHUB_ENV
         echo "RUSTFLAGS=-Ctarget-feature=-simd128" >> $GITHUB_ENV
         curl -LO https://github.com/bytecodealliance/wasmtime/releases/download/v$WASMTIME_VERSION/wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
         tar xvf wasmtime-v$WASMTIME_VERSION-x86_64-linux.tar.xz
         echo `pwd`/wasmtime-v$WASMTIME_VERSION-x86_64-linux >> $GITHUB_PATH
-        echo "CARGO_TARGET_WASM32_WASI_RUNNER=wasmtime run --" >> $GITHUB_ENV
+        echo "CARGO_TARGET_WASM32_WASIP1_RUNNER=wasmtime run --" >> $GITHUB_ENV
     - name: Basic build
       run: cargo build --verbose
     - name: Run tests
@@ -270,8 +270,8 @@ jobs:
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: stable
-    - name: Add wasm32-wasi target
-      run: rustup target add wasm32-wasi
+    - name: Add wasm32-wasip1 target
+      run: rustup target add wasm32-wasip1
     - name: Download and install Wasmtime
       run: |
         # Note that we don't have to set CARGO_BUILD_TARGET and other
