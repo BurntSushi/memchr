@@ -176,7 +176,7 @@ impl Pair {
             core::mem::swap(&mut rare1, &mut rare2);
             core::mem::swap(&mut index1, &mut index2);
         }
-        let max = usize::from(core::u8::MAX);
+        let max = usize::from(u8::MAX);
         for (i, &b) in needle.iter().enumerate().take(max).skip(2) {
             if ranker.rank(b) < ranker.rank(rare1) {
                 rare2 = rare1;
