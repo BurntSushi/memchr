@@ -1,11 +1,13 @@
 #[cfg(miri)]
 #[macro_export]
+#[allow(missing_docs)]
 macro_rules! define_memchr_quickcheck {
     ($($tt:tt)*) => {};
 }
 
 #[cfg(not(miri))]
 #[macro_export]
+#[allow(missing_docs)]
 macro_rules! define_memchr_quickcheck {
     ($mod:ident) => {
         define_memchr_quickcheck!($mod, new);
