@@ -8,7 +8,7 @@ frequencies to heuristically select the pair of bytes to search for.
 [generic SIMD]: http://0x80.pl/articles/simd-strfind.html#first-and-last
 */
 
-use core::arch::x86_64::{__m128i, __m256i};
+use core::arch::x86_64::{__m128i, __m256i, __m512i};
 
 use crate::arch::{all::packedpair::Pair, generic::packedpair};
 
@@ -23,6 +23,7 @@ use crate::arch::{all::packedpair::Pair, generic::packedpair};
 pub struct Finder {
     sse2: packedpair::Finder<__m128i>,
     avx2: packedpair::Finder<__m256i>,
+    avx512: packedpair::Finder<__m512i>,
 }
 
 impl Finder {
@@ -68,7 +69,8 @@ impl Finder {
     unsafe fn with_pair_impl(needle: &[u8], pair: Pair) -> Finder {
         let sse2 = packedpair::Finder::<__m128i>::new(needle, pair);
         let avx2 = packedpair::Finder::<__m256i>::new(needle, pair);
-        Finder { sse2, avx2 }
+        let avx512 = packedpair::Finder::<__m512i>::new(needle, pair);
+        Finder { sse2, avx2, avx512 }
     }
 
     /// Returns true when this implementation is available in the current
@@ -107,6 +109,8 @@ impl Finder {
                 }
             }
         }
+
+        // TODO: avx512
     }
 
     /// Execute a search using AVX2 vectors and routines.

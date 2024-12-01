@@ -20,7 +20,7 @@ or similar. However, it depends mightily on the specific work-load and the
 expected match frequency.
 */
 
-use core::arch::x86_64::{__m128i, __m256i};
+use core::arch::x86_64::{__m128i, __m256i, __m512i};
 
 use crate::{arch::generic::memchr as generic, ext::Pointer, vector::Vector};
 
@@ -29,8 +29,10 @@ use crate::{arch::generic::memchr as generic, ext::Pointer, vector::Vector};
 pub struct One {
     /// Used for haystacks less than 32 bytes.
     sse2: generic::One<__m128i>,
-    /// Used for haystacks bigger than 32 bytes.
+    /// Used for haystacks bigger than 32 and smaller to 64 bytes.
     avx2: generic::One<__m256i>,
+    /// Used for haystacks bigger than 64 bytes.
+    avx512: generic::One<__m512i>,
 }
 
 impl One {
@@ -65,11 +67,13 @@ impl One {
     /// instructions. While this is almost always the case, it isn't true in
     /// 100% of cases.
     #[target_feature(enable = "sse2", enable = "avx2")]
+    // TODO: avx512
     #[inline]
     pub unsafe fn new_unchecked(needle: u8) -> One {
         One {
             sse2: generic::One::new(needle),
             avx2: generic::One::new(needle),
+            avx512: generic::One::new(needle),
         }
     }
 
@@ -215,7 +219,11 @@ impl One {
         // `target_feature` on this routine, it can be inlined which will
         // handle some of the short-haystack cases above without touching the
         // architecture specific code.
-        self.find_raw_avx2(start, end)
+        if len < __m512i::BYTES {
+            self.find_raw_avx2(start, end)
+        } else {
+            self.find_raw_avx512(start, end)
+        }
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -399,6 +407,15 @@ impl One {
         end: *const u8,
     ) -> Option<*const u8> {
         self.avx2.find_raw(start, end)
+    }
+
+    #[inline]
+    unsafe fn find_raw_avx512(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        self.avx512.find_raw(start, end)
     }
 
     /// Execute a search using AVX2 vectors and routines.

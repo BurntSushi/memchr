@@ -11,7 +11,7 @@ frequencies to heuristically select the pair of bytes to search for.
 use crate::{
     arch::all::{is_equal_raw, packedpair::Pair},
     ext::Pointer,
-    vector::{MoveMask, Vector},
+    vector::{ComparisonVector, MoveMask, Vector},
 };
 
 /// A generic architecture dependent "packed pair" finder.

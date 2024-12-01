@@ -4,6 +4,8 @@ macro_rules! define_memchr_quickcheck {
     ($($tt:tt)*) => {};
 }
 
+/// TODO: add comment
+
 #[cfg(not(miri))]
 #[macro_export]
 macro_rules! define_memchr_quickcheck {

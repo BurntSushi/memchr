@@ -92,7 +92,7 @@ Generic crate-internal routines for the `memchr` family of functions.
 
 use crate::{
     ext::Pointer,
-    vector::{MoveMask, Vector},
+    vector::{ComparisonVector, MoveMask, Vector},
 };
 
 /// Finds all occurrences of a single byte in a haystack.
@@ -149,7 +149,7 @@ impl<V: Vector> One<V> {
         // need to move up to using a u64 for the masks used below. Currently
         // they are 32 bits, which means we're SOL for vectors that need masks
         // bigger than 32 bits. Overall unclear until there's a use case.
-        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+        debug_assert!(V::BYTES <= 64, "vector cannot be bigger than 64 bytes");
 
         let topos = V::Mask::first_offset;
         let len = end.distance(start);
