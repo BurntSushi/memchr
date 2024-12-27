@@ -459,6 +459,57 @@ mod aarch64neon {
     }
 }
 
+#[cfg(target_arch = "loongarch64")]
+mod loongarch64lsx {
+    use super::{SensibleMoveMask, Vector};
+    use core::arch::loongarch64::*;
+    use std::mem::transmute;
+
+    impl Vector for v16u8 {
+        const BYTES: usize = 16;
+        const ALIGN: usize = Self::BYTES - 1;
+
+        type Mask = SensibleMoveMask;
+
+        #[inline(always)]
+        unsafe fn splat(byte: u8) -> v16u8 {
+            transmute(lsx_vreplgr2vr_b(byte as i32))
+        }
+
+        #[inline(always)]
+        unsafe fn load_aligned(data: *const u8) -> v16u8 {
+            transmute(lsx_vld::<0>(data as *const i8))
+        }
+
+        #[inline(always)]
+        unsafe fn load_unaligned(data: *const u8) -> v16u8 {
+            transmute(lsx_vld::<0>(data as *const i8))
+        }
+
+        #[inline(always)]
+        unsafe fn movemask(self) -> SensibleMoveMask {
+            SensibleMoveMask(lsx_vpickve2gr_hu::<0>(transmute(lsx_vmskltz_b(
+                transmute(self),
+            ))) as u32)
+        }
+
+        #[inline(always)]
+        unsafe fn cmpeq(self, vector2: Self) -> v16u8 {
+            transmute(lsx_vseq_b(transmute(self), transmute(vector2)))
+        }
+
+        #[inline(always)]
+        unsafe fn and(self, vector2: Self) -> v16u8 {
+            lsx_vand_v(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn or(self, vector2: Self) -> v16u8 {
+            lsx_vor_v(self, vector2)
+        }
+    }
+}
+
 #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
 mod wasm_simd128 {
     use core::arch::wasm32::*;

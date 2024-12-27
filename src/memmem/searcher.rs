@@ -5,6 +5,8 @@ use crate::arch::all::{
 
 #[cfg(target_arch = "aarch64")]
 use crate::arch::aarch64::neon::packedpair as neon;
+#[cfg(target_arch = "loongarch64")]
+use crate::arch::loongarch64::lsx::packedpair as lsx;
 #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
 use crate::arch::wasm32::simd128::packedpair as simd128;
 #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
@@ -149,10 +151,31 @@ impl Searcher {
                 Searcher::twoway(needle, rabinkarp, prestrat)
             }
         }
+        #[cfg(target_arch = "loongarch64")]
+        {
+            if let Some(pp) = lsx::Finder::with_pair(needle, pair) {
+                if do_packed_search(needle) {
+                    trace!("building loongarch64 lsx substring searcher");
+                    let kind = SearcherKind { lsx: pp };
+                    Searcher { call: searcher_kind_lsx, kind, rabinkarp }
+                } else if prefilter.is_none() {
+                    Searcher::twoway(needle, rabinkarp, None)
+                } else {
+                    let prestrat = Prefilter::lsx(pp, needle);
+                    Searcher::twoway(needle, rabinkarp, Some(prestrat))
+                }
+            } else if prefilter.is_none() {
+                Searcher::twoway(needle, rabinkarp, None)
+            } else {
+                let prestrat = Prefilter::fallback(ranker, pair, needle);
+                Searcher::twoway(needle, rabinkarp, prestrat)
+            }
+        }
         #[cfg(not(any(
             all(target_arch = "x86_64", target_feature = "sse2"),
             all(target_arch = "wasm32", target_feature = "simd128"),
-            target_arch = "aarch64"
+            target_arch = "aarch64",
+            target_arch = "loongarch64"
         )))]
         {
             if prefilter.is_none() {
@@ -255,6 +278,8 @@ union SearcherKind {
     simd128: crate::arch::wasm32::simd128::packedpair::Finder,
     #[cfg(target_arch = "aarch64")]
     neon: crate::arch::aarch64::neon::packedpair::Finder,
+    #[cfg(target_arch = "loongarch64")]
+    lsx: crate::arch::loongarch64::lsx::packedpair::Finder,
 }
 
 /// A two-way substring searcher with a prefilter.
@@ -429,6 +454,27 @@ unsafe fn searcher_kind_neon(
     needle: &[u8],
 ) -> Option<usize> {
     let finder = &searcher.kind.neon;
+    if haystack.len() < finder.min_haystack_len() {
+        searcher.rabinkarp.find(haystack, needle)
+    } else {
+        finder.find(haystack, needle)
+    }
+}
+
+/// Reads from the `lsx` field of `SearcherKind` to execute the loongarch64 lsx
+/// vectorized substring search implementation.
+///
+/// # Safety
+///
+/// Callers must ensure that the `searcher.kind.lsx` union field is set.
+#[cfg(target_arch = "loongarch64")]
+unsafe fn searcher_kind_lsx(
+    searcher: &Searcher,
+    _prestate: &mut PrefilterState,
+    haystack: &[u8],
+    needle: &[u8],
+) -> Option<usize> {
+    let finder = &searcher.kind.lsx;
     if haystack.len() < finder.min_haystack_len() {
         searcher.rabinkarp.find(haystack, needle)
     } else {
@@ -700,6 +746,21 @@ impl Prefilter {
         }
     }
 
+    /// Return a prefilter using a loongarch64 lsx vector algorithm.
+    #[cfg(target_arch = "loongarch64")]
+    #[inline]
+    fn lsx(finder: lsx::Finder, needle: &[u8]) -> Prefilter {
+        trace!("building loongarch64 lsx prefilter");
+        let rarest_offset = finder.pair().index1();
+        let rarest_byte = needle[usize::from(rarest_offset)];
+        Prefilter {
+            call: prefilter_kind_lsx,
+            kind: PrefilterKind { lsx: finder },
+            rarest_byte,
+            rarest_offset,
+        }
+    }
+
     /// Return a *candidate* position for a match.
     ///
     /// When this returns an offset, it implies that a match could begin at
@@ -765,6 +826,8 @@ union PrefilterKind {
     simd128: crate::arch::wasm32::simd128::packedpair::Finder,
     #[cfg(target_arch = "aarch64")]
     neon: crate::arch::aarch64::neon::packedpair::Finder,
+    #[cfg(target_arch = "loongarch64")]
+    lsx: crate::arch::loongarch64::lsx::packedpair::Finder,
 }
 
 /// The type of a prefilter function.
@@ -858,6 +921,25 @@ unsafe fn prefilter_kind_neon(
     haystack: &[u8],
 ) -> Option<usize> {
     let finder = &strat.kind.neon;
+    if haystack.len() < finder.min_haystack_len() {
+        strat.find_simple(haystack)
+    } else {
+        finder.find_prefilter(haystack)
+    }
+}
+
+/// Reads from the `lsx` field of `PrefilterKind` to execute the loongarch64 lsx
+/// prefilter.
+///
+/// # Safety
+///
+/// Callers must ensure that the `strat.kind.lsx` union field is set.
+#[cfg(target_arch = "loongarch64")]
+unsafe fn prefilter_kind_lsx(
+    strat: &Prefilter,
+    haystack: &[u8],
+) -> Option<usize> {
+    let finder = &strat.kind.lsx;
     if haystack.len() < finder.min_haystack_len() {
         strat.find_simple(haystack)
     } else {

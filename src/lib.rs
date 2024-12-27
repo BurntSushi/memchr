@@ -184,6 +184,8 @@ Originally, this crate was literally just a safe wrapper function around the
 )]
 // Same deal for miri.
 #![cfg_attr(miri, allow(dead_code, unused_macros))]
+#![cfg_attr(target_arch = "loongarch64", feature(stdarch_loongarch))]
+#![cfg_attr(target_arch = "loongarch64", feature(loongarch_target_feature))]
 
 // Supporting 8-bit (or others) would be fine. If you need it, please submit a
 // bug report at https://github.com/BurntSushi/memchr
