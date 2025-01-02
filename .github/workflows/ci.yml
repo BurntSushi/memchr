@@ -43,7 +43,8 @@ jobs:
       # Bump this as appropriate. We pin to a version to make sure CI
       # continues to work as cross releases in the past have broken things
       # in subtle ways.
-      CROSS_VERSION: v0.2.5
+      CROSS_GIT_URL: https://github.com/cross-rs/cross
+      CROSS_VERSION: 4090beca3cfffa44371a5bba524de3a578aa46c3
       # Make quickcheck run more tests for hopefully better coverage.
       QUICKCHECK_TESTS: 100000
     runs-on: ${{ matrix.os }}
@@ -87,6 +88,10 @@ jobs:
           os: ubuntu-latest
           rust: stable
           target: s390x-unknown-linux-gnu
+        - build: stable-loongarch64
+          os: ubuntu-latest
+          rust: stable
+          target: loongarch64-unknown-linux-gnu
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -100,12 +105,7 @@ jobs:
         # In the past, new releases of 'cross' have broken CI. So for now, we
         # pin it. We also use their pre-compiled binary releases because cross
         # has over 100 dependencies and takes a bit to compile.
-        dir="$RUNNER_TEMP/cross-download"
-        mkdir "$dir"
-        echo "$dir" >> $GITHUB_PATH
-        cd "$dir"
-        curl -LO "https://github.com/cross-rs/cross/releases/download/$CROSS_VERSION/cross-x86_64-unknown-linux-musl.tar.gz"
-        tar xf cross-x86_64-unknown-linux-musl.tar.gz
+        ${{ env.CARGO }} install cross --git ${{ env.CROSS_GIT_URL }} --rev ${{ env.CROSS_VERSION }}
         echo "CARGO=cross" >> $GITHUB_ENV
         echo "TARGET=--target ${{ matrix.target }}" >> $GITHUB_ENV
     - name: Show command used for Cargo
@@ -122,13 +122,13 @@ jobs:
     - name: Show byte order for debugging
       run: ${{ env.CARGO }} test --verbose $TARGET byte_order -- --nocapture
     - name: Run tests
-      run: ${{ env.CARGO }} test --verbose
+      run: ${{ env.CARGO }} test --verbose $TARGET
     - name: Run with only 'alloc' enabled
-      run: ${{ env.CARGO }} test --verbose --no-default-features --features alloc
+      run: ${{ env.CARGO }} test --verbose $TARGET --no-default-features --features alloc
     - name: Run tests without any features enabled (core-only)
-      run: ${{ env.CARGO }} test --verbose --no-default-features
+      run: ${{ env.CARGO }} test --verbose $TARGET --no-default-features
     - name: Run tests with miscellaneous features
-      run: ${{ env.CARGO }} test --verbose --features logging
+      run: ${{ env.CARGO }} test --verbose $TARGET --features logging
 
   # Setup and run tests on the wasm32-wasi target via wasmtime.
   wasm:
