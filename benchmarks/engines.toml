@@ -62,28 +62,28 @@
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "memchr-oneshot",
     ]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
 
@@ -546,7 +546,7 @@
 
 # Engines that specifically target wasm32. These reuse the actual code from
 # existing engines in `rust/memchr`, but change the build configuration to
-# build for `wasm32-wasi` and use the `wasmtime` JIT to actually run it. We
+# build for `wasm32-wasip1` and use the `wasmtime` JIT to actually run it. We
 # don't define every possible engine for wasm32, but just a subset for basic
 # sanity checks. If it would be beneficial to be more exhaustive, please file
 # an issue.
@@ -558,28 +558,28 @@
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "memchr-prebuilt",
     ]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
 
@@ -590,28 +590,28 @@
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "memchr-onlycount",
     ]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
 
@@ -622,28 +622,28 @@
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "memchr2",
     ]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
 
@@ -654,28 +654,28 @@
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "memchr3",
     ]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
 
@@ -686,28 +686,28 @@
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "--version",
     ]
   [engine.run]
     bin = "wasmtime"
     args = [
       "run", "--wasm", "simd", "--",
-      "./target/wasm32-wasi/release/main.wasm",
+      "./target/wasm32-wasip1/release/main.wasm",
       "memmem-prebuilt",
     ]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
     envs = [
-      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasi" },
+      { name = "CARGO_BUILD_TARGET", value = "wasm32-wasip1" },
       { name = "RUSTFLAGS", value = "-Ctarget-feature=+simd128" },
     ]
 
