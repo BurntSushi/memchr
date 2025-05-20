@@ -121,6 +121,70 @@
     bin = "cargo"
     args = ["clean"]
 
+[[engine]]
+  name = "rust/jetscii/memchr"
+  cwd = "./engines/rust-jetscii"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/jetscii/memchr/onlycount"
+  cwd = "./engines/rust-jetscii"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/jetscii/memchr3"
+  cwd = "./engines/rust-jetscii"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/jetscii/memchr3/onlycount"
+  cwd = "./engines/rust-jetscii"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
 # Engines based on the `sliceslice` Rust crate.
 #
 # Note that this crate only supports "does the haystack match or not." It does

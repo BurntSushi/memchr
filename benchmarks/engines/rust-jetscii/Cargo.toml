@@ -8,7 +8,8 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.72"
-jetscii = "=0.5.3"
+# TODO: Temporarily use a fork of jetscii with aarch64 SIMD support
+jetscii = { git = "https://github.com/Dr-Emann/jetscii.git", branch = "aarch64_simd" }
 
 [dependencies.shared]
 path = "../../shared"
