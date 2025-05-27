@@ -124,14 +124,7 @@ impl SensibleMoveMask {
     /// the bytes.
     #[inline(always)]
     fn get_for_offset(self) -> u32 {
-        #[cfg(target_endian = "big")]
-        {
-            self.0.swap_bytes()
-        }
-        #[cfg(target_endian = "little")]
-        {
-            self.0
-        }
+        self.0.to_le()
     }
 }
 
