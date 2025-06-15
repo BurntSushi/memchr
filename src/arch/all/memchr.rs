@@ -23,28 +23,19 @@ or similar. However, it depends mightily on the specific work-load and the
 expected match frequency.
 */
 
+use crate::vector::{SwarVector, Vector};
 use crate::{arch::generic::memchr as generic, ext::Pointer};
-
-/// The number of bytes in a single `usize` value.
-const USIZE_BYTES: usize = (usize::BITS / 8) as usize;
-/// The bits that must be zero for a `*const usize` to be properly aligned.
-const USIZE_ALIGN: usize = USIZE_BYTES - 1;
 
 /// Finds all occurrences of a single byte in a haystack.
 #[derive(Clone, Copy, Debug)]
-pub struct One {
-    s1: u8,
-    v1: usize,
-}
+pub struct One(generic::One<SwarVector, 2>);
 
 impl One {
-    /// The number of bytes we examine per each iteration of our search loop.
-    const LOOP_BYTES: usize = 2 * USIZE_BYTES;
-
     /// Create a new searcher that finds occurrences of the byte given.
     #[inline]
     pub fn new(needle: u8) -> One {
-        One { s1: needle, v1: splat(needle) }
+        // SAFETY: SwarVector is always safe to construct
+        Self(unsafe { generic::One::new(needle) })
     }
 
     /// A test-only routine so that we can bundle a bunch of quickcheck
@@ -132,42 +123,15 @@ impl One {
         if start >= end {
             return None;
         }
-        let confirm = |b| self.confirm(b);
-        let len = end.distance(start);
-        if len < USIZE_BYTES {
-            return generic::fwd_byte_by_byte(start, end, confirm);
+        if end.distance(start) < SwarVector::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+            });
         }
-
-        // The start of the search may not be aligned to `*const usize`,
-        // so we do an unaligned load here.
-        let chunk = start.cast::<usize>().read_unaligned();
-        if self.has_needle(chunk) {
-            return generic::fwd_byte_by_byte(start, end, confirm);
-        }
-
-        // And now we start our search at a guaranteed aligned position.
-        // The first iteration of the loop below will overlap with the the
-        // unaligned chunk above in cases where the search starts at an
-        // unaligned offset, but that's okay as we're only here if that
-        // above didn't find a match.
-        let mut cur =
-            start.add(USIZE_BYTES - (start.as_usize() & USIZE_ALIGN));
-        debug_assert!(cur > start);
-        if len <= One::LOOP_BYTES {
-            return generic::fwd_byte_by_byte(cur, end, confirm);
-        }
-        debug_assert!(end.sub(One::LOOP_BYTES) >= start);
-        while cur <= end.sub(One::LOOP_BYTES) {
-            debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
-
-            let a = cur.cast::<usize>().read();
-            let b = cur.add(USIZE_BYTES).cast::<usize>().read();
-            if self.has_needle(a) || self.has_needle(b) {
-                break;
-            }
-            cur = cur.add(One::LOOP_BYTES);
-        }
-        generic::fwd_byte_by_byte(cur, end, confirm)
+        // SAFETY: Pointer validity is caller's responsibility. No SwarVector
+        // methods are actually unsafe.
+        self.0.find_raw(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -202,33 +166,15 @@ impl One {
         if start >= end {
             return None;
         }
-        let confirm = |b| self.confirm(b);
-        let len = end.distance(start);
-        if len < USIZE_BYTES {
-            return generic::rev_byte_by_byte(start, end, confirm);
+        if end.distance(start) < SwarVector::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::rev_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+            });
         }
-
-        let chunk = end.sub(USIZE_BYTES).cast::<usize>().read_unaligned();
-        if self.has_needle(chunk) {
-            return generic::rev_byte_by_byte(start, end, confirm);
-        }
-
-        let mut cur = end.sub(end.as_usize() & USIZE_ALIGN);
-        debug_assert!(start <= cur && cur <= end);
-        if len <= One::LOOP_BYTES {
-            return generic::rev_byte_by_byte(start, cur, confirm);
-        }
-        while cur >= start.add(One::LOOP_BYTES) {
-            debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
-
-            let a = cur.sub(2 * USIZE_BYTES).cast::<usize>().read();
-            let b = cur.sub(1 * USIZE_BYTES).cast::<usize>().read();
-            if self.has_needle(a) || self.has_needle(b) {
-                break;
-            }
-            cur = cur.sub(One::LOOP_BYTES);
-        }
-        generic::rev_byte_by_byte(start, cur, confirm)
+        // SAFETY: Pointer validity is caller's responsibility. No SwarVector
+        // methods are actually unsafe.
+        self.0.rfind_raw(start, end)
     }
 
     /// Counts all occurrences of this byte in the given haystack represented
@@ -257,18 +203,15 @@ impl One {
         if start >= end {
             return 0;
         }
-        let slice = core::slice::from_raw_parts(start, end.distance(start));
-
-        let confirm = |b| self.confirm(b);
-        let (prefix, body, suffix) = slice.align_to::<usize>();
-        let prefix_count =
-            prefix.iter().fold(0, |acc, &b| acc + usize::from(confirm(b)));
-        let body_count = body.iter().fold(0, |acc, &chunk| {
-            acc + self.eq_needle_mask(chunk).count_ones() as usize
-        });
-        let suffix_count =
-            suffix.iter().fold(0, |acc, &b| acc + usize::from(confirm(b)));
-        prefix_count + body_count + suffix_count
+        if end.distance(start) < SwarVector::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::count_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+            });
+        }
+        // SAFETY: Pointer validity is caller's responsibility. No SwarVector
+        // methods are actually unsafe.
+        self.0.count_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle byte in the
@@ -278,25 +221,6 @@ impl One {
     /// can also be used to find occurrences in reverse order.
     pub fn iter<'a, 'h>(&'a self, haystack: &'h [u8]) -> OneIter<'a, 'h> {
         OneIter { searcher: self, it: generic::Iter::new(haystack) }
-    }
-
-    #[inline(always)]
-    fn has_needle(&self, chunk: usize) -> bool {
-        has_zero_byte(self.v1 ^ chunk)
-    }
-
-    /// Return a mask where the top bit of each byte is set iff the value of the
-    /// input for that byte was 0xff.
-    ///
-    /// This is a slightly more efficient method than computing the mask where zero bytes are.
-    fn eq_needle_mask(&self, chunk: usize) -> usize {
-        // A byte xored with the inverse of itself will be 0xff, and something else otherwise
-        movemask_0xff_bytes(chunk ^ !self.v1)
-    }
-
-    #[inline(always)]
-    fn confirm(&self, haystack_byte: u8) -> bool {
-        self.s1 == haystack_byte
     }
 }
 
@@ -361,24 +285,15 @@ impl<'a, 'h> DoubleEndedIterator for OneIter<'a, 'h> {
 /// searching for `a` or `b` in `afoobar` would report matches at offsets `0`,
 /// `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub struct Two {
-    s1: u8,
-    s2: u8,
-    v1: usize,
-    v2: usize,
-}
+pub struct Two(generic::Two<SwarVector, 2>);
 
 impl Two {
     /// Create a new searcher that finds occurrences of the two needle bytes
     /// given.
     #[inline]
-    pub fn new(needle1: u8, needle2: u8) -> Two {
-        Two {
-            s1: needle1,
-            s2: needle2,
-            v1: splat(needle1),
-            v2: splat(needle2),
-        }
+    pub fn new(needle1: u8, needle2: u8) -> Self {
+        // SAFETY: SwarVector is always safe to construct
+        Self(unsafe { generic::Two::new(needle1, needle2) })
     }
 
     /// A test-only routine so that we can bundle a bunch of quickcheck
@@ -454,38 +369,15 @@ impl Two {
         if start >= end {
             return None;
         }
-        let confirm = |b| self.confirm(b);
-        let len = end.distance(start);
-        if len < USIZE_BYTES {
-            return generic::fwd_byte_by_byte(start, end, confirm);
+        if end.distance(start) < SwarVector::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                b == self.0.needle1() || b == self.0.needle2()
+            });
         }
-
-        // The start of the search may not be aligned to `*const usize`,
-        // so we do an unaligned load here.
-        let chunk = start.cast::<usize>().read_unaligned();
-        if self.has_needle(chunk) {
-            return generic::fwd_byte_by_byte(start, end, confirm);
-        }
-
-        // And now we start our search at a guaranteed aligned position.
-        // The first iteration of the loop below will overlap with the
-        // unaligned chunk above in cases where the search starts at an
-        // unaligned offset, but that's okay as we're only here if that
-        // above didn't find a match.
-        let mut cur =
-            start.add(USIZE_BYTES - (start.as_usize() & USIZE_ALIGN));
-        debug_assert!(cur > start);
-        debug_assert!(end.sub(USIZE_BYTES) >= start);
-        while cur <= end.sub(USIZE_BYTES) {
-            debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
-
-            let chunk = cur.cast::<usize>().read();
-            if self.has_needle(chunk) {
-                break;
-            }
-            cur = cur.add(USIZE_BYTES);
-        }
-        generic::fwd_byte_by_byte(cur, end, confirm)
+        // SAFETY: Pointer validity is caller's responsibility. No SwarVector
+        // methods are actually unsafe.
+        self.0.find_raw(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -520,29 +412,15 @@ impl Two {
         if start >= end {
             return None;
         }
-        let confirm = |b| self.confirm(b);
-        let len = end.distance(start);
-        if len < USIZE_BYTES {
-            return generic::rev_byte_by_byte(start, end, confirm);
+        if end.distance(start) < SwarVector::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::rev_byte_by_byte(start, end, |b| {
+                b == self.0.needle1() || b == self.0.needle2()
+            });
         }
-
-        let chunk = end.sub(USIZE_BYTES).cast::<usize>().read_unaligned();
-        if self.has_needle(chunk) {
-            return generic::rev_byte_by_byte(start, end, confirm);
-        }
-
-        let mut cur = end.sub(end.as_usize() & USIZE_ALIGN);
-        debug_assert!(start <= cur && cur <= end);
-        while cur >= start.add(USIZE_BYTES) {
-            debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
-
-            let chunk = cur.sub(USIZE_BYTES).cast::<usize>().read();
-            if self.has_needle(chunk) {
-                break;
-            }
-            cur = cur.sub(USIZE_BYTES);
-        }
-        generic::rev_byte_by_byte(start, cur, confirm)
+        // SAFETY: Pointer validity is caller's responsibility. No SwarVector
+        // methods are actually unsafe.
+        self.0.rfind_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of one of the needle bytes in
@@ -552,16 +430,6 @@ impl Two {
     /// can also be used to find occurrences in reverse order.
     pub fn iter<'a, 'h>(&'a self, haystack: &'h [u8]) -> TwoIter<'a, 'h> {
         TwoIter { searcher: self, it: generic::Iter::new(haystack) }
-    }
-
-    #[inline(always)]
-    fn has_needle(&self, chunk: usize) -> bool {
-        has_zero_byte(self.v1 ^ chunk) || has_zero_byte(self.v2 ^ chunk)
-    }
-
-    #[inline(always)]
-    fn confirm(&self, haystack_byte: u8) -> bool {
-        self.s1 == haystack_byte || self.s2 == haystack_byte
     }
 }
 
@@ -617,28 +485,15 @@ impl<'a, 'h> DoubleEndedIterator for TwoIter<'a, 'h> {
 /// searching for `a`, `b` or `o` in `afoobar` would report matches at offsets
 /// `0`, `2`, `3`, `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub struct Three {
-    s1: u8,
-    s2: u8,
-    s3: u8,
-    v1: usize,
-    v2: usize,
-    v3: usize,
-}
+pub struct Three(generic::Three<SwarVector, 1>);
 
 impl Three {
     /// Create a new searcher that finds occurrences of the three needle bytes
     /// given.
     #[inline]
-    pub fn new(needle1: u8, needle2: u8, needle3: u8) -> Three {
-        Three {
-            s1: needle1,
-            s2: needle2,
-            s3: needle3,
-            v1: splat(needle1),
-            v2: splat(needle2),
-            v3: splat(needle3),
-        }
+    pub fn new(needle1: u8, needle2: u8, needle3: u8) -> Self {
+        // SAFETY: SwarVector is always safe to construct
+        Self(unsafe { generic::Three::new(needle1, needle2, needle3) })
     }
 
     /// A test-only routine so that we can bundle a bunch of quickcheck
@@ -718,38 +573,17 @@ impl Three {
         if start >= end {
             return None;
         }
-        let confirm = |b| self.confirm(b);
-        let len = end.distance(start);
-        if len < USIZE_BYTES {
-            return generic::fwd_byte_by_byte(start, end, confirm);
+        if end.distance(start) < SwarVector::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+                    || b == self.0.needle2()
+                    || b == self.0.needle3()
+            });
         }
-
-        // The start of the search may not be aligned to `*const usize`,
-        // so we do an unaligned load here.
-        let chunk = start.cast::<usize>().read_unaligned();
-        if self.has_needle(chunk) {
-            return generic::fwd_byte_by_byte(start, end, confirm);
-        }
-
-        // And now we start our search at a guaranteed aligned position.
-        // The first iteration of the loop below will overlap with the
-        // unaligned chunk above in cases where the search starts at an
-        // unaligned offset, but that's okay as we're only here if that
-        // above didn't find a match.
-        let mut cur =
-            start.add(USIZE_BYTES - (start.as_usize() & USIZE_ALIGN));
-        debug_assert!(cur > start);
-        debug_assert!(end.sub(USIZE_BYTES) >= start);
-        while cur <= end.sub(USIZE_BYTES) {
-            debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
-
-            let chunk = cur.cast::<usize>().read();
-            if self.has_needle(chunk) {
-                break;
-            }
-            cur = cur.add(USIZE_BYTES);
-        }
-        generic::fwd_byte_by_byte(cur, end, confirm)
+        // SAFETY: Pointer validity is caller's responsibility. No SwarVector
+        // methods are actually unsafe.
+        self.0.find_raw(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -784,29 +618,17 @@ impl Three {
         if start >= end {
             return None;
         }
-        let confirm = |b| self.confirm(b);
-        let len = end.distance(start);
-        if len < USIZE_BYTES {
-            return generic::rev_byte_by_byte(start, end, confirm);
+        if end.distance(start) < SwarVector::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::rev_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+                    || b == self.0.needle2()
+                    || b == self.0.needle3()
+            });
         }
-
-        let chunk = end.sub(USIZE_BYTES).cast::<usize>().read_unaligned();
-        if self.has_needle(chunk) {
-            return generic::rev_byte_by_byte(start, end, confirm);
-        }
-
-        let mut cur = end.sub(end.as_usize() & USIZE_ALIGN);
-        debug_assert!(start <= cur && cur <= end);
-        while cur >= start.add(USIZE_BYTES) {
-            debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
-
-            let chunk = cur.sub(USIZE_BYTES).cast::<usize>().read();
-            if self.has_needle(chunk) {
-                break;
-            }
-            cur = cur.sub(USIZE_BYTES);
-        }
-        generic::rev_byte_by_byte(start, cur, confirm)
+        // SAFETY: Pointer validity is caller's responsibility. No SwarVector
+        // methods are actually unsafe.
+        self.0.rfind_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of one of the needle bytes in
@@ -816,20 +638,6 @@ impl Three {
     /// can also be used to find occurrences in reverse order.
     pub fn iter<'a, 'h>(&'a self, haystack: &'h [u8]) -> ThreeIter<'a, 'h> {
         ThreeIter { searcher: self, it: generic::Iter::new(haystack) }
-    }
-
-    #[inline(always)]
-    fn has_needle(&self, chunk: usize) -> bool {
-        has_zero_byte(self.v1 ^ chunk)
-            || has_zero_byte(self.v2 ^ chunk)
-            || has_zero_byte(self.v3 ^ chunk)
-    }
-
-    #[inline(always)]
-    fn confirm(&self, haystack_byte: u8) -> bool {
-        self.s1 == haystack_byte
-            || self.s2 == haystack_byte
-            || self.s3 == haystack_byte
     }
 }
 
@@ -877,56 +685,6 @@ impl<'a, 'h> DoubleEndedIterator for ThreeIter<'a, 'h> {
         // 'rfind_raw' falls within the bounds of the start and end pointer.
         unsafe { self.it.next_back(|s, e| self.searcher.rfind_raw(s, e)) }
     }
-}
-
-/// Return `true` if `x` contains any zero byte.
-///
-/// That is, this routine treats `x` as a register of 8-bit lanes and returns
-/// true when any of those lanes is `0`.
-///
-/// From "Matters Computational" by J. Arndt.
-#[inline(always)]
-fn has_zero_byte(x: usize) -> bool {
-    // "The idea is to subtract one from each of the bytes and then look for
-    // bytes where the borrow propagated all the way to the most significant
-    // bit."
-    const LO: usize = splat(0x01);
-    const HI: usize = splat(0x80);
-
-    (x.wrapping_sub(LO) & !x & HI) != 0
-}
-
-/// Return a mask where the top bit of each byte is set iff the value of the
-/// input for that byte was 0xff.
-///
-/// This is a slightly more efficient method than computing the mask where zero bytes are.
-#[inline(always)]
-fn movemask_0xff_bytes(x: usize) -> usize {
-    const HI: usize = splat(0x80);
-    const O7F: usize = splat(0x7F);
-
-    // Allow subtraction by 0x7F, by setting the most significant bit.
-    let allow_subtraction = x | HI;
-    // If the bottom 7 bits of the byte are all set (0x7F), then subtracting 0x7F
-    // will leave the top bit set, and the bottom 7 bits unset. If any of the lower bits
-    // were unset, then subtracting 0x7F will unset the top bit.
-    let only_top_bit = allow_subtraction - O7F;
-    // Remove the false positives: and with the original value: the top bit will remain set only
-    // if the original value already had the top bit set before we set it.
-    let without_false_positives = only_top_bit & x;
-
-    // AND with the top bit mask to only care about the top bit.
-    without_false_positives & HI
-}
-
-/// Repeat the given byte into a word size number. That is, every 8 bits
-/// is equivalent to the given byte. For example, if `b` is `\x4E` or
-/// `01001110` in binary, then the returned value on a 32-bit system would be:
-/// `01001110_01001110_01001110_01001110`.
-#[inline(always)]
-const fn splat(b: u8) -> usize {
-    // TODO: use `usize::from` once it can be used in const context.
-    (b as usize) * (usize::MAX / 255)
 }
 
 #[cfg(test)]
@@ -1053,34 +811,5 @@ mod tests {
     fn regression_big_endian2() {
         let data = [0, 0, 0, 0, 0, 0, 0, 0];
         assert_eq!(One::new(b'\x00').find(&data), Some(0));
-    }
-}
-
-#[cfg(kani)]
-mod kani_tests {
-    use super::*;
-
-    #[kani::proof]
-    fn mask_is_correct() {
-        let needle: u8 = kani::any();
-        let one = One::new(needle);
-
-        let chunk: usize = kani::any();
-        let mask = one.eq_needle_mask(chunk);
-        for i in 0..USIZE_BYTES {
-            let byte = (chunk >> (i * 8)) as u8;
-
-            let expected_mask_byte = if byte == needle { 0x80 } else { 0 };
-            let actual_mask_byte = (mask >> (i * 8)) as u8;
-            assert_eq!(actual_mask_byte, expected_mask_byte);
-        }
-    }
-
-    #[kani::proof]
-    fn has_zero_byte_is_correct() {
-        let chunk: usize = kani::any();
-        let has_zero = has_zero_byte(chunk);
-        let expected_zero = chunk.to_le_bytes().iter().any(|&b| b == 0);
-        assert_eq!(has_zero, expected_zero);
     }
 }

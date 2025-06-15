@@ -95,20 +95,40 @@ use crate::{
     vector::{MoveMask, Vector},
 };
 
+#[inline(always)]
+unsafe fn combine_unrolled<V: Vector, const UNROLL: usize>(
+    arr: [V; UNROLL],
+) -> V {
+    match UNROLL {
+        1 => arr[0],
+        2 => arr[0].or(arr[1]),
+        3 => arr[0].or(arr[1]).or(arr[2]),
+        4 => {
+            let left = arr[0].or(arr[1]);
+            let right = arr[2].or(arr[3]);
+            left.or(right)
+        }
+        _ => {
+            const { assert!(UNROLL >= 1 && UNROLL <= 4) };
+            unreachable!()
+        }
+    }
+}
+
 /// Finds all occurrences of a single byte in a haystack.
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct One<V> {
+pub(crate) struct One<V, const UNROLL: usize = 4> {
     s1: u8,
     v1: V,
 }
 
-impl<V: Vector> One<V> {
+impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
     /// The number of bytes we examine per each iteration of our search loop.
-    const LOOP_SIZE: usize = 4 * V::BYTES;
+    const LOOP_SIZE: usize = UNROLL * V::BYTES;
 
     /// Create a new searcher that finds occurrences of the byte given.
     #[inline(always)]
-    pub(crate) unsafe fn new(needle: u8) -> One<V> {
+    pub(crate) unsafe fn new(needle: u8) -> Self {
         One { s1: needle, v1: V::splat(needle) }
     }
 
@@ -172,36 +192,27 @@ impl<V: Vector> One<V> {
             while cur <= end.sub(Self::LOOP_SIZE) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
-                let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(1 * V::BYTES));
-                let c = V::load_aligned(cur.add(2 * V::BYTES));
-                let d = V::load_aligned(cur.add(3 * V::BYTES));
-                let eqa = self.v1.cmpeq(a);
-                let eqb = self.v1.cmpeq(b);
-                let eqc = self.v1.cmpeq(c);
-                let eqd = self.v1.cmpeq(d);
-                let or1 = eqa.or(eqb);
-                let or2 = eqc.or(eqd);
-                let or3 = or1.or(or2);
-                if or3.movemask_will_have_non_zero() {
-                    let mask = eqa.movemask();
-                    if mask.has_non_zero() {
-                        return Some(cur.add(topos(mask)));
+                let vecs: [V; UNROLL] = core::array::from_fn(|i| {
+                    V::load_aligned(cur.add(i * V::BYTES))
+                });
+                let equals = vecs
+                    .map(|v| self.v1.cmpeq_only_least_significant_match(v));
+                let combined = combine_unrolled(equals);
+                if combined.movemask_will_have_non_zero() {
+                    let (last, prefix) = equals.split_last().unwrap();
+                    for (i, v) in prefix.iter().enumerate() {
+                        let mask = v.movemask();
+                        if mask.has_non_zero() {
+                            return Some(
+                                cur.add(i * V::BYTES).add(topos(mask)),
+                            );
+                        }
                     }
-
-                    let mask = eqb.movemask();
-                    if mask.has_non_zero() {
-                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
-                    }
-
-                    let mask = eqc.movemask();
-                    if mask.has_non_zero() {
-                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
-                    }
-
-                    let mask = eqd.movemask();
+                    let mask = last.movemask();
                     debug_assert!(mask.has_non_zero());
-                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+                    return Some(
+                        cur.add((UNROLL - 1) * V::BYTES).add(topos(mask)),
+                    );
                 }
                 cur = cur.add(Self::LOOP_SIZE);
             }
@@ -281,34 +292,23 @@ impl<V: Vector> One<V> {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 cur = cur.sub(Self::LOOP_SIZE);
-                let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(1 * V::BYTES));
-                let c = V::load_aligned(cur.add(2 * V::BYTES));
-                let d = V::load_aligned(cur.add(3 * V::BYTES));
-                let eqa = self.v1.cmpeq(a);
-                let eqb = self.v1.cmpeq(b);
-                let eqc = self.v1.cmpeq(c);
-                let eqd = self.v1.cmpeq(d);
-                let or1 = eqa.or(eqb);
-                let or2 = eqc.or(eqd);
-                let or3 = or1.or(or2);
-                if or3.movemask_will_have_non_zero() {
-                    let mask = eqd.movemask();
-                    if mask.has_non_zero() {
-                        return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+                let vecs: [V; UNROLL] = core::array::from_fn(|i| {
+                    V::load_aligned(cur.add(i * V::BYTES))
+                });
+                let equals =
+                    vecs.map(|v| self.v1.cmpeq_only_most_significant_match(v));
+                let combined = combine_unrolled(equals);
+                if combined.movemask_will_have_non_zero() {
+                    let (first, rest) = equals.split_first().unwrap();
+                    for (i, v) in rest.iter().enumerate().rev() {
+                        let mask = v.movemask();
+                        if mask.has_non_zero() {
+                            return Some(
+                                cur.add((i + 1) * V::BYTES).add(topos(mask)),
+                            );
+                        }
                     }
-
-                    let mask = eqc.movemask();
-                    if mask.has_non_zero() {
-                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
-                    }
-
-                    let mask = eqb.movemask();
-                    if mask.has_non_zero() {
-                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
-                    }
-
-                    let mask = eqa.movemask();
+                    let mask = first.movemask();
                     debug_assert!(mask.has_non_zero());
                     return Some(cur.add(topos(mask)));
                 }
@@ -371,18 +371,13 @@ impl<V: Vector> One<V> {
             while cur <= end.sub(Self::LOOP_SIZE) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
-                let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(1 * V::BYTES));
-                let c = V::load_aligned(cur.add(2 * V::BYTES));
-                let d = V::load_aligned(cur.add(3 * V::BYTES));
-                let eqa = self.v1.cmpeq(a);
-                let eqb = self.v1.cmpeq(b);
-                let eqc = self.v1.cmpeq(c);
-                let eqd = self.v1.cmpeq(d);
-                count += eqa.movemask().count_ones();
-                count += eqb.movemask().count_ones();
-                count += eqc.movemask().count_ones();
-                count += eqd.movemask().count_ones();
+                let vecs: [V; UNROLL] = core::array::from_fn(|i| {
+                    V::load_aligned(cur.add(i * V::BYTES))
+                });
+                for v in vecs {
+                    let equal = self.v1.cmpeq(v);
+                    count += equal.movemask().count_ones();
+                }
                 cur = cur.add(Self::LOOP_SIZE);
             }
         }
@@ -434,20 +429,20 @@ impl<V: Vector> One<V> {
 /// searching for `a` or `b` in `afoobar` would report matches at offsets `0`,
 /// `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct Two<V> {
+pub(crate) struct Two<V, const UNROLL: usize = 2> {
     s1: u8,
     s2: u8,
     v1: V,
     v2: V,
 }
 
-impl<V: Vector> Two<V> {
+impl<V: Vector, const UNROLL: usize> Two<V, UNROLL> {
     /// The number of bytes we examine per each iteration of our search loop.
-    const LOOP_SIZE: usize = 2 * V::BYTES;
+    const LOOP_SIZE: usize = UNROLL * V::BYTES;
 
     /// Create a new searcher that finds occurrences of the byte given.
     #[inline(always)]
-    pub(crate) unsafe fn new(needle1: u8, needle2: u8) -> Two<V> {
+    pub(crate) unsafe fn new(needle1: u8, needle2: u8) -> Self {
         Two {
             s1: needle1,
             s2: needle2,
@@ -501,7 +496,6 @@ impl<V: Vector> Two<V> {
         // bigger than 32 bits. Overall unclear until there's a use case.
         debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
 
-        let topos = V::Mask::first_offset;
         let len = end.distance(start);
         debug_assert!(
             len >= V::BYTES,
@@ -512,7 +506,7 @@ impl<V: Vector> Two<V> {
 
         // Search a possibly unaligned chunk at `start`. This covers any part
         // of the haystack prior to where aligned loads can start.
-        if let Some(cur) = self.search_chunk(start, topos) {
+        if let Some(cur) = self.search_chunk_fwd(start) {
             return Some(cur);
         }
         // Set `cur` to the first V-aligned pointer greater than `start`.
@@ -522,24 +516,31 @@ impl<V: Vector> Two<V> {
             while cur <= end.sub(Self::LOOP_SIZE) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
-                let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(V::BYTES));
-                let eqa1 = self.v1.cmpeq(a);
-                let eqb1 = self.v1.cmpeq(b);
-                let eqa2 = self.v2.cmpeq(a);
-                let eqb2 = self.v2.cmpeq(b);
-                let or1 = eqa1.or(eqb1);
-                let or2 = eqa2.or(eqb2);
-                let or3 = or1.or(or2);
-                if or3.movemask_will_have_non_zero() {
-                    let mask = eqa1.movemask().or(eqa2.movemask());
-                    if mask.has_non_zero() {
-                        return Some(cur.add(topos(mask)));
+                let vecs: [V; UNROLL] = core::array::from_fn(|i| {
+                    V::load_aligned(cur.add(i * V::BYTES))
+                });
+                let equals = vecs.map(|v| {
+                    let eqa = self.v1.cmpeq_only_least_significant_match(v);
+                    let eqb = self.v2.cmpeq_only_least_significant_match(v);
+                    eqa.or(eqb)
+                });
+                let combined = combine_unrolled(equals);
+                if combined.movemask_will_have_non_zero() {
+                    let (last, prefix) = equals.split_last().unwrap();
+                    for (i, v) in prefix.iter().enumerate() {
+                        let mask = v.movemask();
+                        if mask.has_non_zero() {
+                            return Some(
+                                cur.add(i * V::BYTES).add(mask.first_offset()),
+                            );
+                        }
                     }
-
-                    let mask = eqb1.movemask().or(eqb2.movemask());
+                    let mask = last.movemask();
                     debug_assert!(mask.has_non_zero());
-                    return Some(cur.add(V::BYTES).add(topos(mask)));
+                    return Some(
+                        cur.add((UNROLL - 1) * V::BYTES)
+                            .add(mask.first_offset()),
+                    );
                 }
                 cur = cur.add(Self::LOOP_SIZE);
             }
@@ -549,7 +550,7 @@ impl<V: Vector> Two<V> {
         // since `cur` is aligned.
         while cur <= end.sub(V::BYTES) {
             debug_assert!(end.distance(cur) >= V::BYTES);
-            if let Some(cur) = self.search_chunk(cur, topos) {
+            if let Some(cur) = self.search_chunk_fwd(cur) {
                 return Some(cur);
             }
             cur = cur.add(V::BYTES);
@@ -562,7 +563,7 @@ impl<V: Vector> Two<V> {
             debug_assert!(end.distance(cur) < V::BYTES);
             cur = cur.sub(V::BYTES - end.distance(cur));
             debug_assert_eq!(end.distance(cur), V::BYTES);
-            return self.search_chunk(cur, topos);
+            return self.search_chunk_fwd(cur);
         }
         None
     }
@@ -600,7 +601,6 @@ impl<V: Vector> Two<V> {
         // bigger than 32 bits. Overall unclear until there's a use case.
         debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
 
-        let topos = V::Mask::last_offset;
         let len = end.distance(start);
         debug_assert!(
             len >= V::BYTES,
@@ -609,7 +609,7 @@ impl<V: Vector> Two<V> {
             V::BYTES
         );
 
-        if let Some(cur) = self.search_chunk(end.sub(V::BYTES), topos) {
+        if let Some(cur) = self.search_chunk_rev(end.sub(V::BYTES)) {
             return Some(cur);
         }
         let mut cur = end.sub(end.as_usize() & V::ALIGN);
@@ -619,37 +619,43 @@ impl<V: Vector> Two<V> {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 cur = cur.sub(Self::LOOP_SIZE);
-                let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(V::BYTES));
-                let eqa1 = self.v1.cmpeq(a);
-                let eqb1 = self.v1.cmpeq(b);
-                let eqa2 = self.v2.cmpeq(a);
-                let eqb2 = self.v2.cmpeq(b);
-                let or1 = eqa1.or(eqb1);
-                let or2 = eqa2.or(eqb2);
-                let or3 = or1.or(or2);
-                if or3.movemask_will_have_non_zero() {
-                    let mask = eqb1.movemask().or(eqb2.movemask());
-                    if mask.has_non_zero() {
-                        return Some(cur.add(V::BYTES).add(topos(mask)));
-                    }
 
-                    let mask = eqa1.movemask().or(eqa2.movemask());
+                let vecs: [V; UNROLL] = core::array::from_fn(|i| {
+                    V::load_aligned(cur.add(i * V::BYTES))
+                });
+                let equals = vecs.map(|v| {
+                    let eqa = self.v1.cmpeq_only_most_significant_match(v);
+                    let eqb = self.v2.cmpeq_only_most_significant_match(v);
+                    eqa.or(eqb)
+                });
+                let combined = combine_unrolled(equals);
+                if combined.movemask_will_have_non_zero() {
+                    let (first, rest) = equals.split_first().unwrap();
+                    for (i, v) in rest.iter().enumerate().rev() {
+                        let mask = v.movemask();
+                        if mask.has_non_zero() {
+                            return Some(
+                                cur.add((i + 1) * V::BYTES)
+                                    .add(mask.last_offset()),
+                            );
+                        }
+                    }
+                    let mask = first.movemask();
                     debug_assert!(mask.has_non_zero());
-                    return Some(cur.add(topos(mask)));
+                    return Some(cur.add(mask.last_offset()));
                 }
             }
         }
         while cur >= start.add(V::BYTES) {
             debug_assert!(cur.distance(start) >= V::BYTES);
             cur = cur.sub(V::BYTES);
-            if let Some(cur) = self.search_chunk(cur, topos) {
+            if let Some(cur) = self.search_chunk_rev(cur) {
                 return Some(cur);
             }
         }
         if cur > start {
             debug_assert!(cur.distance(start) < V::BYTES);
-            return self.search_chunk(start, topos);
+            return self.search_chunk_rev(start);
         }
         None
     }
@@ -667,19 +673,26 @@ impl<V: Vector> Two<V> {
     /// `cur` must be a valid pointer and it must be valid to do an unaligned
     /// load of size `V::BYTES` at `cur`.
     #[inline(always)]
-    unsafe fn search_chunk(
-        &self,
-        cur: *const u8,
-        mask_to_offset: impl Fn(V::Mask) -> usize,
-    ) -> Option<*const u8> {
+    unsafe fn search_chunk_fwd(&self, cur: *const u8) -> Option<*const u8> {
         let chunk = V::load_unaligned(cur);
-        let eq1 = self.v1.cmpeq(chunk);
-        let eq2 = self.v2.cmpeq(chunk);
-        let mask = eq1.or(eq2).movemask();
-        if mask.has_non_zero() {
-            let mask1 = eq1.movemask();
-            let mask2 = eq2.movemask();
-            Some(cur.add(mask_to_offset(mask1.or(mask2))))
+        let eq1 = self.v1.cmpeq_only_least_significant_match(chunk);
+        let eq2 = self.v2.cmpeq_only_least_significant_match(chunk);
+        let eq_either = eq1.or(eq2);
+        if eq_either.movemask_will_have_non_zero() {
+            Some(cur.add(eq_either.movemask().first_offset()))
+        } else {
+            None
+        }
+    }
+
+    #[inline(always)]
+    unsafe fn search_chunk_rev(&self, cur: *const u8) -> Option<*const u8> {
+        let chunk = V::load_unaligned(cur);
+        let eq1 = self.v1.cmpeq_only_most_significant_match(chunk);
+        let eq2 = self.v2.cmpeq_only_most_significant_match(chunk);
+        let eq_either = eq1.or(eq2);
+        if eq_either.movemask_will_have_non_zero() {
+            Some(cur.add(eq_either.movemask().last_offset()))
         } else {
             None
         }
@@ -692,7 +705,7 @@ impl<V: Vector> Two<V> {
 /// searching for `a` or `b` in `afoobar` would report matches at offsets `0`,
 /// `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct Three<V> {
+pub(crate) struct Three<V, const UNROLL: usize = 1> {
     s1: u8,
     s2: u8,
     s3: u8,
@@ -701,18 +714,14 @@ pub(crate) struct Three<V> {
     v3: V,
 }
 
-impl<V: Vector> Three<V> {
+impl<V: Vector, const UNROLL: usize> Three<V, UNROLL> {
     /// The number of bytes we examine per each iteration of our search loop.
-    const LOOP_SIZE: usize = 2 * V::BYTES;
+    const LOOP_SIZE: usize = UNROLL * V::BYTES;
 
     /// Create a new searcher that finds occurrences of the byte given.
     #[inline(always)]
-    pub(crate) unsafe fn new(
-        needle1: u8,
-        needle2: u8,
-        needle3: u8,
-    ) -> Three<V> {
-        Three {
+    pub(crate) unsafe fn new(needle1: u8, needle2: u8, needle3: u8) -> Self {
+        Self {
             s1: needle1,
             s2: needle2,
             s3: needle3,
@@ -794,34 +803,32 @@ impl<V: Vector> Three<V> {
             while cur <= end.sub(Self::LOOP_SIZE) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
-                let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(V::BYTES));
-                let eqa1 = self.v1.cmpeq(a);
-                let eqb1 = self.v1.cmpeq(b);
-                let eqa2 = self.v2.cmpeq(a);
-                let eqb2 = self.v2.cmpeq(b);
-                let eqa3 = self.v3.cmpeq(a);
-                let eqb3 = self.v3.cmpeq(b);
-                let or1 = eqa1.or(eqb1);
-                let or2 = eqa2.or(eqb2);
-                let or3 = eqa3.or(eqb3);
-                let or4 = or1.or(or2);
-                let or5 = or3.or(or4);
-                if or5.movemask_will_have_non_zero() {
-                    let mask = eqa1
-                        .movemask()
-                        .or(eqa2.movemask())
-                        .or(eqa3.movemask());
-                    if mask.has_non_zero() {
-                        return Some(cur.add(topos(mask)));
+                let vecs: [V; UNROLL] = core::array::from_fn(|i| {
+                    V::load_aligned(cur.add(i * V::BYTES))
+                });
+                let equals = vecs.map(|v| {
+                    let eq1 = self.v1.cmpeq_only_least_significant_match(v);
+                    let eq2 = self.v2.cmpeq_only_least_significant_match(v);
+                    let eq3 = self.v3.cmpeq_only_least_significant_match(v);
+                    eq1.or(eq2).or(eq3)
+                });
+                let combined = combine_unrolled(equals);
+                if combined.movemask_will_have_non_zero() {
+                    let (last, prefix) = equals.split_last().unwrap();
+                    for (i, v) in prefix.iter().enumerate() {
+                        let mask = v.movemask();
+                        if mask.has_non_zero() {
+                            return Some(
+                                cur.add(i * V::BYTES).add(topos(mask)),
+                            );
+                        }
                     }
 
-                    let mask = eqb1
-                        .movemask()
-                        .or(eqb2.movemask())
-                        .or(eqb3.movemask());
+                    let mask = last.movemask();
                     debug_assert!(mask.has_non_zero());
-                    return Some(cur.add(V::BYTES).add(topos(mask)));
+                    return Some(
+                        cur.add((UNROLL - 1) * V::BYTES).add(topos(mask)),
+                    );
                 }
                 cur = cur.add(Self::LOOP_SIZE);
             }
@@ -901,32 +908,27 @@ impl<V: Vector> Three<V> {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 cur = cur.sub(Self::LOOP_SIZE);
-                let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(V::BYTES));
-                let eqa1 = self.v1.cmpeq(a);
-                let eqb1 = self.v1.cmpeq(b);
-                let eqa2 = self.v2.cmpeq(a);
-                let eqb2 = self.v2.cmpeq(b);
-                let eqa3 = self.v3.cmpeq(a);
-                let eqb3 = self.v3.cmpeq(b);
-                let or1 = eqa1.or(eqb1);
-                let or2 = eqa2.or(eqb2);
-                let or3 = eqa3.or(eqb3);
-                let or4 = or1.or(or2);
-                let or5 = or3.or(or4);
-                if or5.movemask_will_have_non_zero() {
-                    let mask = eqb1
-                        .movemask()
-                        .or(eqb2.movemask())
-                        .or(eqb3.movemask());
-                    if mask.has_non_zero() {
-                        return Some(cur.add(V::BYTES).add(topos(mask)));
+                let vecs: [V; UNROLL] = core::array::from_fn(|i| {
+                    V::load_aligned(cur.add(i * V::BYTES))
+                });
+                let equals = vecs.map(|v| {
+                    let eqa = self.v1.cmpeq_only_most_significant_match(v);
+                    let eqb = self.v2.cmpeq_only_most_significant_match(v);
+                    let eqc = self.v3.cmpeq_only_most_significant_match(v);
+                    eqa.or(eqb).or(eqc)
+                });
+                let combined = combine_unrolled(equals);
+                if combined.movemask_will_have_non_zero() {
+                    let (first, rest) = equals.split_first().unwrap();
+                    for (i, v) in rest.iter().enumerate().rev() {
+                        let mask = v.movemask();
+                        if mask.has_non_zero() {
+                            return Some(
+                                cur.add((i + 1) * V::BYTES).add(topos(mask)),
+                            );
+                        }
                     }
-
-                    let mask = eqa1
-                        .movemask()
-                        .or(eqa2.movemask())
-                        .or(eqa3.movemask());
+                    let mask = first.movemask();
                     debug_assert!(mask.has_non_zero());
                     return Some(cur.add(topos(mask)));
                 }
