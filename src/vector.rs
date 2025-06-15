@@ -17,10 +17,10 @@
 pub(crate) trait Vector: Copy + core::fmt::Debug {
     /// The number of bytes in the vector. That is, this is the size of the
     /// vector in memory.
-    const BYTES: usize;
+    const BYTES: usize = core::mem::size_of::<Self>();
     /// The bits that must be zero in order for a `*const u8` pointer to be
     /// correctly aligned to read vector values.
-    const ALIGN: usize;
+    const ALIGN: usize = core::mem::size_of::<Self>() - 1;
 
     /// The type of the value returned by `Vector::movemask`.
     ///
@@ -198,9 +198,6 @@ mod x86sse2 {
     use super::{SensibleMoveMask, Vector};
 
     impl Vector for __m128i {
-        const BYTES: usize = 16;
-        const ALIGN: usize = Self::BYTES - 1;
-
         type Mask = SensibleMoveMask;
 
         #[inline(always)]
@@ -247,9 +244,6 @@ mod x86avx2 {
     use super::{SensibleMoveMask, Vector};
 
     impl Vector for __m256i {
-        const BYTES: usize = 32;
-        const ALIGN: usize = Self::BYTES - 1;
-
         type Mask = SensibleMoveMask;
 
         #[inline(always)]
@@ -296,9 +290,6 @@ mod aarch64neon {
     use super::{MoveMask, Vector};
 
     impl Vector for uint8x16_t {
-        const BYTES: usize = 16;
-        const ALIGN: usize = Self::BYTES - 1;
-
         type Mask = NeonMoveMask;
 
         #[inline(always)]
@@ -466,9 +457,6 @@ mod wasm_simd128 {
     use super::{SensibleMoveMask, Vector};
 
     impl Vector for v128 {
-        const BYTES: usize = 16;
-        const ALIGN: usize = Self::BYTES - 1;
-
         type Mask = SensibleMoveMask;
 
         #[inline(always)]
