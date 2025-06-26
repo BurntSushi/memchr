@@ -396,6 +396,19 @@ impl<'n> Finder<'n> {
         FinderBuilder::new().build_forward(needle)
     }
 
+    #[cfg(feature = "alloc")]
+    /// Create a new owned finder for the given needle.
+    ///
+    /// This is functionally equivalent to `Finder::new(needle).into_owned()`
+    /// but is useful if you already have an owned needle and don't want to pay
+    /// the price of heap allocating it another time.
+    #[inline]
+    pub fn new_owned<B: ?Sized + Into<alloc::boxed::Box<[u8]>>>(
+        needle: B,
+    ) -> Finder<'static> {
+        FinderBuilder::new().build_forward_owned(needle)
+    }
+
     /// Returns the index of the first occurrence of this needle in the given
     /// haystack.
     ///
@@ -531,6 +544,19 @@ impl<'n> FinderRev<'n> {
     #[inline]
     pub fn new<B: ?Sized + AsRef<[u8]>>(needle: &'n B) -> FinderRev<'n> {
         FinderBuilder::new().build_reverse(needle)
+    }
+
+    #[cfg(feature = "alloc")]
+    /// Create a new owned reverse finder for the given needle.
+    ///
+    /// This is functionally equivalent to `FinderRev::new(needle).into_owned()`
+    /// but is useful if you already have an owned needle and don't want to pay
+    /// the price of heap allocating it another time.
+    #[inline]
+    pub fn new_owned<B: ?Sized + Into<alloc::boxed::Box<[u8]>>>(
+        needle: B,
+    ) -> FinderRev<'static> {
+        FinderBuilder::new().build_reverse_owned(needle)
     }
 
     /// Returns the index of the last occurrence of this needle in the given
@@ -670,6 +696,16 @@ impl FinderBuilder {
         self.build_forward_with_ranker(DefaultFrequencyRank, needle)
     }
 
+    #[cfg(feature = "alloc")]
+    /// Build an owned forward finder using the given needle from the current
+    /// settings.
+    pub fn build_forward_owned<B: ?Sized + Into<alloc::boxed::Box<[u8]>>>(
+        &self,
+        needle: B,
+    ) -> Finder<'static> {
+        self.build_forward_with_ranker_owned(DefaultFrequencyRank, needle)
+    }
+
     /// Build a forward finder using the given needle and a custom heuristic for
     /// determining the frequency of a given byte in the dataset.
     /// See [`HeuristicFrequencyRank`] for more details.
@@ -689,6 +725,23 @@ impl FinderBuilder {
         }
     }
 
+    #[cfg(feature = "alloc")]
+    /// Build an owned forward finder using the given needle and a custom heuristic
+    /// for determining the frequency of a given byte in the dataset.
+    /// See [`HeuristicFrequencyRank`] for more details.
+    pub fn build_forward_with_ranker_owned<
+        R: HeuristicFrequencyRank,
+        B: ?Sized + Into<alloc::boxed::Box<[u8]>>,
+    >(
+        &self,
+        ranker: R,
+        needle: B,
+    ) -> Finder<'static> {
+        let needle = needle.into();
+        let searcher = Searcher::new(self.prefilter, ranker, &needle);
+        Finder { needle: CowBytes::new_owned(needle), searcher }
+    }
+
     /// Build a reverse finder using the given needle from the current
     /// settings.
     pub fn build_reverse<'n, B: ?Sized + AsRef<[u8]>>(
@@ -700,6 +753,18 @@ impl FinderBuilder {
             needle: CowBytes::new(needle),
             searcher: SearcherRev::new(needle),
         }
+    }
+
+    #[cfg(feature = "alloc")]
+    /// Build an owned reverse finder using the given needle from the current
+    /// settings.
+    pub fn build_reverse_owned<B: ?Sized + Into<alloc::boxed::Box<[u8]>>>(
+        &self,
+        needle: B,
+    ) -> FinderRev<'static> {
+        let needle = needle.into();
+        let searcher = SearcherRev::new(&needle);
+        FinderRev { needle: CowBytes::new_owned(needle), searcher }
     }
 
     /// Configure the prefilter setting for the finder.
