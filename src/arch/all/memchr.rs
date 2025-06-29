@@ -1057,3 +1057,32 @@ mod tests {
         assert_eq!(One::new(b'\x00').find(&data), Some(0));
     }
 }
+
+#[cfg(kani)]
+mod kani_tests {
+    use super::*;
+
+    #[kani::proof]
+    fn mask_is_correct() {
+        let needle: u8 = kani::any();
+        let one = One::new(needle);
+
+        let chunk: usize = kani::any();
+        let mask = one.eq_needle_mask(chunk);
+        for i in 0..USIZE_BYTES {
+            let byte = (chunk >> (i * 8)) as u8;
+
+            let expected_mask_byte = if byte == needle { 0x80 } else { 0 };
+            let actual_mask_byte = (mask >> (i * 8)) as u8;
+            assert_eq!(actual_mask_byte, expected_mask_byte);
+        }
+    }
+
+    #[kani::proof]
+    fn has_zero_byte_is_correct() {
+        let chunk: usize = kani::any();
+        let has_zero = has_zero_byte(chunk);
+        let expected_zero = chunk.to_le_bytes().iter().any(|&b| b == 0);
+        assert_eq!(has_zero, expected_zero);
+    }
+}
