@@ -253,17 +253,24 @@ impl One {
     /// Note that callers may pass a pair of pointers such that `start >= end`.
     /// In that case, `0` will always be returned.
     #[inline]
-    pub unsafe fn count_raw(&self, start: *const u8, end: *const u8) -> usize {
+    pub unsafe fn count_raw(
+        &self,
+        mut start: *const u8,
+        end: *const u8,
+    ) -> usize {
         if start >= end {
             return 0;
         }
-        // Sadly I couldn't get the SWAR approach to work here, so we just do
-        // one byte at a time for now. PRs to improve this are welcome.
-        let mut ptr = start;
         let mut count = 0;
-        while ptr < end {
-            count += (ptr.read() == self.s1) as usize;
-            ptr = ptr.offset(1);
+        while end.distance(start) >= core::mem::size_of::<usize>() {
+            let chunk = start.cast::<usize>().read_unaligned();
+            count += self.eq_needle_mask(chunk).count_ones() as usize;
+            start = start.add(core::mem::size_of::<usize>());
+        }
+        while end > start {
+            let byte = *start;
+            count += usize::from(self.confirm(byte));
+            start = start.add(1);
         }
         count
     }
@@ -280,6 +287,13 @@ impl One {
     #[inline(always)]
     fn has_needle(&self, chunk: usize) -> bool {
         has_zero_byte(self.v1 ^ chunk)
+    }
+
+    /// Return a mask where the top bit of each byte is set iff the value of the
+    /// corresponding byte in chunk is equal to the needle byte.
+    fn eq_needle_mask(&self, chunk: usize) -> usize {
+        // A byte xored with the inverse of itself will be 0xff, and something else otherwise
+        movemask_0xff_bytes(chunk ^ !self.v1)
     }
 
     #[inline(always)]
@@ -882,6 +896,29 @@ fn has_zero_byte(x: usize) -> bool {
     const HI: usize = splat(0x80);
 
     (x.wrapping_sub(LO) & !x & HI) != 0
+}
+
+/// Return a mask where the top bit of each byte is set iff the value of the
+/// input for that byte was 0xff.
+///
+/// This is a slightly more efficient method than computing the mask where zero bytes are.
+#[inline(always)]
+fn movemask_0xff_bytes(x: usize) -> usize {
+    const HI: usize = splat(0x80);
+    const O7F: usize = splat(0x7F);
+
+    // Allow subtraction by 0x7F, by setting the most significant bit.
+    let allow_subtraction = x | HI;
+    // If the bottom 7 bits of the byte are all set (0x7F), then subtracting 0x7F
+    // will leave the top bit set, and the bottom 7 bits unset. If any of the lower bits
+    // were unset, then subtracting 0x7F will unset the top bit.
+    let only_top_bit = allow_subtraction - O7F;
+    // Remove the false positives: and with the original value: the top bit will remain set only
+    // if the original value already had the top bit set before we set it.
+    let without_false_positives = only_top_bit & x;
+
+    // AND with the top bit mask to only care about the top bit.
+    without_false_positives & HI
 }
 
 /// Repeat the given byte into a word size number. That is, every 8 bits
