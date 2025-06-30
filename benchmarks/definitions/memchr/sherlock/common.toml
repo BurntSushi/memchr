@@ -45,6 +45,7 @@ regex = ['a', 't', 'o']
 haystack = { path = "sherlock/huge.txt" }
 count = 109_064
 engines = [
+  "rust/jetscii/memchr3",
   "rust/memchr/memchr3",
   "rust/memchr/memchr3/fallback",
   "rust/memchr/memchr3/naive",
@@ -101,6 +102,7 @@ regex = ['a', 'h', 'i']
 haystack = { path = "sherlock/small.txt" }
 count = 113
 engines = [
+  "rust/jetscii/memchr3",
   "rust/memchr/memchr3",
   "rust/memchr/memchr3/fallback",
   "rust/memchr/memchr3/naive",
