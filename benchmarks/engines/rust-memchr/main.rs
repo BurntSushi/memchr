@@ -28,6 +28,9 @@ fn main() -> anyhow::Result<()> {
         ("memchr-prebuilt", "count-bytes") => memchr_prebuilt_count(&b)?,
         ("memchr-onlycount", "count-bytes") => memchr_only_count(&b)?,
         ("memchr-fallback", "count-bytes") => memchr_fallback_count(&b)?,
+        ("memchr-fallback-onlycount", "count-bytes") => {
+            memchr_fallback_only_count(&b)?
+        }
         ("memchr-naive", "count-bytes") => memchr_naive_count(&b)?,
         ("memchr2", "count-bytes") => memchr2_count(&b)?,
         ("memchr2-fallback", "count-bytes") => memchr2_fallback_count(&b)?,
@@ -90,6 +93,13 @@ fn memchr_fallback_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
     let needle = b.one_needle_byte()?;
     let finder = memchr::arch::all::memchr::One::new(needle);
     shared::run(b, || Ok(finder.iter(haystack).count_slow()))
+}
+
+fn memchr_fallback_only_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
+    let haystack = &b.haystack;
+    let needle = b.one_needle_byte()?;
+    let finder = memchr::arch::all::memchr::One::new(needle);
+    shared::run(b, || Ok(finder.iter(haystack).count()))
 }
 
 fn memchr_naive_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
