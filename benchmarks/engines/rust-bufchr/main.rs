@@ -29,6 +29,9 @@ fn main() -> anyhow::Result<()> {
         ("memchr-prebuilt", "count-bytes", true) => {
             bufchr_prebuilt_count_aligned(&b)?
         }
+        ("memchr2-prebuilt", "count-bytes", false) => {
+            bufchr2_prebuilt_count_unaligned(&b)?
+        }
         (engine, model, _) => {
             anyhow::bail!("unrecognized engine '{engine}' and model '{model}'")
         }
@@ -56,6 +59,14 @@ fn bufchr_prebuilt_count_aligned(
     let haystack = &b.haystack;
     let needle = b.one_needle_byte()?;
     shared::run(b, || Ok(bufchr_sse2_aligned_iter(needle, haystack)))
+}
+
+fn bufchr2_prebuilt_count_unaligned(
+    b: &Benchmark,
+) -> anyhow::Result<Vec<Sample>> {
+    let haystack = &b.haystack;
+    let (n1, n2) = b.two_needle_bytes()?;
+    shared::run(b, || Ok(bufchr2_sse2_unaligned_iter(n1, n2, haystack)))
 }
 
 /// A trait for adding some helper routines to pointers.
@@ -90,7 +101,7 @@ impl<T> Pointer for *const T {
 
 use core::arch::x86_64::{
     __m128i, _mm_cmpeq_epi8, _mm_load_si128, _mm_loadu_si128,
-    _mm_movemask_epi8, _mm_set1_epi8,
+    _mm_movemask_epi8, _mm_or_si128, _mm_set1_epi8,
 };
 
 #[inline(always)]
@@ -291,6 +302,87 @@ impl<'h> OneMatchesUnaligned<'h> {
     }
 }
 
+struct TwoMatchesUnaligned<'h> {
+    splat1: __m128i,
+    splat2: __m128i,
+    start: *const u8,
+    end: *const u8,
+    current: *const u8,
+    mask: u32,
+    needle1: u8,
+    needle2: u8,
+    haystack: core::marker::PhantomData<&'h [u8]>,
+}
+
+impl<'h> TwoMatchesUnaligned<'h> {
+    unsafe fn new(needle1: u8, needle2: u8, haystack: &[u8]) -> Self {
+        // dbg!(size_of::<Self>(), align_of::<Self>());
+        let ptr = haystack.as_ptr();
+
+        Self {
+            start: ptr,
+            end: ptr.wrapping_add(haystack.len()),
+            current: ptr,
+            mask: 0,
+            needle1,
+            needle2,
+            splat1: _mm_set1_epi8(needle1 as i8),
+            splat2: _mm_set1_epi8(needle2 as i8),
+            haystack: core::marker::PhantomData,
+        }
+    }
+
+    unsafe fn next(&mut self) -> Option<usize> {
+        if self.start >= self.end {
+            return None;
+        }
+
+        let mut mask = self.mask;
+        let vectorized_end = self.end.sub(BYTES);
+        let mut current = self.current;
+        let start = self.start;
+
+        'main: loop {
+            // Processing current move mask
+            if mask != 0 {
+                let offset = current.sub(BYTES).add(first_offset(mask));
+                self.mask = clear_least_significant_bit(mask);
+                self.current = current;
+
+                return Some(offset.distance(start));
+            }
+
+            // Main loop of unaligned loads
+            while current <= vectorized_end {
+                let chunk = _mm_loadu_si128(current as *const __m128i);
+                let cmp1 = _mm_cmpeq_epi8(chunk, self.splat1);
+                let cmp2 = _mm_cmpeq_epi8(chunk, self.splat2);
+                let cmp = _mm_or_si128(cmp1, cmp2);
+
+                mask = _mm_movemask_epi8(cmp) as u32;
+
+                current = current.add(BYTES);
+
+                if mask != 0 {
+                    continue 'main;
+                }
+            }
+
+            // Processing remaining bytes linearly
+            while current < self.end {
+                if *current == self.needle1 || *current == self.needle2 {
+                    let offset = current.distance(start);
+                    self.current = current.add(1);
+                    return Some(offset);
+                }
+                current = current.add(1);
+            }
+
+            return None;
+        }
+    }
+}
+
 struct OneMatchesUnalignedIter<'h>(OneMatchesUnaligned<'h>);
 
 impl<'h> OneMatchesUnalignedIter<'h> {
@@ -325,6 +417,23 @@ impl<'h> Iterator for OneMatchesAlignedIter<'h> {
     }
 }
 
+struct TwoMatchesUnalignedIter<'h>(TwoMatchesUnaligned<'h>);
+
+impl<'h> TwoMatchesUnalignedIter<'h> {
+    fn new(needle1: u8, needle2: u8, haystack: &[u8]) -> Self {
+        unsafe { Self(TwoMatchesUnaligned::new(needle1, needle2, haystack)) }
+    }
+}
+
+impl<'h> Iterator for TwoMatchesUnalignedIter<'h> {
+    type Item = usize;
+
+    #[inline(always)]
+    fn next(&mut self) -> Option<Self::Item> {
+        unsafe { self.0.next() }
+    }
+}
+
 #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
 pub fn bufchr_sse2_unaligned_iter(needle: u8, haystack: &[u8]) -> usize {
     OneMatchesUnalignedIter::new(needle, haystack).count()
@@ -333,4 +442,13 @@ pub fn bufchr_sse2_unaligned_iter(needle: u8, haystack: &[u8]) -> usize {
 #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
 pub fn bufchr_sse2_aligned_iter(needle: u8, haystack: &[u8]) -> usize {
     OneMatchesAlignedIter::new(needle, haystack).count()
+}
+
+#[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+pub fn bufchr2_sse2_unaligned_iter(
+    needle1: u8,
+    needle2: u8,
+    haystack: &[u8],
+) -> usize {
+    TwoMatchesUnalignedIter::new(needle1, needle2, haystack).count()
 }

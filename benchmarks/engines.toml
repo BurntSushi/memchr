@@ -888,3 +888,19 @@
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
+
+[[engine]]
+  name = "rust/bufchr/memchr2/prebuilt"
+  cwd = "./engines/rust-bufchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
