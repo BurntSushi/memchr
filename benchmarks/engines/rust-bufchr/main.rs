@@ -108,7 +108,7 @@ fn clear_least_significant_bit(mask: u32) -> u32 {
     mask & (mask - 1)
 }
 
-struct OneMatches<'h> {
+struct OneMatchesAligned<'h> {
     start: *const u8,
     end: *const u8,
     current: *const u8,
@@ -121,7 +121,8 @@ struct OneMatches<'h> {
 const BYTES: usize = 16;
 const ALIGN: usize = 15;
 
-impl<'h> OneMatches<'h> {
+// NOTE: could clamp the mask to avoid scalar operations at beginning and end
+impl<'h> OneMatchesAligned<'h> {
     unsafe fn new(needle: u8, haystack: &[u8]) -> Self {
         let ptr = haystack.as_ptr();
 
@@ -136,65 +137,8 @@ impl<'h> OneMatches<'h> {
         }
     }
 
-    unsafe fn next_unaligned(&mut self) -> Option<usize> {
-        if self.start >= self.end {
-            return None;
-        }
 
-        'main: loop {
-            // Processing current move mask
-            if let Some((from, mask)) = &mut self.mask {
-                debug_assert!(*mask != 0);
-
-                let offset = from.add(first_offset(*mask));
-                let next_mask = clear_least_significant_bit(*mask);
-
-                if next_mask != 0 {
-                    *mask = next_mask;
-                } else {
-                    self.mask = None;
-                }
-
-                return Some(offset.distance(self.start));
-            }
-
-            // Main loop of unaligned loads
-            while self.current <= self.end.sub(BYTES) {
-                // debug_assert_eq!(0, self.current.as_usize() % BYTES);
-
-                let chunk = _mm_loadu_si128(self.current as *const __m128i);
-                let cmp = _mm_cmpeq_epi8(chunk, self.splat);
-                let mask = _mm_movemask_epi8(cmp) as u32;
-
-                let next = self.current.add(BYTES);
-
-                if mask != 0 {
-                    self.mask = Some((self.current, mask));
-                    self.current = next;
-                    continue 'main;
-                } else {
-                    self.current = next;
-                }
-            }
-
-            // debug_assert!(self.end.distance(self.current) < BYTES);
-
-            // Processing remaining bytes linearly
-            while self.current < self.end {
-                if *self.current == self.needle {
-                    let offset = self.current.distance(self.start);
-                    self.current = self.current.add(1);
-                    return Some(offset);
-                } else {
-                    self.current = self.current.add(1);
-                }
-            }
-
-            return None;
-        }
-    }
-
-    unsafe fn next_aligned(&mut self) -> Option<usize> {
+    unsafe fn next(&mut self) -> Option<usize> {
         if self.start >= self.end {
             return None;
         }
@@ -266,11 +210,96 @@ impl<'h> OneMatches<'h> {
     }
 }
 
-struct OneMatchesUnalignedIter<'h>(OneMatches<'h>);
+struct OneMatchesUnaligned<'h> {
+    start: *const u8,
+    end: *const u8,
+    current: *const u8,
+    mask: Option<(*const u8, u32)>,
+    needle: u8,
+    splat: __m128i,
+    haystack: core::marker::PhantomData<&'h [u8]>,
+}
+
+impl<'h> OneMatchesUnaligned<'h> {
+    unsafe fn new(needle: u8, haystack: &[u8]) -> Self {
+        let ptr = haystack.as_ptr();
+
+        Self {
+            start: ptr,
+            end: ptr.wrapping_add(haystack.len()),
+            current: ptr,
+            mask: None,
+            needle,
+            splat: _mm_set1_epi8(needle as i8),
+            haystack: core::marker::PhantomData,
+        }
+    }
+
+    unsafe fn next(&mut self) -> Option<usize> {
+        if self.start >= self.end {
+            return None;
+        }
+
+        'main: loop {
+            // Processing current move mask
+            if let Some((from, mask)) = &mut self.mask {
+                debug_assert!(*mask != 0);
+
+                let offset = from.add(first_offset(*mask));
+                let next_mask = clear_least_significant_bit(*mask);
+
+                if next_mask != 0 {
+                    *mask = next_mask;
+                } else {
+                    self.mask = None;
+                }
+
+                return Some(offset.distance(self.start));
+            }
+
+            // Main loop of unaligned loads
+            while self.current <= self.end.sub(BYTES) {
+                // debug_assert_eq!(0, self.current.as_usize() % BYTES);
+
+                let chunk = _mm_loadu_si128(self.current as *const __m128i);
+                let cmp = _mm_cmpeq_epi8(chunk, self.splat);
+                let mask = _mm_movemask_epi8(cmp) as u32;
+
+                let next = self.current.add(BYTES);
+
+                if mask != 0 {
+                    self.mask = Some((self.current, mask));
+                    self.current = next;
+                    continue 'main;
+                } else {
+                    self.current = next;
+                }
+            }
+
+            // debug_assert!(self.end.distance(self.current) < BYTES);
+
+            // Processing remaining bytes linearly
+            while self.current < self.end {
+                if *self.current == self.needle {
+                    let offset = self.current.distance(self.start);
+                    self.current = self.current.add(1);
+                    return Some(offset);
+                } else {
+                    self.current = self.current.add(1);
+                }
+            }
+
+            return None;
+        }
+    }
+
+}
+
+struct OneMatchesUnalignedIter<'h>(OneMatchesUnaligned<'h>);
 
 impl<'h> OneMatchesUnalignedIter<'h> {
     fn new(needle: u8, haystack: &[u8]) -> Self {
-        unsafe { OneMatchesUnalignedIter(OneMatches::new(needle, haystack)) }
+        unsafe { OneMatchesUnalignedIter(OneMatchesUnaligned::new(needle, haystack)) }
     }
 }
 
@@ -279,15 +308,15 @@ impl<'h> Iterator for OneMatchesUnalignedIter<'h> {
 
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
-        unsafe { self.0.next_unaligned() }
+        unsafe { self.0.next() }
     }
 }
 
-struct OneMatchesAlignedIter<'h>(OneMatches<'h>);
+struct OneMatchesAlignedIter<'h>(OneMatchesAligned<'h>);
 
 impl<'h> OneMatchesAlignedIter<'h> {
     fn new(needle: u8, haystack: &[u8]) -> Self {
-        unsafe { OneMatchesAlignedIter(OneMatches::new(needle, haystack)) }
+        unsafe { OneMatchesAlignedIter(OneMatchesAligned::new(needle, haystack)) }
     }
 }
 
@@ -296,7 +325,7 @@ impl<'h> Iterator for OneMatchesAlignedIter<'h> {
 
     #[inline(always)]
     fn next(&mut self) -> Option<Self::Item> {
-        unsafe { self.0.next_aligned() }
+        unsafe { self.0.next() }
     }
 }
 
