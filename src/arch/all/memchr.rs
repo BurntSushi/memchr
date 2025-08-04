@@ -28,14 +28,17 @@ use crate::{arch::generic::memchr as generic, ext::Pointer};
 
 /// Finds all occurrences of a single byte in a haystack.
 #[derive(Clone, Copy, Debug)]
-pub struct One(generic::One<SwarVector, 2>);
+pub struct One(generic::One<SwarVector>);
 
 impl One {
+    /// The unroll factor used for search methods.
+    const UNROLL: usize = 2;
+
     /// Create a new searcher that finds occurrences of the byte given.
     #[inline]
     pub fn new(needle: u8) -> One {
-        // SAFETY: SwarVector is always safe to construct
-        Self(unsafe { generic::One::new(needle) })
+        // SAFETY: No SwarVector methods are actually unsafe.
+        One(unsafe { generic::One::new(needle) })
     }
 
     /// A test-only routine so that we can bundle a bunch of quickcheck
@@ -131,7 +134,7 @@ impl One {
         }
         // SAFETY: Pointer validity is caller's responsibility. No SwarVector
         // methods are actually unsafe.
-        self.0.find_raw(start, end)
+        self.0.find_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -174,7 +177,7 @@ impl One {
         }
         // SAFETY: Pointer validity is caller's responsibility. No SwarVector
         // methods are actually unsafe.
-        self.0.rfind_raw(start, end)
+        self.0.rfind_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Counts all occurrences of this byte in the given haystack represented
@@ -211,7 +214,7 @@ impl One {
         }
         // SAFETY: Pointer validity is caller's responsibility. No SwarVector
         // methods are actually unsafe.
-        self.0.count_raw(start, end)
+        self.0.count_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle byte in the
@@ -285,9 +288,12 @@ impl<'a, 'h> DoubleEndedIterator for OneIter<'a, 'h> {
 /// searching for `a` or `b` in `afoobar` would report matches at offsets `0`,
 /// `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub struct Two(generic::Two<SwarVector, 2>);
+pub struct Two(generic::Two<SwarVector>);
 
 impl Two {
+    /// The unroll factor used for search methods.
+    const UNROLL: usize = 2;
+
     /// Create a new searcher that finds occurrences of the two needle bytes
     /// given.
     #[inline]
@@ -377,7 +383,7 @@ impl Two {
         }
         // SAFETY: Pointer validity is caller's responsibility. No SwarVector
         // methods are actually unsafe.
-        self.0.find_raw(start, end)
+        self.0.find_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -420,7 +426,7 @@ impl Two {
         }
         // SAFETY: Pointer validity is caller's responsibility. No SwarVector
         // methods are actually unsafe.
-        self.0.rfind_raw(start, end)
+        self.0.rfind_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Returns an iterator over all occurrences of one of the needle bytes in
@@ -485,9 +491,12 @@ impl<'a, 'h> DoubleEndedIterator for TwoIter<'a, 'h> {
 /// searching for `a`, `b` or `o` in `afoobar` would report matches at offsets
 /// `0`, `2`, `3`, `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub struct Three(generic::Three<SwarVector, 1>);
+pub struct Three(generic::Three<SwarVector>);
 
 impl Three {
+    /// The unroll factor used for search methods.
+    const UNROLL: usize = 1;
+
     /// Create a new searcher that finds occurrences of the three needle bytes
     /// given.
     #[inline]
@@ -583,7 +592,7 @@ impl Three {
         }
         // SAFETY: Pointer validity is caller's responsibility. No SwarVector
         // methods are actually unsafe.
-        self.0.find_raw(start, end)
+        self.0.find_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -628,7 +637,7 @@ impl Three {
         }
         // SAFETY: Pointer validity is caller's responsibility. No SwarVector
         // methods are actually unsafe.
-        self.0.rfind_raw(start, end)
+        self.0.rfind_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Returns an iterator over all occurrences of one of the needle bytes in

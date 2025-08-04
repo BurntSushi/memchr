@@ -29,6 +29,9 @@ use crate::{arch::generic::memchr as generic, ext::Pointer, vector::Vector};
 pub struct One(generic::One<uint8x16_t>);
 
 impl One {
+    /// The unroll factor used for search methods.
+    const UNROLL: usize = 4;
+
     /// Create a new searcher that finds occurrences of the needle byte given.
     ///
     /// This particular searcher is specialized to use neon vector instructions
@@ -271,7 +274,7 @@ impl One {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.0.find_raw(start, end)
+        self.0.find_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Execute a search using neon vectors and routines.
@@ -291,7 +294,7 @@ impl One {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.0.rfind_raw(start, end)
+        self.0.rfind_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Execute a count using neon vectors and routines.
@@ -311,7 +314,7 @@ impl One {
         start: *const u8,
         end: *const u8,
     ) -> usize {
-        self.0.count_raw(start, end)
+        self.0.count_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle byte in the
@@ -389,7 +392,11 @@ impl<'a, 'h> core::iter::FusedIterator for OneIter<'a, 'h> {}
 pub struct Two(generic::Two<uint8x16_t>);
 
 impl Two {
-    /// Create a new searcher that finds occurrences of the needle bytes given.
+    /// The unroll factor used for search methods.
+    const UNROLL: usize = 2;
+
+    /// Create a new searcher that finds occurrences of the two needle bytes
+    /// given.
     ///
     /// This particular searcher is specialized to use neon vector instructions
     /// that typically make it quite fast.
@@ -582,7 +589,7 @@ impl Two {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.0.find_raw(start, end)
+        self.0.find_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Execute a search using neon vectors and routines.
@@ -602,7 +609,7 @@ impl Two {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.0.rfind_raw(start, end)
+        self.0.rfind_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle bytes in the
@@ -671,7 +678,11 @@ impl<'a, 'h> core::iter::FusedIterator for TwoIter<'a, 'h> {}
 pub struct Three(generic::Three<uint8x16_t>);
 
 impl Three {
-    /// Create a new searcher that finds occurrences of the needle bytes given.
+    /// The unroll factor used for search methods.
+    const UNROLL: usize = 1;
+
+    /// Create a new searcher that finds occurrences of the three needle bytes
+    /// given.
     ///
     /// This particular searcher is specialized to use neon vector instructions
     /// that typically make it quite fast.
@@ -872,7 +883,7 @@ impl Three {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.0.find_raw(start, end)
+        self.0.find_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Execute a search using neon vectors and routines.
@@ -892,7 +903,7 @@ impl Three {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.0.rfind_raw(start, end)
+        self.0.rfind_raw::<{ Self::UNROLL }>(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle byte in the

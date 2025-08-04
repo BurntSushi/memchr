@@ -117,15 +117,12 @@ unsafe fn combine_unrolled<V: Vector, const UNROLL: usize>(
 
 /// Finds all occurrences of a single byte in a haystack.
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct One<V, const UNROLL: usize = 4> {
+pub(crate) struct One<V> {
     s1: u8,
     v1: V,
 }
 
-impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
-    /// The number of bytes we examine per each iteration of our search loop.
-    const LOOP_SIZE: usize = UNROLL * V::BYTES;
-
+impl<V: Vector> One<V> {
     /// Create a new searcher that finds occurrences of the byte given.
     #[inline(always)]
     pub(crate) unsafe fn new(needle: u8) -> Self {
@@ -160,7 +157,7 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
     /// * The distance being in bounds must not rely on "wrapping around" the
     /// address space.
     #[inline(always)]
-    pub(crate) unsafe fn find_raw(
+    pub(crate) unsafe fn find_raw<const UNROLL: usize>(
         &self,
         start: *const u8,
         end: *const u8,
@@ -188,8 +185,9 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
         // Set `cur` to the first V-aligned pointer greater than `start`.
         let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
         debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-        if len >= Self::LOOP_SIZE {
-            while cur <= end.sub(Self::LOOP_SIZE) {
+        let loop_size = UNROLL * V::BYTES;
+        if len >= loop_size {
+            while cur <= end.sub(loop_size) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 let vecs: [V; UNROLL] = core::array::from_fn(|i| {
@@ -214,7 +212,7 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
                         cur.add((UNROLL - 1) * V::BYTES).add(topos(mask)),
                     );
                 }
-                cur = cur.add(Self::LOOP_SIZE);
+                cur = cur.add(loop_size);
             }
         }
         // Handle any leftovers after the aligned loop above. We use unaligned
@@ -262,7 +260,7 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
     /// * The distance being in bounds must not rely on "wrapping around" the
     /// address space.
     #[inline(always)]
-    pub(crate) unsafe fn rfind_raw(
+    pub(crate) unsafe fn rfind_raw<const UNROLL: usize>(
         &self,
         start: *const u8,
         end: *const u8,
@@ -287,11 +285,12 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
         }
         let mut cur = end.sub(end.as_usize() & V::ALIGN);
         debug_assert!(start <= cur && cur <= end);
-        if len >= Self::LOOP_SIZE {
-            while cur >= start.add(Self::LOOP_SIZE) {
+        let loop_size = UNROLL * V::BYTES;
+        if len >= loop_size {
+            while cur >= start.add(loop_size) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
-                cur = cur.sub(Self::LOOP_SIZE);
+                cur = cur.sub(loop_size);
                 let vecs: [V; UNROLL] = core::array::from_fn(|i| {
                     V::load_aligned(cur.add(i * V::BYTES))
                 });
@@ -346,7 +345,7 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
     /// * The distance being in bounds must not rely on "wrapping around" the
     /// address space.
     #[inline(always)]
-    pub(crate) unsafe fn count_raw(
+    pub(crate) unsafe fn count_raw<const UNROLL: usize>(
         &self,
         start: *const u8,
         end: *const u8,
@@ -367,8 +366,9 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
         // Count any matching bytes before we start our aligned loop.
         let mut count = count_byte_by_byte(start, cur, confirm);
         debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-        if len >= Self::LOOP_SIZE {
-            while cur <= end.sub(Self::LOOP_SIZE) {
+        let loop_size = UNROLL * V::BYTES;
+        if len >= loop_size {
+            while cur <= end.sub(loop_size) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 let vecs: [V; UNROLL] = core::array::from_fn(|i| {
@@ -378,7 +378,7 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
                     let equal = self.v1.cmpeq(v);
                     count += equal.movemask().count_ones();
                 }
-                cur = cur.add(Self::LOOP_SIZE);
+                cur = cur.add(loop_size);
             }
         }
         // Handle any leftovers after the aligned loop above. We use unaligned
@@ -429,17 +429,14 @@ impl<V: Vector, const UNROLL: usize> One<V, UNROLL> {
 /// searching for `a` or `b` in `afoobar` would report matches at offsets `0`,
 /// `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct Two<V, const UNROLL: usize = 2> {
+pub(crate) struct Two<V> {
     s1: u8,
     s2: u8,
     v1: V,
     v2: V,
 }
 
-impl<V: Vector, const UNROLL: usize> Two<V, UNROLL> {
-    /// The number of bytes we examine per each iteration of our search loop.
-    const LOOP_SIZE: usize = UNROLL * V::BYTES;
-
+impl<V: Vector> Two<V> {
     /// Create a new searcher that finds occurrences of the byte given.
     #[inline(always)]
     pub(crate) unsafe fn new(needle1: u8, needle2: u8) -> Self {
@@ -485,7 +482,7 @@ impl<V: Vector, const UNROLL: usize> Two<V, UNROLL> {
     /// * The distance being in bounds must not rely on "wrapping around" the
     /// address space.
     #[inline(always)]
-    pub(crate) unsafe fn find_raw(
+    pub(crate) unsafe fn find_raw<const UNROLL: usize>(
         &self,
         start: *const u8,
         end: *const u8,
@@ -512,8 +509,9 @@ impl<V: Vector, const UNROLL: usize> Two<V, UNROLL> {
         // Set `cur` to the first V-aligned pointer greater than `start`.
         let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
         debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-        if len >= Self::LOOP_SIZE {
-            while cur <= end.sub(Self::LOOP_SIZE) {
+        let loop_size = UNROLL * V::BYTES;
+        if len >= loop_size {
+            while cur <= end.sub(loop_size) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 let vecs: [V; UNROLL] = core::array::from_fn(|i| {
@@ -542,7 +540,7 @@ impl<V: Vector, const UNROLL: usize> Two<V, UNROLL> {
                             .add(mask.first_offset()),
                     );
                 }
-                cur = cur.add(Self::LOOP_SIZE);
+                cur = cur.add(loop_size);
             }
         }
         // Handle any leftovers after the aligned loop above. We use unaligned
@@ -590,7 +588,7 @@ impl<V: Vector, const UNROLL: usize> Two<V, UNROLL> {
     /// * The distance being in bounds must not rely on "wrapping around" the
     /// address space.
     #[inline(always)]
-    pub(crate) unsafe fn rfind_raw(
+    pub(crate) unsafe fn rfind_raw<const UNROLL: usize>(
         &self,
         start: *const u8,
         end: *const u8,
@@ -614,11 +612,12 @@ impl<V: Vector, const UNROLL: usize> Two<V, UNROLL> {
         }
         let mut cur = end.sub(end.as_usize() & V::ALIGN);
         debug_assert!(start <= cur && cur <= end);
-        if len >= Self::LOOP_SIZE {
-            while cur >= start.add(Self::LOOP_SIZE) {
+        let loop_size = UNROLL * V::BYTES;
+        if len >= loop_size {
+            while cur >= start.add(loop_size) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
-                cur = cur.sub(Self::LOOP_SIZE);
+                cur = cur.sub(loop_size);
 
                 let vecs: [V; UNROLL] = core::array::from_fn(|i| {
                     V::load_aligned(cur.add(i * V::BYTES))
@@ -705,7 +704,7 @@ impl<V: Vector, const UNROLL: usize> Two<V, UNROLL> {
 /// searching for `a` or `b` in `afoobar` would report matches at offsets `0`,
 /// `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct Three<V, const UNROLL: usize = 1> {
+pub(crate) struct Three<V> {
     s1: u8,
     s2: u8,
     s3: u8,
@@ -714,10 +713,7 @@ pub(crate) struct Three<V, const UNROLL: usize = 1> {
     v3: V,
 }
 
-impl<V: Vector, const UNROLL: usize> Three<V, UNROLL> {
-    /// The number of bytes we examine per each iteration of our search loop.
-    const LOOP_SIZE: usize = UNROLL * V::BYTES;
-
+impl<V: Vector> Three<V> {
     /// Create a new searcher that finds occurrences of the byte given.
     #[inline(always)]
     pub(crate) unsafe fn new(needle1: u8, needle2: u8, needle3: u8) -> Self {
@@ -771,7 +767,7 @@ impl<V: Vector, const UNROLL: usize> Three<V, UNROLL> {
     /// * The distance being in bounds must not rely on "wrapping around" the
     /// address space.
     #[inline(always)]
-    pub(crate) unsafe fn find_raw(
+    pub(crate) unsafe fn find_raw<const UNROLL: usize>(
         &self,
         start: *const u8,
         end: *const u8,
@@ -799,8 +795,9 @@ impl<V: Vector, const UNROLL: usize> Three<V, UNROLL> {
         // Set `cur` to the first V-aligned pointer greater than `start`.
         let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
         debug_assert!(cur > start && end.sub(V::BYTES) >= start);
-        if len >= Self::LOOP_SIZE {
-            while cur <= end.sub(Self::LOOP_SIZE) {
+        let loop_size = UNROLL * V::BYTES;
+        if len >= loop_size {
+            while cur <= end.sub(loop_size) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 let vecs: [V; UNROLL] = core::array::from_fn(|i| {
@@ -830,7 +827,7 @@ impl<V: Vector, const UNROLL: usize> Three<V, UNROLL> {
                         cur.add((UNROLL - 1) * V::BYTES).add(topos(mask)),
                     );
                 }
-                cur = cur.add(Self::LOOP_SIZE);
+                cur = cur.add(loop_size);
             }
         }
         // Handle any leftovers after the aligned loop above. We use unaligned
@@ -878,7 +875,7 @@ impl<V: Vector, const UNROLL: usize> Three<V, UNROLL> {
     /// * The distance being in bounds must not rely on "wrapping around" the
     /// address space.
     #[inline(always)]
-    pub(crate) unsafe fn rfind_raw(
+    pub(crate) unsafe fn rfind_raw<const UNROLL: usize>(
         &self,
         start: *const u8,
         end: *const u8,
@@ -903,11 +900,12 @@ impl<V: Vector, const UNROLL: usize> Three<V, UNROLL> {
         }
         let mut cur = end.sub(end.as_usize() & V::ALIGN);
         debug_assert!(start <= cur && cur <= end);
-        if len >= Self::LOOP_SIZE {
-            while cur >= start.add(Self::LOOP_SIZE) {
+        let loop_size = UNROLL * V::BYTES;
+        if len >= loop_size {
+            while cur >= start.add(loop_size) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
-                cur = cur.sub(Self::LOOP_SIZE);
+                cur = cur.sub(loop_size);
                 let vecs: [V; UNROLL] = core::array::from_fn(|i| {
                     V::load_aligned(cur.add(i * V::BYTES))
                 });
