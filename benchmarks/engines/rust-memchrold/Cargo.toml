@@ -7,7 +7,7 @@ edition = "2021"
 [workspace]
 
 [dependencies]
-anyhow = "1.0.72"
+anyhow = "1.0.100"
 memchr = "=2.5.0"
 
 [dependencies.shared]

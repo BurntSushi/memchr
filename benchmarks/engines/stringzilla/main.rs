@@ -2,7 +2,7 @@ use std::io::Write;
 
 use shared::{Benchmark, Sample};
 
-use stringzilla::StringZilla;
+use stringzilla::stringzilla::StringZillableBinary;
 
 fn main() -> anyhow::Result<()> {
     let Some(arg) = std::env::args_os().nth(1) else {

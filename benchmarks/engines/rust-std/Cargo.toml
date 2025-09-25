@@ -7,7 +7,7 @@ edition = "2021"
 [workspace]
 
 [dependencies]
-anyhow = "1.0.72"
+anyhow = "1.0.100"
 
 [build-dependencies]
 regex-lite = "0.1"

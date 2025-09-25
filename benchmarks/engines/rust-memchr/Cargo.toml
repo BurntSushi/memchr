@@ -1,13 +1,13 @@
 [package]
 publish = false
 name = "main"
-version = "2.7.4"  # should match current 'memchr' version
+version = "2.7.6"  # should match current 'memchr' version
 edition = "2021"
 
 [workspace]
 
 [dependencies]
-anyhow = "1.0.72"
+anyhow = "1.0.100"
 memchr = { version = "*", path = "../../../" }
 
 [dependencies.shared]

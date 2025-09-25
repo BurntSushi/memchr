@@ -7,7 +7,7 @@ edition = "2021"
 [workspace]
 
 [dependencies]
-anyhow = "1.0.72"
+anyhow = "1.0.100"
 # Note that with bytecount 0.6.7, it seems to fail on wasm32:
 #
 #     $ rebar measure -f '^memchr/sherlock/rare/huge1$' -e '^rust/bytecount/memchr/oneshot/wasm32$' -t
