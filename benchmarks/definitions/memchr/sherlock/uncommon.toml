@@ -20,6 +20,7 @@ engines = [
   "rust/memchrold/memchr/prebuilt",
   "rust/memchrold/memchr/naive",
   "rust/memchrold/memrchr",
+  "rust/bufchr/memchr/prebuilt",
 ]
 
 [[bench]]
@@ -36,6 +37,7 @@ engines = [
   "rust/memchr/memrchr2",
   "rust/memchrold/memchr2",
   "rust/memchrold/memrchr2",
+  "rust/bufchr/memchr2/prebuilt",
 ]
 
 [[bench]]
@@ -76,6 +78,7 @@ engines = [
   "rust/memchrold/memchr/prebuilt",
   "rust/memchrold/memchr/naive",
   "rust/memchrold/memrchr",
+  "rust/bufchr/memchr/prebuilt",
 ]
 
 [[bench]]
@@ -92,6 +95,7 @@ engines = [
   "rust/memchr/memrchr2",
   "rust/memchrold/memchr2",
   "rust/memchrold/memrchr2",
+  "rust/bufchr/memchr2/prebuilt",
 ]
 
 [[bench]]
@@ -132,6 +136,7 @@ engines = [
   "rust/memchrold/memchr/prebuilt",
   "rust/memchrold/memchr/naive",
   "rust/memchrold/memrchr",
+  "rust/bufchr/memchr/prebuilt",
 ]
 
 [[bench]]
@@ -148,6 +153,7 @@ engines = [
   "rust/memchr/memrchr2",
   "rust/memchrold/memchr2",
   "rust/memchrold/memrchr2",
+  "rust/bufchr/memchr2/prebuilt",
 ]
 
 [[bench]]
