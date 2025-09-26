@@ -508,10 +508,10 @@ unsafe fn memchr_raw(
 ) -> Option<*const u8> {
     #[cfg(target_arch = "x86_64")]
     {
-        // x86_64 does CPU feature detection at runtime in order to use AVX2
-        // instructions even when the `avx2` feature isn't enabled at compile
-        // time. This function also handles using a fallback if neither AVX2
-        // nor SSE2 (unusual) are available.
+        // x86_64 does CPU feature detection at runtime (when std feature enabled)
+        // in order to use AVX2 instructions even when the `avx2` feature isn't
+        // enabled at compile  time. This function also handles using a fallback if
+        // neither AVX2 nor SSE2 (unusual) are available.
         crate::arch::x86_64::memchr::memchr_raw(needle, start, end)
     }
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
