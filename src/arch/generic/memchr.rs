@@ -980,6 +980,158 @@ impl<V: Vector> Three<V> {
     }
 }
 
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Eight<'a, V> {
+    needles: &'a [u8],
+    lo: V,
+    hi: V,
+}
+
+impl<V: Vector> Eight<'_, V> {
+    const LOOP_SIZE: usize = 2 * V::BYTES;
+
+    #[inline(always)]
+    pub(crate) unsafe fn new(needles: &[u8]) -> Eight<'_, V> {
+        assert!(needles.len() <= 8);
+
+        debug_assert!(V::BYTES <= 32);
+
+        let mut lo = [0; 32];
+        let mut hi = [0; 32];
+
+        for (idx, byte) in needles.iter().enumerate() {
+            let lo_nibble = byte & 0xF;
+            lo[lo_nibble as usize] |= 1 << idx;
+            lo[16 + lo_nibble as usize] |= 1 << idx;
+
+            let hi_nibble = byte >> 4;
+            hi[hi_nibble as usize] |= 1 << idx;
+            hi[16 + hi_nibble as usize] |= 1 << idx;
+        }
+
+        let lo = V::load_unaligned(lo.as_ptr());
+        let hi = V::load_unaligned(hi.as_ptr());
+
+        Eight { needles, lo, hi }
+    }
+
+    #[inline(always)]
+    pub(crate) fn needles(&self) -> &[u8] {
+        self.needles
+    }
+
+    #[inline(always)]
+    pub(crate) unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+
+        let topos = V::Mask::first_offset;
+        let len = end.distance(start);
+        debug_assert!(
+            len >= V::BYTES,
+            "haystack has length {}, but must be at least {}",
+            len,
+            V::BYTES
+        );
+
+        // Search a possibly unaligned chunk at `start`. This covers any part
+        // of the haystack prior to where aligned loads can start.
+        if let Some(cur) = self.search_chunk(start, topos) {
+            return Some(cur);
+        }
+        // Set `cur` to the first V-aligned pointer greater than `start`.
+        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+        if len >= Self::LOOP_SIZE {
+            while cur <= end.sub(Self::LOOP_SIZE) {
+                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+
+                let chunk_a = V::load_aligned(cur);
+                let chunk_b = V::load_aligned(cur.add(V::BYTES));
+
+                let lo_chunk_a = chunk_a.and(V::splat(0xF));
+                let lo_chunk_b = chunk_b.and(V::splat(0xF));
+                let lo_hits_a = self.lo.shuffle_bytes(lo_chunk_a);
+                let lo_hits_b = self.lo.shuffle_bytes(lo_chunk_b);
+
+                let hi_chunk_a = chunk_a.shift_8bit_lane_right::<4>();
+                let hi_chunk_b = chunk_b.shift_8bit_lane_right::<4>();
+                let hi_hits_a = self.hi.shuffle_bytes(hi_chunk_a);
+                let hi_hits_b = self.hi.shuffle_bytes(hi_chunk_b);
+
+                let hits_a = lo_hits_a.and(hi_hits_a);
+                let hits_b = lo_hits_b.and(hi_hits_b);
+
+                let mask_a = hits_a.cmpeq(V::splat(0)).inverted_movemask();
+                let mask_b = hits_b.cmpeq(V::splat(0)).inverted_movemask();
+
+                if mask_a.has_non_zero() {
+                    let offset = topos(mask_a);
+
+                    return Some(cur.add(offset));
+                } else if mask_b.has_non_zero() {
+                    let offset = topos(mask_b);
+
+                    return Some(cur.add(V::BYTES).add(offset));
+                }
+
+                cur = cur.add(Self::LOOP_SIZE);
+            }
+        }
+        // Handle any leftovers after the aligned loop above. We use unaligned
+        // loads here, but I believe we are guaranteed that they are aligned
+        // since `cur` is aligned.
+        while cur <= end.sub(V::BYTES) {
+            debug_assert!(end.distance(cur) >= V::BYTES);
+            if let Some(cur) = self.search_chunk(cur, topos) {
+                return Some(cur);
+            }
+            cur = cur.add(V::BYTES);
+        }
+        // Finally handle any remaining bytes less than the size of V. In this
+        // case, our pointer may indeed be unaligned and the load may overlap
+        // with the previous one. But that's okay since we know the previous
+        // load didn't lead to a match (otherwise we wouldn't be here).
+        if cur < end {
+            debug_assert!(end.distance(cur) < V::BYTES);
+            cur = cur.sub(V::BYTES - end.distance(cur));
+            debug_assert_eq!(end.distance(cur), V::BYTES);
+            return self.search_chunk(cur, topos);
+        }
+        None
+    }
+
+    #[inline(always)]
+    unsafe fn search_chunk(
+        &self,
+        cur: *const u8,
+        mask_to_offset: impl Fn(V::Mask) -> usize,
+    ) -> Option<*const u8> {
+        let chunk = V::load_unaligned(cur);
+
+        let lo_chunk = chunk.and(V::splat(0xF));
+        let lo_hits = self.lo.shuffle_bytes(lo_chunk);
+
+        let hi_chunk = chunk.shift_8bit_lane_right::<4>();
+        let hi_hits = self.hi.shuffle_bytes(hi_chunk);
+
+        let hits = lo_hits.and(hi_hits);
+
+        let mask = hits.cmpeq(V::splat(0)).inverted_movemask();
+
+        if mask.has_non_zero() {
+            let offset = mask_to_offset(mask);
+
+            return Some(cur.add(offset));
+        }
+
+        None
+    }
+}
+
 /// An iterator over all occurrences of a set of bytes in a haystack.
 ///
 /// This iterator implements the routines necessary to provide a

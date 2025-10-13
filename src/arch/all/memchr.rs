@@ -867,6 +867,64 @@ impl<'a, 'h> DoubleEndedIterator for ThreeIter<'a, 'h> {
     }
 }
 
+/// TODO
+#[derive(Clone, Copy, Debug)]
+pub struct Eight<'a> {
+    needles: &'a [u8],
+}
+
+impl Eight<'_> {
+    /// TODO
+    #[inline]
+    pub fn new(needles: &[u8]) -> Eight<'_> {
+        assert!(needles.len() <= 8);
+
+        Eight { needles }
+    }
+
+    /// TODO
+    #[inline]
+    pub unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        if self.needles.is_empty() || start >= end {
+            return None;
+        }
+        generic::fwd_byte_by_byte(start, end, |b| self.needles.contains(&b))
+    }
+
+    /// TODO
+    pub fn iter<'a, 'h>(&'a self, haystack: &'h [u8]) -> EightIter<'a, 'h> {
+        EightIter { searcher: self, it: generic::Iter::new(haystack) }
+    }
+}
+
+/// TODO
+#[derive(Clone, Debug)]
+pub struct EightIter<'a, 'h> {
+    searcher: &'a Eight<'a>,
+    it: generic::Iter<'h>,
+}
+
+impl<'a, 'h> Iterator for EightIter<'a, 'h> {
+    type Item = usize;
+
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
+        // SAFETY: We rely on the generic iterator to provide valid start
+        // and end pointers, but we guarantee that any pointer returned by
+        // 'find_raw' falls within the bounds of the start and end pointer.
+        unsafe { self.it.next(|s, e| self.searcher.find_raw(s, e)) }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.it.size_hint()
+    }
+}
+
 /// Return `true` if `x` contains any zero byte.
 ///
 /// That is, this routine treats `x` as a register of 8-bit lanes and returns
@@ -967,6 +1025,15 @@ mod tests {
                 let n2 = needles.get(1).copied()?;
                 let n3 = needles.get(2).copied()?;
                 Some(Three::new(n1, n2, n3).iter(haystack).rev().collect())
+            },
+        )
+    }
+
+    #[test]
+    fn forward_eight() {
+        crate::tests::memchr::Runner::new(8).forward_iter(
+            |haystack, needles| {
+                Some(Eight::new(needles).iter(haystack).collect())
             },
         )
     }

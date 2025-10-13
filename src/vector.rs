@@ -52,17 +52,24 @@ pub(crate) trait Vector: Copy + core::fmt::Debug {
 
     /// _mm_movemask_epi8 or _mm256_movemask_epi8
     unsafe fn movemask(self) -> Self::Mask;
+    /// TODO
+    unsafe fn inverted_movemask(self) -> Self::Mask;
     /// _mm_cmpeq_epi8 or _mm256_cmpeq_epi8
     unsafe fn cmpeq(self, vector2: Self) -> Self;
     /// _mm_and_si128 or _mm256_and_si256
     unsafe fn and(self, vector2: Self) -> Self;
-    /// _mm_or or _mm256_or_si256
+    /// _mm_or_si128 or _mm256_or_si256
     unsafe fn or(self, vector2: Self) -> Self;
     /// Returns true if and only if `Self::movemask` would return a mask that
     /// contains at least one non-zero bit.
     unsafe fn movemask_will_have_non_zero(self) -> bool {
         self.movemask().has_non_zero()
     }
+
+    /// TODO
+    unsafe fn shift_8bit_lane_right<const BITS: i32>(self) -> Self;
+    /// TODO
+    unsafe fn shuffle_bytes(self, indices: Self) -> Self;
 }
 
 /// A trait that abstracts over a vector-to-scalar operation called
@@ -224,6 +231,11 @@ mod x86sse2 {
         }
 
         #[inline(always)]
+        unsafe fn inverted_movemask(self) -> SensibleMoveMask {
+            SensibleMoveMask(_mm_movemask_epi8(self) as u32 ^ 0xFF_FF)
+        }
+
+        #[inline(always)]
         unsafe fn cmpeq(self, vector2: Self) -> __m128i {
             _mm_cmpeq_epi8(self, vector2)
         }
@@ -236,6 +248,16 @@ mod x86sse2 {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> __m128i {
             _mm_or_si128(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn shift_8bit_lane_right<const BITS: i32>(self) -> Self {
+            _mm_srli_epi16(self, BITS).and(Self::splat(0xF))
+        }
+
+        #[inline(always)]
+        unsafe fn shuffle_bytes(self, indices: Self) -> Self {
+            _mm_shuffle_epi8(self, indices)
         }
     }
 }
@@ -273,6 +295,11 @@ mod x86avx2 {
         }
 
         #[inline(always)]
+        unsafe fn inverted_movemask(self) -> SensibleMoveMask {
+            SensibleMoveMask(_mm256_movemask_epi8(self) as u32 ^ 0xFF_FF_FF_FF)
+        }
+
+        #[inline(always)]
         unsafe fn cmpeq(self, vector2: Self) -> __m256i {
             _mm256_cmpeq_epi8(self, vector2)
         }
@@ -285,6 +312,16 @@ mod x86avx2 {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> __m256i {
             _mm256_or_si256(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn shift_8bit_lane_right<const BITS: i32>(self) -> __m256i {
+            _mm256_srli_epi16(self, BITS).and(Self::splat(0xF))
+        }
+
+        #[inline(always)]
+        unsafe fn shuffle_bytes(self, indices: Self) -> __m256i {
+            _mm256_shuffle_epi8(self, indices)
         }
     }
 }

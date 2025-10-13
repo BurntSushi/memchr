@@ -998,6 +998,109 @@ impl<'a, 'h> DoubleEndedIterator for ThreeIter<'a, 'h> {
 
 impl<'a, 'h> core::iter::FusedIterator for ThreeIter<'a, 'h> {}
 
+/// TODO
+#[derive(Clone, Copy, Debug)]
+pub struct Eight<'a>(generic::Eight<'a, __m128i>);
+
+impl Eight<'_> {
+    /// TODO
+    #[inline]
+    pub fn new(needles: &[u8]) -> Option<Eight<'_>> {
+        if Eight::is_available() {
+            // SAFETY: we check that ssse3 is available above.
+            unsafe { Some(Eight::new_unchecked(needles)) }
+        } else {
+            None
+        }
+    }
+
+    /// TODO
+    #[target_feature(enable = "ssse3")]
+    #[inline]
+    pub unsafe fn new_unchecked(needles: &[u8]) -> Eight<'_> {
+        Eight(generic::Eight::new(needles))
+    }
+
+    /// TODO
+    #[inline]
+    pub fn is_available() -> bool {
+        #[cfg(target_feature = "ssse3")]
+        {
+            true
+        }
+        #[cfg(not(target_feature = "ssse3"))]
+        {
+            #[cfg(feature = "std")]
+            {
+                std::is_x86_feature_detected!("ssse3")
+            }
+            #[cfg(not(feature = "std"))]
+            {
+                false
+            }
+        }
+    }
+
+    /// TODO
+    #[inline]
+    pub unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        if start >= end {
+            return None;
+        }
+        if end.distance(start) < __m128i::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                self.0.needles().contains(&b)
+            });
+        }
+        self.find_raw_impl(start, end)
+    }
+
+    #[target_feature(enable = "ssse3")]
+    #[inline]
+    unsafe fn find_raw_impl(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        self.0.find_raw(start, end)
+    }
+
+    /// TODO
+    #[inline]
+    pub fn iter<'a, 'h>(&'a self, haystack: &'h [u8]) -> EightIter<'a, 'h> {
+        EightIter { searcher: self, it: generic::Iter::new(haystack) }
+    }
+}
+
+/// TODO
+#[derive(Clone, Debug)]
+pub struct EightIter<'a, 'h> {
+    searcher: &'a Eight<'a>,
+    it: generic::Iter<'h>,
+}
+
+impl<'a, 'h> Iterator for EightIter<'a, 'h> {
+    type Item = usize;
+
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
+        // SAFETY: We rely on the generic iterator to provide valid start
+        // and end pointers, but we guarantee that any pointer returned by
+        // 'find_raw' falls within the bounds of the start and end pointer.
+        unsafe { self.it.next(|s, e| self.searcher.find_raw(s, e)) }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.it.size_hint()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1071,6 +1174,15 @@ mod tests {
                 let n2 = needles.get(1).copied()?;
                 let n3 = needles.get(2).copied()?;
                 Some(Three::new(n1, n2, n3)?.iter(haystack).rev().collect())
+            },
+        )
+    }
+
+    #[test]
+    fn forward_eight() {
+        crate::tests::memchr::Runner::new(8).forward_iter(
+            |haystack, needles| {
+                Some(Eight::new(needles)?.iter(haystack).collect())
             },
         )
     }

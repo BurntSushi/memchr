@@ -208,6 +208,18 @@ pub fn memrchr3(
     }
 }
 
+/// TODO
+#[inline]
+pub fn memchr8(needles: &[u8], haystack: &[u8]) -> Option<usize> {
+    // SAFETY: memrchr8_raw, when a match is found, always returns a valid
+    // pointer between start and end.
+    unsafe {
+        generic::search_slice_with_raw(haystack, |start, end| {
+            memchr8_raw(needles, start, end)
+        })
+    }
+}
+
 /// Returns an iterator over all occurrences of the needle in a haystack.
 ///
 /// The iterator returned implements `DoubleEndedIterator`. This means it
@@ -718,6 +730,23 @@ unsafe fn memrchr3_raw(
     {
         crate::arch::all::memchr::Three::new(needle1, needle2, needle3)
             .rfind_raw(start, end)
+    }
+}
+
+/// TODO
+#[inline]
+unsafe fn memchr8_raw(
+    needles: &[u8],
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    #[cfg(target_arch = "x86_64")]
+    {
+        crate::arch::x86_64::memchr::memchr8_raw(needles, start, end)
+    }
+    #[cfg(not(target_arch = "x86_64"))]
+    {
+        crate::arch::all::memchr::Eight::new(needles).find_raw(start, end)
     }
 }
 

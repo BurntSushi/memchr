@@ -68,11 +68,11 @@ impl Runner {
     /// Create a new test runner for forward and reverse byte search
     /// implementations.
     ///
-    /// The `needle_len` given must be at most `3` and at least `1`. It
+    /// The `needle_len` given must be at most `8` and at least `1`. It
     /// corresponds to the number of needle bytes to search for.
     pub(crate) fn new(needle_len: usize) -> Runner {
         assert!(needle_len >= 1, "needle_len must be at least 1");
-        assert!(needle_len <= 3, "needle_len must be at most 3");
+        assert!(needle_len <= 8, "needle_len must be at most 8");
         Runner { needle_len }
     }
 

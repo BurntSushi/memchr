@@ -63,7 +63,7 @@ macro_rules! unsafe_ifunc {
         $retty:ty,
         $hay_start:ident,
         $hay_end:ident,
-        $($needle:ident),+
+        $($needle:ident: $needle_ty:ty),+
     ) => {{
         #![allow(unused_unsafe)]
 
@@ -76,7 +76,7 @@ macro_rules! unsafe_ifunc {
         #[cfg(target_feature = "sse2")]
         #[target_feature(enable = "sse2", enable = "avx2")]
         unsafe fn find_avx2(
-            $($needle: u8),+,
+            $($needle: $needle_ty),+,
             $hay_start: *const u8,
             $hay_end: *const u8,
         ) -> $retty {
@@ -88,7 +88,7 @@ macro_rules! unsafe_ifunc {
         #[cfg(target_feature = "sse2")]
         #[target_feature(enable = "sse2")]
         unsafe fn find_sse2(
-            $($needle: u8),+,
+            $($needle: $needle_ty),+,
             $hay_start: *const u8,
             $hay_end: *const u8,
         ) -> $retty {
@@ -98,7 +98,7 @@ macro_rules! unsafe_ifunc {
         }
 
         unsafe fn find_fallback(
-            $($needle: u8),+,
+            $($needle: $needle_ty),+,
             $hay_start: *const u8,
             $hay_end: *const u8,
         ) -> $retty {
@@ -107,7 +107,7 @@ macro_rules! unsafe_ifunc {
         }
 
         unsafe fn detect(
-            $($needle: u8),+,
+            $($needle: $needle_ty),+,
             $hay_start: *const u8,
             $hay_end: *const u8,
         ) -> $retty {
@@ -184,7 +184,7 @@ pub(crate) fn memchr_raw(
         Option<*const u8>,
         start,
         end,
-        n1
+        n1: u8
     )
 }
 
@@ -207,7 +207,7 @@ pub(crate) fn memrchr_raw(
         Option<*const u8>,
         start,
         end,
-        n1
+        n1: u8
     )
 }
 
@@ -231,8 +231,8 @@ pub(crate) fn memchr2_raw(
         Option<*const u8>,
         start,
         end,
-        n1,
-        n2
+        n1: u8,
+        n2: u8
     )
 }
 
@@ -256,8 +256,8 @@ pub(crate) fn memrchr2_raw(
         Option<*const u8>,
         start,
         end,
-        n1,
-        n2
+        n1: u8,
+        n2: u8
     )
 }
 
@@ -282,9 +282,9 @@ pub(crate) fn memchr3_raw(
         Option<*const u8>,
         start,
         end,
-        n1,
-        n2,
-        n3
+        n1: u8,
+        n2: u8,
+        n3: u8
     )
 }
 
@@ -309,9 +309,27 @@ pub(crate) fn memrchr3_raw(
         Option<*const u8>,
         start,
         end,
-        n1,
-        n2,
-        n3
+        n1: u8,
+        n2: u8,
+        n3: u8
+    )
+}
+
+#[inline(always)]
+pub(crate) fn memchr8_raw(
+    needles: &[u8],
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    // SAFETY: We provide a valid function pointer type.
+    unsafe_ifunc!(
+        Eight,
+        find_raw,
+        unsafe fn(&[u8], *const u8, *const u8) -> Option<*const u8>,
+        Option<*const u8>,
+        start,
+        end,
+        needles: &[u8]
     )
 }
 
@@ -330,6 +348,6 @@ pub(crate) fn count_raw(n1: u8, start: *const u8, end: *const u8) -> usize {
         usize,
         start,
         end,
-        n1
+        n1: u8
     )
 }
