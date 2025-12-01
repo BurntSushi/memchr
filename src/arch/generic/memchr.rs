@@ -1132,7 +1132,15 @@ pub(crate) unsafe fn search_slice_with_raw(
     let start = haystack.as_ptr();
     let end = start.add(haystack.len());
     let found = find_raw(start, end)?;
-    Some(found.distance(start))
+    let result = found.distance(start);
+
+    // Hint to the compiler that this index is within bounds of the original
+    // slice. This lets it elide bound checks in the function calling `memchr`.
+    // SAFETY: `found` is in the range `start..end`, so `result`
+    //         (i.e. `found - start`) is in the range `0..haystack.len()`.
+    unsafe { core::hint::assert_unchecked(result < haystack.len()) };
+
+    Some(result)
 }
 
 /// Performs a forward byte-at-a-time loop until either `ptr >= end_ptr` or
