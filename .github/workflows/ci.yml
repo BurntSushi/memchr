@@ -234,7 +234,7 @@ jobs:
     - name: Install Rust
       uses: dtolnay/rust-toolchain@master
       with:
-        toolchain: 1.61.0
+        toolchain: 1.81.0
     - name: Basic build
       run: cargo build --verbose
     - name: Build docs
