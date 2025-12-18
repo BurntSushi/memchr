@@ -55,7 +55,7 @@ impl One {
     /// in the current environment.
     ///
     /// Note that it is a common misconception that if one compiles for an
-    /// `x86_64` target, then they therefore automatically have access to neon
+    /// `aarch64` target, then they therefore automatically have access to neon
     /// instructions. While this is almost always the case, it isn't true in
     /// 100% of cases.
     #[target_feature(enable = "neon")]
@@ -415,7 +415,7 @@ impl Two {
     /// in the current environment.
     ///
     /// Note that it is a common misconception that if one compiles for an
-    /// `x86_64` target, then they therefore automatically have access to neon
+    /// `aarch64` target, then they therefore automatically have access to neon
     /// instructions. While this is almost always the case, it isn't true in
     /// 100% of cases.
     #[target_feature(enable = "neon")]
@@ -697,7 +697,7 @@ impl Three {
     /// in the current environment.
     ///
     /// Note that it is a common misconception that if one compiles for an
-    /// `x86_64` target, then they therefore automatically have access to neon
+    /// `aarch64` target, then they therefore automatically have access to neon
     /// instructions. While this is almost always the case, it isn't true in
     /// 100% of cases.
     #[target_feature(enable = "neon")]
