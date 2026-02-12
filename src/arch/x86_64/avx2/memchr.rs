@@ -165,13 +165,13 @@ impl One {
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     ///
     /// Note that callers may pass a pair of pointers such that `start >= end`.
     /// In that case, `None` will always be returned.
@@ -231,13 +231,13 @@ impl One {
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     ///
     /// Note that callers may pass a pair of pointers such that `start >= end`.
     /// In that case, `None` will always be returned.
@@ -285,13 +285,13 @@ impl One {
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     ///
     /// Note that callers may pass a pair of pointers such that `start >= end`.
     /// In that case, `0` will always be returned.
@@ -640,13 +640,13 @@ impl Two {
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     ///
     /// Note that callers may pass a pair of pointers such that `start >= end`.
     /// In that case, `None` will always be returned.
@@ -706,13 +706,13 @@ impl Two {
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     ///
     /// Note that callers may pass a pair of pointers such that `start >= end`.
     /// In that case, `None` will always be returned.
@@ -1023,13 +1023,13 @@ impl Three {
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     ///
     /// Note that callers may pass a pair of pointers such that `start >= end`.
     /// In that case, `None` will always be returned.
@@ -1091,13 +1091,13 @@ impl Three {
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     ///
     /// Note that callers may pass a pair of pointers such that `start >= end`.
     /// In that case, `None` will always be returned.

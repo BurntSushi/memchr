@@ -95,15 +95,15 @@ pub fn is_equal(x: &[u8], y: &[u8]) -> bool {
 /// * Both `x` and `y` must be valid for reads of up to `n` bytes.
 /// * Both `x` and `y` must point to an initialized value.
 /// * Both `x` and `y` must each point to an allocated object and
-/// must either be in bounds or at most one byte past the end of the
-/// allocated object. `x` and `y` do not need to point to the same allocated
-/// object, but they may.
+///   must either be in bounds or at most one byte past the end of the
+///   allocated object. `x` and `y` do not need to point to the same allocated
+///   object, but they may.
 /// * Both `x` and `y` must be _derived from_ a pointer to their respective
-/// allocated objects.
+///   allocated objects.
 /// * The distance between `x` and `x+n` must not overflow `isize`. Similarly
-/// for `y` and `y+n`.
+///   for `y` and `y+n`.
 /// * The distance being in bounds must not rely on "wrapping around" the
-/// address space.
+///   address space.
 #[inline(always)]
 pub unsafe fn is_equal_raw(
     mut x: *const u8,

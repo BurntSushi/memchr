@@ -137,36 +137,36 @@ accelerated implementations of `memchr` (and friends) and `memmem`.
 # Crate features
 
 * **std** - When enabled (the default), this will permit features specific to
-the standard library. Currently, the only thing used from the standard library
-is runtime SIMD CPU feature detection. This means that this feature must be
-enabled to get AVX2 accelerated routines on `x86_64` targets without enabling
-the `avx2` feature at compile time, for example. When `std` is not enabled,
-this crate will still attempt to use SSE2 accelerated routines on `x86_64`. It
-will also use AVX2 accelerated routines when the `avx2` feature is enabled at
-compile time. In general, enable this feature if you can.
+  the standard library. Currently, the only thing used from the standard library
+  is runtime SIMD CPU feature detection. This means that this feature must be
+  enabled to get AVX2 accelerated routines on `x86_64` targets without enabling
+  the `avx2` feature at compile time, for example. When `std` is not enabled,
+  this crate will still attempt to use SSE2 accelerated routines on `x86_64`. It
+  will also use AVX2 accelerated routines when the `avx2` feature is enabled at
+  compile time. In general, enable this feature if you can.
 * **alloc** - When enabled (the default), APIs in this crate requiring some
-kind of allocation will become available. For example, the
-[`memmem::Finder::into_owned`](crate::memmem::Finder::into_owned) API and the
-[`arch::all::shiftor`](crate::arch::all::shiftor) substring search
-implementation. Otherwise, this crate is designed from the ground up to be
-usable in core-only contexts, so the `alloc` feature doesn't add much
-currently. Notably, disabling `std` but enabling `alloc` will **not** result
-in the use of AVX2 on `x86_64` targets unless the `avx2` feature is enabled
-at compile time. (With `std` enabled, AVX2 can be used even without the `avx2`
-feature enabled at compile time by way of runtime CPU feature detection.)
-* **logging** - When enabled (disabled by default), the `log` crate is used
-to emit log messages about what kinds of `memchr` and `memmem` algorithms
-are used. Namely, both `memchr` and `memmem` have a number of different
-implementation choices depending on the target and CPU, and the log messages
-can help show what specific implementations are being used. Generally, this is
-useful for debugging performance issues.
+  kind of allocation will become available. For example, the
+  [`memmem::Finder::into_owned`](crate::memmem::Finder::into_owned) API and the
+  [`arch::all::shiftor`](crate::arch::all::shiftor) substring search
+  implementation. Otherwise, this crate is designed from the ground up to be
+  usable in core-only contexts, so the `alloc` feature doesn't add much
+  currently. Notably, disabling `std` but enabling `alloc` will **not** result
+  in the use of AVX2 on `x86_64` targets unless the `avx2` feature is enabled
+  at compile time. (With `std` enabled, AVX2 can be used even without the `avx2`
+  feature enabled at compile time by way of runtime CPU feature detection.)
+  * **logging** - When enabled (disabled by default), the `log` crate is used
+    to emit log messages about what kinds of `memchr` and `memmem` algorithms
+    are used. Namely, both `memchr` and `memmem` have a number of different
+    implementation choices depending on the target and CPU, and the log messages
+    can help show what specific implementations are being used. Generally, this
+    is useful for debugging performance issues.
 * **libc** - **DEPRECATED**. Previously, this enabled the use of the target's
-`memchr` function from whatever `libc` was linked into the program. This
-feature is now a no-op because this crate's implementation of `memchr` should
-now be sufficiently fast on a number of platforms that `libc` should no longer
-be needed. (This feature is somewhat of a holdover from this crate's origins.
-Originally, this crate was literally just a safe wrapper function around the
-`memchr` function from `libc`.)
+    `memchr` function from whatever `libc` was linked into the program. This
+    feature is now a no-op because this crate's implementation of `memchr`
+    should now be sufficiently fast on a number of platforms that `libc` should
+    no longer be needed. (This feature is somewhat of a holdover from this
+    crate's origins. Originally, this crate was literally just a safe wrapper
+    function around the `memchr` function from `libc`.)
 */
 
 #![deny(missing_docs)]

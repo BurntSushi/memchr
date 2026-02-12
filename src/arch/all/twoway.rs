@@ -69,10 +69,10 @@ pub struct FinderRev(TwoWay);
 ///
 /// 1. Do something to detect a "critical" position in the needle.
 /// 2. For the current position in the haystack, look if `needle[critical..]`
-/// matches at that position.
+///    matches at that position.
 /// 3. If so, look if `needle[..critical]` matches.
 /// 4. If a mismatch occurs, shift the search by some amount based on the
-/// critical position and a pre-computed shift.
+///    critical position and a pre-computed shift.
 ///
 /// This type is wrapped in the forward and reverse finders that expose
 /// consistent forward or reverse APIs.

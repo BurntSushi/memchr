@@ -127,18 +127,18 @@ impl<V: Vector> One<V> {
     /// # Safety
     ///
     /// * It must be the case that `start < end` and that the distance between
-    /// them is at least equal to `V::BYTES`. That is, it must always be valid
-    /// to do at least an unaligned load of `V` at `start`.
+    ///   them is at least equal to `V::BYTES`. That is, it must always be valid
+    ///   to do at least an unaligned load of `V` at `start`.
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     #[inline(always)]
     pub(crate) unsafe fn find_raw(
         &self,
@@ -238,18 +238,18 @@ impl<V: Vector> One<V> {
     /// # Safety
     ///
     /// * It must be the case that `start < end` and that the distance between
-    /// them is at least equal to `V::BYTES`. That is, it must always be valid
-    /// to do at least an unaligned load of `V` at `start`.
+    ///   them is at least equal to `V::BYTES`. That is, it must always be valid
+    ///   to do at least an unaligned load of `V` at `start`.
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     #[inline(always)]
     pub(crate) unsafe fn rfind_raw(
         &self,
@@ -333,18 +333,18 @@ impl<V: Vector> One<V> {
     /// # Safety
     ///
     /// * It must be the case that `start < end` and that the distance between
-    /// them is at least equal to `V::BYTES`. That is, it must always be valid
-    /// to do at least an unaligned load of `V` at `start`.
+    ///   them is at least equal to `V::BYTES`. That is, it must always be valid
+    ///   to do at least an unaligned load of `V` at `start`.
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     #[inline(always)]
     pub(crate) unsafe fn count_raw(
         &self,
@@ -477,18 +477,18 @@ impl<V: Vector> Two<V> {
     /// # Safety
     ///
     /// * It must be the case that `start < end` and that the distance between
-    /// them is at least equal to `V::BYTES`. That is, it must always be valid
-    /// to do at least an unaligned load of `V` at `start`.
+    ///   them is at least equal to `V::BYTES`. That is, it must always be valid
+    ///   to do at least an unaligned load of `V` at `start`.
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     #[inline(always)]
     pub(crate) unsafe fn find_raw(
         &self,
@@ -576,18 +576,18 @@ impl<V: Vector> Two<V> {
     /// # Safety
     ///
     /// * It must be the case that `start < end` and that the distance between
-    /// them is at least equal to `V::BYTES`. That is, it must always be valid
-    /// to do at least an unaligned load of `V` at `start`.
+    ///   them is at least equal to `V::BYTES`. That is, it must always be valid
+    ///   to do at least an unaligned load of `V` at `start`.
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     #[inline(always)]
     pub(crate) unsafe fn rfind_raw(
         &self,
@@ -749,18 +749,18 @@ impl<V: Vector> Three<V> {
     /// # Safety
     ///
     /// * It must be the case that `start < end` and that the distance between
-    /// them is at least equal to `V::BYTES`. That is, it must always be valid
-    /// to do at least an unaligned load of `V` at `start`.
+    ///   them is at least equal to `V::BYTES`. That is, it must always be valid
+    ///   to do at least an unaligned load of `V` at `start`.
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     #[inline(always)]
     pub(crate) unsafe fn find_raw(
         &self,
@@ -858,18 +858,18 @@ impl<V: Vector> Three<V> {
     /// # Safety
     ///
     /// * It must be the case that `start < end` and that the distance between
-    /// them is at least equal to `V::BYTES`. That is, it must always be valid
-    /// to do at least an unaligned load of `V` at `start`.
+    ///   them is at least equal to `V::BYTES`. That is, it must always be valid
+    ///   to do at least an unaligned load of `V` at `start`.
     /// * Both `start` and `end` must be valid for reads.
     /// * Both `start` and `end` must point to an initialized value.
     /// * Both `start` and `end` must point to the same allocated object and
-    /// must either be in bounds or at most one byte past the end of the
-    /// allocated object.
+    ///   must either be in bounds or at most one byte past the end of the
+    ///   allocated object.
     /// * Both `start` and `end` must be _derived from_ a pointer to the same
-    /// object.
+    ///   object.
     /// * The distance between `start` and `end` must not overflow `isize`.
     /// * The distance being in bounds must not rely on "wrapping around" the
-    /// address space.
+    ///   address space.
     #[inline(always)]
     pub(crate) unsafe fn rfind_raw(
         &self,
