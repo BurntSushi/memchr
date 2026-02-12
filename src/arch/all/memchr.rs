@@ -222,7 +222,7 @@ impl One {
             debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
 
             let a = cur.sub(2 * USIZE_BYTES).cast::<usize>().read();
-            let b = cur.sub(1 * USIZE_BYTES).cast::<usize>().read();
+            let b = cur.sub(USIZE_BYTES).cast::<usize>().read();
             if self.has_needle(a) || self.has_needle(b) {
                 break;
             }

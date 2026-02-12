@@ -173,7 +173,7 @@ impl<V: Vector> One<V> {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(1 * V::BYTES));
+                let b = V::load_aligned(cur.add(V::BYTES));
                 let c = V::load_aligned(cur.add(2 * V::BYTES));
                 let d = V::load_aligned(cur.add(3 * V::BYTES));
                 let eqa = self.v1.cmpeq(a);
@@ -191,7 +191,7 @@ impl<V: Vector> One<V> {
 
                     let mask = eqb.movemask();
                     if mask.has_non_zero() {
-                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+                        return Some(cur.add(V::BYTES).add(topos(mask)));
                     }
 
                     let mask = eqc.movemask();
@@ -282,7 +282,7 @@ impl<V: Vector> One<V> {
 
                 cur = cur.sub(Self::LOOP_SIZE);
                 let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(1 * V::BYTES));
+                let b = V::load_aligned(cur.add(V::BYTES));
                 let c = V::load_aligned(cur.add(2 * V::BYTES));
                 let d = V::load_aligned(cur.add(3 * V::BYTES));
                 let eqa = self.v1.cmpeq(a);
@@ -305,7 +305,7 @@ impl<V: Vector> One<V> {
 
                     let mask = eqb.movemask();
                     if mask.has_non_zero() {
-                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+                        return Some(cur.add(V::BYTES).add(topos(mask)));
                     }
 
                     let mask = eqa.movemask();
@@ -372,7 +372,7 @@ impl<V: Vector> One<V> {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
 
                 let a = V::load_aligned(cur);
-                let b = V::load_aligned(cur.add(1 * V::BYTES));
+                let b = V::load_aligned(cur.add(V::BYTES));
                 let c = V::load_aligned(cur.add(2 * V::BYTES));
                 let d = V::load_aligned(cur.add(3 * V::BYTES));
                 let eqa = self.v1.cmpeq(a);
