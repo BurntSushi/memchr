@@ -14,7 +14,7 @@ keywords = ["memchr", "memmem", "substring", "find", "search"]
 license = "Unlicense OR MIT"
 exclude = ["/.github", "/benchmarks", "/fuzz", "/scripts", "/tmp"]
 edition = "2021"
-rust-version = "1.61"
+rust-version = "1.81"
 
 [lib]
 name = "memchr"
