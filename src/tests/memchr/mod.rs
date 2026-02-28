@@ -72,7 +72,6 @@ impl Runner {
     /// corresponds to the number of needle bytes to search for.
     pub(crate) fn new(needle_len: usize) -> Runner {
         assert!(needle_len >= 1, "needle_len must be at least 1");
-        assert!(needle_len <= 3, "needle_len must be at most 3");
         Runner { needle_len }
     }
 
