@@ -135,3 +135,18 @@ pub(crate) unsafe fn count_raw(
 ) -> usize {
     defraw!(One, count_raw, start, end, n1)
 }
+
+#[inline(always)]
+pub(crate) unsafe fn memchrn_raw(
+    raw: *const u8,
+    raw_len: usize,
+    low_tab: *const u8,
+    high_tab: *const u8,
+    mask: u8,
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    defraw!(
+        Multiple, find_raw, start, end, raw, raw_len, low_tab, high_tab, mask
+    )
+}

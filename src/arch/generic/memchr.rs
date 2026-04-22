@@ -1212,3 +1212,64 @@ pub(crate) unsafe fn count_byte_by_byte<F: Fn(u8) -> bool>(
     }
     count
 }
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Multiple<V> {
+    lo: V,
+    hi: V,
+    mask: u8,
+}
+
+impl<V: Vector> Multiple<V> {
+    pub(crate) unsafe fn new(lo: V, hi: V, mask: u8) -> Self {
+        Self { lo, hi, mask }
+    }
+
+    #[inline(always)]
+    pub(crate) unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        let mut cur = start;
+        while cur <= end.sub(V::BYTES) {
+            let chunk = V::load_unaligned(cur);
+            if let Some(m) = self.find_one(chunk) {
+                return Some(cur.add(m));
+            }
+            cur = cur.add(V::BYTES);
+        }
+        if cur < end {
+            let chunk = V::load_unaligned(end.sub(V::BYTES));
+            if let Some(m) = self.find_one(chunk) {
+                return Some(end.sub(V::BYTES - m));
+            }
+        }
+        None
+    }
+
+    unsafe fn find_one(&self, chunk: V) -> Option<usize> {
+        let res = self.bitmask(chunk);
+        let mask = res.movemask();
+        if mask.has_non_zero() {
+            Some(mask.first_offset())
+        } else {
+            None
+        }
+    }
+
+    #[inline(always)]
+    unsafe fn bitmask(&self, chunk: V) -> V {
+        let mask = V::splat(self.mask);
+        let lomask = V::splat(0xF);
+        let hlo = chunk.and(lomask);
+        let hhi = chunk.shift_8bit_lane_right::<4>().and(lomask);
+        let locand = self.lo.shuffle_bytes(hlo);
+        let hicand = self.hi.shuffle_bytes(hhi);
+        let loc = locand.and(hicand);
+        // loc & mask != 0
+        let res = loc.and(mask).cmpneq(V::splat(0x00));
+
+        res
+    }
+}

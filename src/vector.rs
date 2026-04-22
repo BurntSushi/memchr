@@ -54,6 +54,7 @@ pub(crate) trait Vector: Copy + core::fmt::Debug {
     unsafe fn movemask(self) -> Self::Mask;
     /// _mm_cmpeq_epi8 or _mm256_cmpeq_epi8
     unsafe fn cmpeq(self, vector2: Self) -> Self;
+    unsafe fn cmpneq(self, vector2: Self) -> Self;
     /// _mm_and_si128 or _mm256_and_si256
     unsafe fn and(self, vector2: Self) -> Self;
     /// _mm_or or _mm256_or_si256
@@ -63,6 +64,18 @@ pub(crate) trait Vector: Copy + core::fmt::Debug {
     unsafe fn movemask_will_have_non_zero(self) -> bool {
         self.movemask().has_non_zero()
     }
+
+    /// shuffle bytes for table lookup
+    unsafe fn shuffle_bytes(self, indices: Self) -> Self;
+
+    /// Shift each 8-bit lane in this vector to the right by the number of
+    /// bits indictated by the `BITS` type parameter.
+    ///
+    /// # Safety
+    ///
+    /// Callers must ensure that this is okay to call in the current target for
+    /// the current CPU.
+    unsafe fn shift_8bit_lane_right<const BITS: i32>(self) -> Self;
 }
 
 /// A trait that abstracts over a vector-to-scalar operation called
@@ -229,6 +242,12 @@ mod x86sse2 {
         }
 
         #[inline(always)]
+        unsafe fn cmpneq(self, vector2: Self) -> __m128i {
+            let eq = self.cmpeq(vector2);
+            _mm_andnot_si128(eq, _mm_set1_epi8(-1))
+        }
+
+        #[inline(always)]
         unsafe fn and(self, vector2: Self) -> __m128i {
             _mm_and_si128(self, vector2)
         }
@@ -236,6 +255,15 @@ mod x86sse2 {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> __m128i {
             _mm_or_si128(self, vector2)
+        }
+
+        unsafe fn shuffle_bytes(self, indices: Self) -> Self {
+            _mm_shuffle_epi8(self, indices)
+        }
+
+        unsafe fn shift_8bit_lane_right<const BITS: i32>(self) -> Self {
+            let lomask = Self::splat(0xF);
+            _mm_srli_epi16(self, BITS).and(lomask)
         }
     }
 }
@@ -277,6 +305,11 @@ mod x86avx2 {
             _mm256_cmpeq_epi8(self, vector2)
         }
 
+        unsafe fn cmpneq(self, vector2: Self) -> Self {
+            let eq = self.cmpeq(vector2);
+            _mm256_andnot_si256(eq, _mm256_set1_epi8(-1))
+        }
+
         #[inline(always)]
         unsafe fn and(self, vector2: Self) -> __m256i {
             _mm256_and_si256(self, vector2)
@@ -285,6 +318,17 @@ mod x86avx2 {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> __m256i {
             _mm256_or_si256(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn shuffle_bytes(self, indices: Self) -> Self {
+            _mm256_shuffle_epi8(self, indices)
+        }
+
+        #[inline(always)]
+        unsafe fn shift_8bit_lane_right<const BITS: i32>(self) -> Self {
+            let lomask = Self::splat(0xF);
+            _mm256_srli_epi16(self, BITS).and(lomask)
         }
     }
 }
@@ -333,6 +377,11 @@ mod aarch64neon {
         }
 
         #[inline(always)]
+        unsafe fn cmpneq(self, vector2: Self) -> uint8x16_t {
+            vmvnq_u8(self.cmpeq(vector2))
+        }
+
+        #[inline(always)]
         unsafe fn and(self, vector2: Self) -> uint8x16_t {
             vandq_u8(self, vector2)
         }
@@ -352,6 +401,17 @@ mod aarch64neon {
         unsafe fn movemask_will_have_non_zero(self) -> bool {
             let low = vreinterpretq_u64_u8(vpmaxq_u8(self, self));
             vgetq_lane_u64(low, 0) != 0
+        }
+
+        #[inline(always)]
+        unsafe fn shuffle_bytes(self, indices: Self) -> Self {
+            vqtbl1q_u8(self, indices)
+        }
+
+        #[inline(always)]
+        unsafe fn shift_8bit_lane_right<const BITS: i32>(self) -> Self {
+            debug_assert!(BITS <= 7);
+            vshrq_n_u8(self, BITS)
         }
     }
 
@@ -489,6 +549,11 @@ mod wasm_simd128 {
         }
 
         #[inline(always)]
+        unsafe fn cmpneq(self, vector2: Self) -> v128 {
+            v128_not(self.cmpeq(vector2))
+        }
+
+        #[inline(always)]
         unsafe fn and(self, vector2: Self) -> v128 {
             v128_and(self, vector2)
         }
@@ -496,6 +561,17 @@ mod wasm_simd128 {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> v128 {
             v128_or(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn shuffle_bytes(self, indices: Self) -> Self {
+            i8x16_swizzle(self, indices)
+        }
+
+        #[inline(always)]
+        unsafe fn shift_8bit_lane_right<const BITS: i32>(self) -> Self {
+            debug_assert!(BITS <= 7 && BITS > 0);
+            u8x16_shr(self, BITS as u32)
         }
     }
 }
