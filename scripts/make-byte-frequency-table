@@ -56,7 +56,7 @@ def main():
 
     # Forcefully set the highest rank possible for bytes that start multi-byte
     # UTF-8 sequences. The idea here is that a continuation byte will be more
-    # discerning in a homogenous haystack.
+    # discerning in a homogeneous haystack.
     for byte in range(0xC0, 0xFF + 1):
         rank[byte] = 255
 
