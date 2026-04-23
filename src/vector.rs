@@ -93,9 +93,6 @@ pub(crate) trait MoveMask: Copy + core::fmt::Debug {
     /// Does a bitwise `and` operation between `self` and `other`.
     fn and(self, other: Self) -> Self;
 
-    /// Does a bitwise `or` operation between `self` and `other`.
-    fn or(self, other: Self) -> Self;
-
     /// Returns a mask that is equivalent to `self` but with the least
     /// significant 1-bit set to 0.
     fn clear_least_significant_bit(self) -> Self;
@@ -155,11 +152,6 @@ impl MoveMask for SensibleMoveMask {
     #[inline(always)]
     fn and(self, other: SensibleMoveMask) -> SensibleMoveMask {
         SensibleMoveMask(self.0 & other.0)
-    }
-
-    #[inline(always)]
-    fn or(self, other: SensibleMoveMask) -> SensibleMoveMask {
-        SensibleMoveMask(self.0 | other.0)
     }
 
     #[inline(always)]
@@ -403,11 +395,6 @@ mod aarch64neon {
         #[inline(always)]
         fn and(self, other: NeonMoveMask) -> NeonMoveMask {
             NeonMoveMask(self.0 & other.0)
-        }
-
-        #[inline(always)]
-        fn or(self, other: NeonMoveMask) -> NeonMoveMask {
-            NeonMoveMask(self.0 | other.0)
         }
 
         #[inline(always)]
