@@ -867,6 +867,73 @@ impl<'a, 'h> DoubleEndedIterator for ThreeIter<'a, 'h> {
     }
 }
 
+/// Finds the first occurrence of a byte that does not equal the needle.
+#[derive(Clone, Copy, Debug)]
+pub struct OneInv {
+    s1: u8,
+}
+
+impl OneInv {
+    /// Create a new searcher for bytes not equal to the needle.
+    #[inline]
+    pub fn new(needle: u8) -> OneInv {
+        OneInv { s1: needle }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn try_new(needle: u8) -> Option<OneInv> {
+        Some(OneInv::new(needle))
+    }
+
+    /// Return the first occurrence of a byte not equal to needle.
+    #[inline]
+    pub fn find(&self, haystack: &[u8]) -> Option<usize> {
+        unsafe {
+            generic::search_slice_with_raw(haystack, |s, e| {
+                self.find_raw(s, e)
+            })
+        }
+    }
+
+    /// Return the last occurrence of a byte not equal to needle.
+    #[inline]
+    pub fn rfind(&self, haystack: &[u8]) -> Option<usize> {
+        unsafe {
+            generic::search_slice_with_raw(haystack, |s, e| {
+                self.rfind_raw(s, e)
+            })
+        }
+    }
+
+    /// Like find, but with raw pointers.
+    #[inline]
+    pub unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        if start >= end {
+            return None;
+        }
+        let confirm = |b: u8| b != self.s1;
+        generic::fwd_byte_by_byte(start, end, confirm)
+    }
+
+    /// Like rfind, but with raw pointers.
+    #[inline]
+    pub unsafe fn rfind_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        if start >= end {
+            return None;
+        }
+        let confirm = |b: u8| b != self.s1;
+        generic::rev_byte_by_byte(start, end, confirm)
+    }
+}
+
 /// Return `true` if `x` contains any zero byte.
 ///
 /// That is, this routine treats `x` as a register of 8-bit lanes and returns
@@ -968,6 +1035,20 @@ mod tests {
                 let n3 = needles.get(2).copied()?;
                 Some(Three::new(n1, n2, n3).iter(haystack).rev().collect())
             },
+        )
+    }
+
+    #[test]
+    fn forward_one_inv() {
+        crate::tests::memchr::Runner::new(1).forward_inv_oneshot(
+            |haystack, needle| Some(OneInv::new(needle).find(haystack)),
+        )
+    }
+
+    #[test]
+    fn reverse_one_inv() {
+        crate::tests::memchr::Runner::new(1).reverse_inv_oneshot(
+            |haystack, needle| Some(OneInv::new(needle).rfind(haystack)),
         )
     }
 

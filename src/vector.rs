@@ -58,6 +58,9 @@ pub(crate) trait Vector: Copy + core::fmt::Debug {
     unsafe fn and(self, vector2: Self) -> Self;
     /// _mm_or or _mm256_or_si256
     unsafe fn or(self, vector2: Self) -> Self;
+    /// Bitwise NOT of `self`. Equivalent to XOR with an all-ones vector, but
+    /// some ISAs (e.g., NEON, simd128) provide a dedicated instruction.
+    unsafe fn not(self) -> Self;
     /// Returns true if and only if `Self::movemask` would return a mask that
     /// contains at least one non-zero bit.
     unsafe fn movemask_will_have_non_zero(self) -> bool {
@@ -237,6 +240,11 @@ mod x86sse2 {
         unsafe fn or(self, vector2: Self) -> __m128i {
             _mm_or_si128(self, vector2)
         }
+
+        #[inline(always)]
+        unsafe fn not(self) -> __m128i {
+            _mm_xor_si128(self, _mm_set1_epi8(-1))
+        }
     }
 }
 
@@ -285,6 +293,11 @@ mod x86avx2 {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> __m256i {
             _mm256_or_si256(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn not(self) -> __m256i {
+            _mm256_xor_si256(self, _mm256_set1_epi8(-1))
         }
     }
 }
@@ -340,6 +353,11 @@ mod aarch64neon {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> uint8x16_t {
             vorrq_u8(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn not(self) -> uint8x16_t {
+            vmvnq_u8(self)
         }
 
         /// This is the only interesting implementation of this routine.
@@ -496,6 +514,11 @@ mod wasm_simd128 {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> v128 {
             v128_or(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn not(self) -> v128 {
+            v128_not(self)
         }
     }
 }
