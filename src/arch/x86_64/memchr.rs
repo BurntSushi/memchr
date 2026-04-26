@@ -315,6 +315,50 @@ pub(crate) fn memrchr3_raw(
     )
 }
 
+/// memchr_inv, but using raw pointers to represent the haystack.
+///
+/// # Safety
+///
+/// Pointers must be valid. See `OneInv::find_raw`.
+#[inline(always)]
+pub(crate) fn memchr_inv_raw(
+    n1: u8,
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    unsafe_ifunc!(
+        OneInv,
+        find_raw,
+        unsafe fn(u8, *const u8, *const u8) -> Option<*const u8>,
+        Option<*const u8>,
+        start,
+        end,
+        n1
+    )
+}
+
+/// memrchr_inv, but using raw pointers to represent the haystack.
+///
+/// # Safety
+///
+/// Pointers must be valid. See `OneInv::rfind_raw`.
+#[inline(always)]
+pub(crate) fn memrchr_inv_raw(
+    n1: u8,
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    unsafe_ifunc!(
+        OneInv,
+        rfind_raw,
+        unsafe fn(u8, *const u8, *const u8) -> Option<*const u8>,
+        Option<*const u8>,
+        start,
+        end,
+        n1
+    )
+}
+
 /// Count all matching bytes, but using raw pointers to represent the haystack.
 ///
 /// # Safety

@@ -209,6 +209,125 @@ impl Runner {
             Some(results)
         })
     }
+
+    /// Run all inverse forward-search tests. This panics on the first failure.
+    ///
+    /// "Inverse" here means: find bytes that are *not* equal to the needle.
+    /// The test function is called with each generated haystack and the first
+    /// needle of each seed; the expected results are computed via the naive
+    /// implementation. If the function returns `None`, that test is skipped.
+    pub(crate) fn forward_inv_oneshot<F>(self, mut test: F)
+    where
+        F: FnMut(&[u8], u8) -> Option<Option<usize>> + 'static,
+    {
+        for seed in SEEDS.iter() {
+            for t in seed.generate() {
+                let haystack = t.haystack.as_bytes();
+                let needle = seed.needles[0];
+                let got = match test(haystack, needle) {
+                    None => continue,
+                    Some(got) => got,
+                };
+                let expected = naive::memchr_inv(needle, haystack);
+                assert_eq!(
+                    expected,
+                    got,
+                    "needle (excluded): {:?}, haystack: {:?}",
+                    needle.to_char(),
+                    t.haystack,
+                );
+            }
+        }
+    }
+
+    /// Like `forward_inv_oneshot`, but in the reverse direction.
+    pub(crate) fn reverse_inv_oneshot<F>(self, mut test: F)
+    where
+        F: FnMut(&[u8], u8) -> Option<Option<usize>> + 'static,
+    {
+        for seed in SEEDS.iter() {
+            for t in seed.generate() {
+                let haystack = t.haystack.as_bytes();
+                let needle = seed.needles[0];
+                let got = match test(haystack, needle) {
+                    None => continue,
+                    Some(got) => got,
+                };
+                let expected = naive::memrchr_inv(needle, haystack);
+                assert_eq!(
+                    expected,
+                    got,
+                    "needle (excluded): {:?}, haystack: {:?}",
+                    needle.to_char(),
+                    t.haystack,
+                );
+            }
+        }
+    }
+
+    /// Run all forward inverse-search iterator tests. The test function should
+    /// return *every* offset in `haystack` whose byte differs from `needle`,
+    /// in ascending order.
+    pub(crate) fn forward_inv_iter<F>(self, mut test: F)
+    where
+        F: FnMut(&[u8], u8) -> Option<Vec<usize>> + 'static,
+    {
+        for seed in SEEDS.iter() {
+            for t in seed.generate() {
+                let haystack = t.haystack.as_bytes();
+                let needle = seed.needles[0];
+                let got = match test(haystack, needle) {
+                    None => continue,
+                    Some(got) => got,
+                };
+                let expected: Vec<usize> = haystack
+                    .iter()
+                    .enumerate()
+                    .filter(|&(_, &b)| b != needle)
+                    .map(|(i, _)| i)
+                    .collect();
+                assert_eq!(
+                    expected,
+                    got,
+                    "needle (excluded): {:?}, haystack: {:?}",
+                    needle.to_char(),
+                    t.haystack,
+                );
+            }
+        }
+    }
+
+    /// Like `forward_inv_iter`, but the test function returns matches in
+    /// descending order; results are reversed before comparison.
+    pub(crate) fn reverse_inv_iter<F>(self, mut test: F)
+    where
+        F: FnMut(&[u8], u8) -> Option<Vec<usize>> + 'static,
+    {
+        for seed in SEEDS.iter() {
+            for t in seed.generate() {
+                let haystack = t.haystack.as_bytes();
+                let needle = seed.needles[0];
+                let mut got = match test(haystack, needle) {
+                    None => continue,
+                    Some(got) => got,
+                };
+                got.reverse();
+                let expected: Vec<usize> = haystack
+                    .iter()
+                    .enumerate()
+                    .filter(|&(_, &b)| b != needle)
+                    .map(|(i, _)| i)
+                    .collect();
+                assert_eq!(
+                    expected,
+                    got,
+                    "needle (excluded): {:?}, haystack: {:?}",
+                    needle.to_char(),
+                    t.haystack,
+                );
+            }
+        }
+    }
 }
 
 /// A single test for memr?chr{,2,3}.
