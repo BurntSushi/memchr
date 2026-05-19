@@ -1019,4 +1019,72 @@ mod tests {
         let data = [0, 0, 0, 0, 0, 0, 0, 0];
         assert_eq!(One::new(b'\x00').find(&data), Some(0));
     }
+
+    #[test]
+    fn edge_empty_haystack() {
+        assert_eq!(One::new(b'a').find(b""), None);
+        assert_eq!(One::new(b'a').rfind(b""), None);
+        assert_eq!(Two::new(b'a', b'b').find(b""), None);
+        assert_eq!(Two::new(b'a', b'b').rfind(b""), None);
+        assert_eq!(Three::new(b'a', b'b', b'c').find(b""), None);
+        assert_eq!(Three::new(b'a', b'b', b'c').rfind(b""), None);
+    }
+
+    #[test]
+    fn edge_single_byte_haystack() {
+        assert_eq!(One::new(b'a').find(b"a"), Some(0));
+        assert_eq!(One::new(b'a').find(b"z"), None);
+        assert_eq!(One::new(b'a').rfind(b"a"), Some(0));
+        assert_eq!(One::new(b'a').rfind(b"z"), None);
+
+        assert_eq!(Two::new(b'a', b'b').find(b"a"), Some(0));
+        assert_eq!(Two::new(b'a', b'b').find(b"z"), None);
+        assert_eq!(Two::new(b'a', b'b').rfind(b"a"), Some(0));
+        assert_eq!(Two::new(b'a', b'b').rfind(b"z"), None);
+
+        assert_eq!(Three::new(b'a', b'b', b'c').find(b"a"), Some(0));
+        assert_eq!(Three::new(b'a', b'b', b'c').find(b"z"), None);
+        assert_eq!(Three::new(b'a', b'b', b'c').rfind(b"a"), Some(0));
+        assert_eq!(Three::new(b'a', b'b', b'c').rfind(b"z"), None);
+    }
+
+    #[test]
+    fn edge_boundary_alignment() {
+        let usz = core::mem::size_of::<usize>();
+
+        // Match in the first unaligned chunk: short-circuit path.
+        let all_zs = vec![b'z'; usz];
+        assert_eq!(One::new(b'z').find(&all_zs), Some(0));
+        assert_eq!(One::new(b'z').rfind(&all_zs), Some(usz - 1));
+
+        // Match is not in the first chunk, forcing the aligned forward path.
+        let mut hay = vec![b'a'; usz];
+        hay.push(b'z');
+        assert_eq!(One::new(b'z').find(&hay), Some(usz));
+
+        // Length exactly LOOP_BYTES (2 * USIZE_BYTES).
+        let mut hay = vec![b'a'; usz];
+        hay.extend(vec![b'z'; usz]);
+        assert_eq!(One::new(b'z').find(&hay), Some(usz));
+        assert_eq!(One::new(b'z').rfind(&hay), Some(2 * usz - 1));
+
+        // Length just above LOOP_BYTES for One.
+        let mut hay = vec![b'a'; usz + 1];
+        hay.extend(vec![b'z'; usz]);
+        assert_eq!(One::new(b'z').find(&hay), Some(usz + 1));
+        assert_eq!(One::new(b'z').rfind(&hay), Some(2 * usz));
+
+        // Match is not in the last chunk, forcing the aligned reverse path.
+        let mut hay = vec![b'z'; usz];
+        hay.extend(vec![b'a'; usz + 1]);
+        assert_eq!(One::new(b'z').rfind(&hay), Some(usz - 1));
+
+        // Two/Three aligned loop path.
+        let mut hay = vec![b'a'; usz];
+        hay.extend(vec![b'z'; usz]);
+        assert_eq!(Two::new(b'z', b'y').find(&hay), Some(usz));
+        assert_eq!(Two::new(b'z', b'y').rfind(&hay), Some(2 * usz - 1));
+        assert_eq!(Three::new(b'z', b'y', b'x').find(&hay), Some(usz));
+        assert_eq!(Three::new(b'z', b'y', b'x').rfind(&hay), Some(2 * usz - 1));
+    }
 }
