@@ -80,9 +80,9 @@ pub(crate) trait Vector: Copy + core::fmt::Debug {
 /// for `memchr` and `packedpair`. So instead, we abstraction over the specific
 /// representation with this trait and define the operations we actually need.
 pub(crate) trait MoveMask: Copy + core::fmt::Debug {
-    /// Return a mask that is all zeros except for the least significant `n`
+    /// Return a mask that is all ones except for the least significant `n`
     /// lanes in a corresponding vector.
-    fn all_zeros_except_least_significant(n: usize) -> Self;
+    fn all_ones_except_least_significant(n: usize) -> Self;
 
     /// Returns true if and only if this mask has a a non-zero bit anywhere.
     fn has_non_zero(self) -> bool;
@@ -137,9 +137,9 @@ impl SensibleMoveMask {
 
 impl MoveMask for SensibleMoveMask {
     #[inline(always)]
-    fn all_zeros_except_least_significant(n: usize) -> SensibleMoveMask {
+    fn all_ones_except_least_significant(n: usize) -> SensibleMoveMask {
         debug_assert!(n < 32);
-        SensibleMoveMask(!((1 << n) - 1))
+        SensibleMoveMask(0xFFFFFFFF << n)
     }
 
     #[inline(always)]
@@ -385,9 +385,9 @@ mod aarch64neon {
 
     impl MoveMask for NeonMoveMask {
         #[inline(always)]
-        fn all_zeros_except_least_significant(n: usize) -> NeonMoveMask {
+        fn all_ones_except_least_significant(n: usize) -> NeonMoveMask {
             debug_assert!(n < 16);
-            NeonMoveMask(!(((1 << n) << 2) - 1))
+            NeonMoveMask(0x8888888888888888 << (n << 2))
         }
 
         #[inline(always)]

@@ -89,7 +89,7 @@ impl<V: Vector> Finder<V> {
             haystack.len(),
         );
 
-        let all = V::Mask::all_zeros_except_least_significant(0);
+        let all = V::Mask::all_ones_except_least_significant(0);
         let start = haystack.as_ptr();
         let end = start.add(haystack.len());
         let max = end.sub(self.min_haystack_len);
@@ -139,7 +139,7 @@ impl<V: Vector> Finder<V> {
             // significant bits, where N=overlap. This way, any matches that
             // occur in find_in_chunk within the overlap are automatically
             // ignored.
-            let mask = V::Mask::all_zeros_except_least_significant(overlap);
+            let mask = V::Mask::all_ones_except_least_significant(overlap);
             cur = max;
             let m = self.find_in_chunk(needle, cur, end, mask);
             if let Some(chunki) = m {
