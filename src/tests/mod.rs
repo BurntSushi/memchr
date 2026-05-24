@@ -3,6 +3,7 @@ pub(crate) mod memchr;
 pub(crate) mod packedpair;
 #[macro_use]
 pub(crate) mod substring;
+pub(crate) mod vector;
 
 // For debugging, particularly in CI, print out the byte order of the current
 // target.
