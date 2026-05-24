@@ -21,12 +21,18 @@ mod tests {
     #[test]
     fn first_offset() {
         #[cfg(target_arch = "aarch64")]
-        test_move_mask_first_offset::<<std::arch::aarch64::uint8x16_t as Vector>::Mask, 16>();
+        test_move_mask_first_offset::<
+            <std::arch::aarch64::uint8x16_t as Vector>::Mask,
+            16,
+        >();
     }
 
     #[test]
     fn clear_first_offset() {
         #[cfg(target_arch = "aarch64")]
-        test_move_mask_clear_first_offset::<<std::arch::aarch64::uint8x16_t as Vector>::Mask, 16>();
+        test_move_mask_clear_first_offset::<
+            <std::arch::aarch64::uint8x16_t as Vector>::Mask,
+            16,
+        >();
     }
 }
