@@ -387,7 +387,7 @@ mod aarch64neon {
         #[inline(always)]
         fn all_ones_except_least_significant(n: usize) -> NeonMoveMask {
             debug_assert!(n < 16);
-            NeonMoveMask(0x8888888888888888 << (n << 2))
+            NeonMoveMask(!(((1 << n) << 2) - 1))
         }
 
         #[inline(always)]
