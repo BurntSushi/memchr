@@ -223,8 +223,9 @@ impl<V: Vector> Finder<V> {
     /// # Safety
     ///
     /// It must be safe to do an unaligned read of size(V) bytes starting at
-    /// both (cur + self.index1) and (cur + self.index2). It must also be safe
-    /// to do unaligned loads on cur up to (end - needle.len()).
+    /// both (cur + self.index1) and (cur + self.index2). `cur` and `end`
+    /// must point into the same allocation, with every candidate offset
+    /// reported by the vector mask keeping `cur.add(offset) < end`.
     #[inline(always)]
     unsafe fn find_in_chunk(
         &self,
@@ -244,7 +245,7 @@ impl<V: Vector> Finder<V> {
         while offsets.has_non_zero() {
             let offset = offsets.first_offset();
             let cur = cur.add(offset);
-            if end.sub(needle.len()) < cur {
+            if needle.len() > end.distance(cur) {
                 return None;
             }
             if is_equal_raw(needle.as_ptr(), cur, needle.len()) {

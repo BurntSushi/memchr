@@ -229,4 +229,21 @@ mod tests {
         }
         crate::tests::packedpair::Runner::new().fwd(find).run()
     }
+
+    #[cfg(miri)]
+    #[test]
+    fn miri_ub_mismatched_needle_longer_than_haystack() {
+        // Soundness issue: `Finder::find` is a safe public method that accepts
+        // a `needle` slice at search time, but the underlying vector finder
+        // only validates the haystack against the needle used at construction
+        // time. Passing a longer search-time needle can make
+        // `generic::packedpair::Finder::find_in_chunk` compute
+        // `end.sub(needle.len())` before the start of `haystack`, which is UB.
+        let pair = Pair::with_indices(b"ab", 0, 1).unwrap();
+        let finder = Finder::with_pair(b"ab", pair).unwrap();
+        let haystack = b"abxxxxxxxxxxxxxxx";
+        let needle = b"abcdefghijklmnopqr";
+
+        let _ = finder.find(haystack, needle);
+    }
 }
