@@ -468,10 +468,7 @@ impl<'n> Finder<'n> {
     #[cfg(feature = "alloc")]
     #[inline]
     pub fn into_owned(self) -> Finder<'static> {
-        Finder {
-            needle: self.needle.into_owned(),
-            searcher: self.searcher.clone(),
-        }
+        Finder { needle: self.needle.into_owned(), searcher: self.searcher }
     }
 
     /// Convert this finder into its borrowed variant.
@@ -606,10 +603,7 @@ impl<'n> FinderRev<'n> {
     #[cfg(feature = "alloc")]
     #[inline]
     pub fn into_owned(self) -> FinderRev<'static> {
-        FinderRev {
-            needle: self.needle.into_owned(),
-            searcher: self.searcher.clone(),
-        }
+        FinderRev { needle: self.needle.into_owned(), searcher: self.searcher }
     }
 
     /// Convert this finder into its borrowed variant.
