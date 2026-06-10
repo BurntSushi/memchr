@@ -1,14 +1,14 @@
 [package]
 publish = false
 name = "main"
-version = "4.0.14"  # should match 'stringzilla' version below
+version = "4.6.2"  # should match 'stringzilla' version below
 edition = "2021"
 
 [workspace]
 
 [dependencies]
 anyhow = "1.0.100"
-stringzilla = "=4.0.14"
+stringzilla = "=4.6.2"
 
 [dependencies.shared]
 path = "../../shared"

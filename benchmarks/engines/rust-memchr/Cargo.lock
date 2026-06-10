@@ -14,28 +14,28 @@ version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "234113d19d0d7d613b40e86fb654acf958910802bcceab913a4f9e7cda03b1a4"
 dependencies = [
- "memchr 2.7.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "memchr 2.7.6",
  "serde",
 ]
 
 [[package]]
 name = "main"
-version = "2.7.6"
+version = "2.8.1"
 dependencies = [
  "anyhow",
- "memchr 2.7.6",
+ "memchr 2.8.1",
  "shared",
 ]
 
 [[package]]
 name = "memchr"
 version = "2.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f52b00d39961fc5b2736ea853c9cc86238e165017a493d1d5c8eac6bdc4cc273"
 
 [[package]]
 name = "memchr"
-version = "2.7.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f52b00d39961fc5b2736ea853c9cc86238e165017a493d1d5c8eac6bdc4cc273"
+version = "2.8.1"
 
 [[package]]
 name = "proc-macro2"
