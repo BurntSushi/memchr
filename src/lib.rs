@@ -201,9 +201,10 @@ extern crate std;
 extern crate alloc;
 
 pub use crate::memchr::{
-    memchr, memchr2, memchr2_iter, memchr3, memchr3_iter, memchr_iter,
-    memrchr, memrchr2, memrchr2_iter, memrchr3, memrchr3_iter, memrchr_iter,
-    Memchr, Memchr2, Memchr3,
+    memchr, memchr2, memchr2_iter, memchr3, memchr3_iter, memchr_inv,
+    memchr_inv_iter, memchr_iter, memrchr, memrchr2, memrchr2_iter, memrchr3,
+    memrchr3_iter, memrchr_inv, memrchr_inv_iter, memrchr_iter, Memchr,
+    Memchr2, Memchr3, MemchrInv,
 };
 
 #[macro_use]

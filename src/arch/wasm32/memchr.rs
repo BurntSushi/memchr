@@ -109,6 +109,26 @@ pub(crate) unsafe fn memrchr3_raw(
     defraw!(Three, rfind_raw, start, end, n1, n2, n3)
 }
 
+/// memchr_inv, but using raw pointers...
+#[inline(always)]
+pub(crate) unsafe fn memchr_inv_raw(
+    n1: u8,
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    defraw!(OneInv, find_raw, start, end, n1)
+}
+
+/// memrchr_inv, but using raw pointers...
+#[inline(always)]
+pub(crate) unsafe fn memrchr_inv_raw(
+    n1: u8,
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    defraw!(OneInv, rfind_raw, start, end, n1)
+}
+
 /// Count all matching bytes, but using raw pointers to represent the haystack.
 ///
 /// # Safety

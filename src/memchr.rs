@@ -208,6 +208,74 @@ pub fn memrchr3(
     }
 }
 
+/// Search for the first occurrence of a byte that is not equal to the needle in
+/// a slice.
+///
+/// This returns the index corresponding to the first occurrence of a byte in
+/// `haystack` that is not equal to `needle`, or `None` if all bytes in
+/// `haystack` are equal to `needle`. If an index is returned, it is
+/// guaranteed to be less than `haystack.len()`.
+///
+/// While this is semantically the same as something like
+/// `haystack.iter().position(|&b| b != needle)`, this routine will attempt to
+/// use highly optimized vector operations that can be an order of magnitude
+/// faster (or more).
+///
+/// # Example
+///
+/// This shows how to find the first position of a byte not equal to a given
+/// byte in a byte string.
+///
+/// ```
+/// use memchr::memchr_inv;
+///
+/// let haystack = b"aaaabbbbccccdddd";
+/// assert_eq!(memchr_inv(b'a', haystack), Some(4));
+/// ```
+#[inline]
+pub fn memchr_inv(needle: u8, haystack: &[u8]) -> Option<usize> {
+    // SAFETY: memchr_inv_raw, when a match is found, always returns a valid
+    // pointer between start and end.
+    unsafe {
+        generic::search_slice_with_raw(haystack, |start, end| {
+            memchr_inv_raw(needle, start, end)
+        })
+    }
+}
+
+/// Search for the last occurrence of a byte that is not equal to the needle in
+/// a slice.
+///
+/// This returns the index corresponding to the last occurrence of a byte in
+/// `haystack` that is not equal to `needle`, or `None` if all bytes in
+/// `haystack` are equal to `needle`. If an index is returned, it is
+/// guaranteed to be less than `haystack.len()`.
+///
+/// While this is semantically the same as something like
+/// `haystack.iter().rposition(|&b| b != needle)`, this routine will attempt to
+/// use highly optimized vector operations that can be an order of magnitude
+/// faster (or more).
+///
+/// # Example
+///
+/// This shows how to find the last position of a byte not equal to a given
+/// byte in a byte string.
+///
+/// ```
+/// use memchr::memrchr_inv;
+///
+/// let haystack = b"aaaabbbbccccdddd";
+/// assert_eq!(memrchr_inv(b'd', haystack), Some(11));
+/// ```
+#[inline]
+pub fn memrchr_inv(needle: u8, haystack: &[u8]) -> Option<usize> {
+    unsafe {
+        generic::search_slice_with_raw(haystack, |start, end| {
+            memrchr_inv_raw(needle, start, end)
+        })
+    }
+}
+
 /// Returns an iterator over all occurrences of the needle in a haystack.
 ///
 /// The iterator returned implements `DoubleEndedIterator`. This means it
@@ -272,6 +340,23 @@ pub fn memrchr3_iter(
     haystack: &[u8],
 ) -> Rev<Memchr3<'_>> {
     Memchr3::new(needle1, needle2, needle3, haystack).rev()
+}
+
+/// Returns an iterator over all occurrences of bytes in `haystack` that are
+/// *not* equal to `needle`.
+///
+/// The iterator returned implements `DoubleEndedIterator`. This means it
+/// can also be used to find occurrences in reverse order.
+#[inline]
+pub fn memchr_inv_iter<'h>(needle: u8, haystack: &'h [u8]) -> MemchrInv<'h> {
+    MemchrInv::new(needle, haystack)
+}
+
+/// Returns an iterator over all occurrences of bytes in `haystack` that are
+/// *not* equal to `needle`, in reverse.
+#[inline]
+pub fn memrchr_inv_iter(needle: u8, haystack: &[u8]) -> Rev<MemchrInv<'_>> {
+    MemchrInv::new(needle, haystack).rev()
 }
 
 /// An iterator over all occurrences of a single byte in a haystack.
@@ -494,6 +579,67 @@ impl<'h> DoubleEndedIterator for Memchr3<'h> {
 }
 
 impl<'h> core::iter::FusedIterator for Memchr3<'h> {}
+
+/// An iterator over all occurrences of bytes that are *not* equal to a given
+/// byte in a haystack.
+///
+/// This iterator implements `DoubleEndedIterator`, which means it can also be
+/// used to find occurrences in reverse order.
+///
+/// This iterator is created by the [`memchr_inv_iter`] or [`memrchr_inv_iter`]
+/// functions. It can also be created with the [`MemchrInv::new`] method.
+///
+/// The lifetime parameter `'h` refers to the lifetime of the haystack being
+/// searched.
+#[derive(Clone, Debug)]
+pub struct MemchrInv<'h> {
+    needle1: u8,
+    it: crate::arch::generic::memchr::Iter<'h>,
+}
+
+impl<'h> MemchrInv<'h> {
+    /// Returns an iterator over all bytes in `haystack` that are not equal to
+    /// `needle1`.
+    ///
+    /// The iterator returned implements `DoubleEndedIterator`. This means it
+    /// can also be used to find occurrences in reverse order.
+    #[inline]
+    pub fn new(needle1: u8, haystack: &'h [u8]) -> MemchrInv<'h> {
+        MemchrInv {
+            needle1,
+            it: crate::arch::generic::memchr::Iter::new(haystack),
+        }
+    }
+}
+
+impl<'h> Iterator for MemchrInv<'h> {
+    type Item = usize;
+
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
+        // SAFETY: All of our implementations of memchr_inv ensure that any
+        // returned pointer falls within the start and end bounds, satisfying
+        // the safety contract of `self.it.next`.
+        unsafe { self.it.next(|s, e| memchr_inv_raw(self.needle1, s, e)) }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.it.size_hint()
+    }
+}
+
+impl<'h> DoubleEndedIterator for MemchrInv<'h> {
+    #[inline]
+    fn next_back(&mut self) -> Option<usize> {
+        // SAFETY: Same as `next` above.
+        unsafe {
+            self.it.next_back(|s, e| memrchr_inv_raw(self.needle1, s, e))
+        }
+    }
+}
+
+impl<'h> core::iter::FusedIterator for MemchrInv<'h> {}
 
 /// memchr, but using raw pointers to represent the haystack.
 ///
@@ -721,6 +867,72 @@ unsafe fn memrchr3_raw(
     }
 }
 
+/// memchr_inv, but using raw pointers to represent the haystack.
+///
+/// # Safety
+///
+/// Pointers must be valid. See `OneInv::find_raw`.
+#[inline]
+unsafe fn memchr_inv_raw(
+    needle: u8,
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    #[cfg(target_arch = "x86_64")]
+    {
+        crate::arch::x86_64::memchr::memchr_inv_raw(needle, start, end)
+    }
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+    {
+        crate::arch::wasm32::memchr::memchr_inv_raw(needle, start, end)
+    }
+    #[cfg(target_arch = "aarch64")]
+    {
+        crate::arch::aarch64::memchr::memchr_inv_raw(needle, start, end)
+    }
+    #[cfg(not(any(
+        target_arch = "x86_64",
+        all(target_arch = "wasm32", target_feature = "simd128"),
+        target_arch = "aarch64"
+    )))]
+    {
+        crate::arch::all::memchr::OneInv::new(needle).find_raw(start, end)
+    }
+}
+
+/// memrchr_inv, but using raw pointers to represent the haystack.
+///
+/// # Safety
+///
+/// Pointers must be valid. See `OneInv::rfind_raw`.
+#[inline]
+unsafe fn memrchr_inv_raw(
+    needle: u8,
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    #[cfg(target_arch = "x86_64")]
+    {
+        crate::arch::x86_64::memchr::memrchr_inv_raw(needle, start, end)
+    }
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+    {
+        crate::arch::wasm32::memchr::memrchr_inv_raw(needle, start, end)
+    }
+    #[cfg(target_arch = "aarch64")]
+    {
+        crate::arch::aarch64::memchr::memrchr_inv_raw(needle, start, end)
+    }
+    #[cfg(not(any(
+        target_arch = "x86_64",
+        all(target_arch = "wasm32", target_feature = "simd128"),
+        target_arch = "aarch64"
+    )))]
+    {
+        crate::arch::all::memchr::OneInv::new(needle).rfind_raw(start, end)
+    }
+}
+
 /// Count all matching bytes, but using raw pointers to represent the haystack.
 ///
 /// # Safety
@@ -885,6 +1097,38 @@ mod tests {
         )
     }
 
+    #[test]
+    fn forward_inv_iter() {
+        crate::tests::memchr::Runner::new(1).forward_inv_iter(
+            |haystack, needle| {
+                Some(memchr_inv_iter(needle, haystack).collect())
+            },
+        )
+    }
+
+    #[test]
+    fn forward_inv_oneshot() {
+        crate::tests::memchr::Runner::new(1).forward_inv_oneshot(
+            |haystack, needle| Some(memchr_inv(needle, haystack)),
+        )
+    }
+
+    #[test]
+    fn reverse_inv_iter() {
+        crate::tests::memchr::Runner::new(1).reverse_inv_iter(
+            |haystack, needle| {
+                Some(memrchr_inv_iter(needle, haystack).collect())
+            },
+        )
+    }
+
+    #[test]
+    fn reverse_inv_oneshot() {
+        crate::tests::memchr::Runner::new(1).reverse_inv_oneshot(
+            |haystack, needle| Some(memrchr_inv(needle, haystack)),
+        )
+    }
+
     // Prior to memchr 2.6, the memchr iterators both implemented Send and
     // Sync. But in memchr 2.6, the iterator changed to use raw pointers
     // internally and I didn't add explicit Send/Sync impls. This ended up
@@ -898,6 +1142,7 @@ mod tests {
         fn assert_send_sync<T: Send + Sync + UnwindSafe + RefUnwindSafe>() {}
         assert_send_sync::<Memchr>();
         assert_send_sync::<Memchr2>();
-        assert_send_sync::<Memchr3>()
+        assert_send_sync::<Memchr3>();
+        assert_send_sync::<MemchrInv>();
     }
 }
