@@ -528,16 +528,16 @@ impl<V: Vector> Two<V> {
                 let eqb1 = self.v1.cmpeq(b);
                 let eqa2 = self.v2.cmpeq(a);
                 let eqb2 = self.v2.cmpeq(b);
-                let or1 = eqa1.or(eqb1);
-                let or2 = eqa2.or(eqb2);
+                let or1 = eqa1.or(eqa2);
+                let or2 = eqb1.or(eqb2);
                 let or3 = or1.or(or2);
                 if or3.movemask_will_have_non_zero() {
-                    let mask = eqa1.movemask().or(eqa2.movemask());
+                    let mask = or1.movemask();
                     if mask.has_non_zero() {
                         return Some(cur.add(topos(mask)));
                     }
 
-                    let mask = eqb1.movemask().or(eqb2.movemask());
+                    let mask = or2.movemask();
                     debug_assert!(mask.has_non_zero());
                     return Some(cur.add(V::BYTES).add(topos(mask)));
                 }
@@ -625,16 +625,16 @@ impl<V: Vector> Two<V> {
                 let eqb1 = self.v1.cmpeq(b);
                 let eqa2 = self.v2.cmpeq(a);
                 let eqb2 = self.v2.cmpeq(b);
-                let or1 = eqa1.or(eqb1);
-                let or2 = eqa2.or(eqb2);
+                let or1 = eqa1.or(eqa2);
+                let or2 = eqb1.or(eqb2);
                 let or3 = or1.or(or2);
                 if or3.movemask_will_have_non_zero() {
-                    let mask = eqb1.movemask().or(eqb2.movemask());
+                    let mask = or2.movemask();
                     if mask.has_non_zero() {
                         return Some(cur.add(V::BYTES).add(topos(mask)));
                     }
 
-                    let mask = eqa1.movemask().or(eqa2.movemask());
+                    let mask = or1.movemask();
                     debug_assert!(mask.has_non_zero());
                     return Some(cur.add(topos(mask)));
                 }
@@ -677,9 +677,7 @@ impl<V: Vector> Two<V> {
         let eq2 = self.v2.cmpeq(chunk);
         let mask = eq1.or(eq2).movemask();
         if mask.has_non_zero() {
-            let mask1 = eq1.movemask();
-            let mask2 = eq2.movemask();
-            Some(cur.add(mask_to_offset(mask1.or(mask2))))
+            Some(cur.add(mask_to_offset(mask)))
         } else {
             None
         }
@@ -802,24 +800,18 @@ impl<V: Vector> Three<V> {
                 let eqb2 = self.v2.cmpeq(b);
                 let eqa3 = self.v3.cmpeq(a);
                 let eqb3 = self.v3.cmpeq(b);
-                let or1 = eqa1.or(eqb1);
-                let or2 = eqa2.or(eqb2);
-                let or3 = eqa3.or(eqb3);
-                let or4 = or1.or(or2);
+                let or1 = eqa1.or(eqa2);
+                let or2 = eqb1.or(eqb2);
+                let or3 = or1.or(eqa3);
+                let or4 = or2.or(eqb3);
                 let or5 = or3.or(or4);
                 if or5.movemask_will_have_non_zero() {
-                    let mask = eqa1
-                        .movemask()
-                        .or(eqa2.movemask())
-                        .or(eqa3.movemask());
+                    let mask = or3.movemask();
                     if mask.has_non_zero() {
                         return Some(cur.add(topos(mask)));
                     }
 
-                    let mask = eqb1
-                        .movemask()
-                        .or(eqb2.movemask())
-                        .or(eqb3.movemask());
+                    let mask = or4.movemask();
                     debug_assert!(mask.has_non_zero());
                     return Some(cur.add(V::BYTES).add(topos(mask)));
                 }
@@ -909,24 +901,18 @@ impl<V: Vector> Three<V> {
                 let eqb2 = self.v2.cmpeq(b);
                 let eqa3 = self.v3.cmpeq(a);
                 let eqb3 = self.v3.cmpeq(b);
-                let or1 = eqa1.or(eqb1);
-                let or2 = eqa2.or(eqb2);
-                let or3 = eqa3.or(eqb3);
-                let or4 = or1.or(or2);
+                let or1 = eqa1.or(eqa2);
+                let or2 = eqb1.or(eqb2);
+                let or3 = or1.or(eqa3);
+                let or4 = or2.or(eqb3);
                 let or5 = or3.or(or4);
                 if or5.movemask_will_have_non_zero() {
-                    let mask = eqb1
-                        .movemask()
-                        .or(eqb2.movemask())
-                        .or(eqb3.movemask());
+                    let mask = or4.movemask();
                     if mask.has_non_zero() {
                         return Some(cur.add(V::BYTES).add(topos(mask)));
                     }
 
-                    let mask = eqa1
-                        .movemask()
-                        .or(eqa2.movemask())
-                        .or(eqa3.movemask());
+                    let mask = or3.movemask();
                     debug_assert!(mask.has_non_zero());
                     return Some(cur.add(topos(mask)));
                 }
@@ -970,10 +956,7 @@ impl<V: Vector> Three<V> {
         let eq3 = self.v3.cmpeq(chunk);
         let mask = eq1.or(eq2).or(eq3).movemask();
         if mask.has_non_zero() {
-            let mask1 = eq1.movemask();
-            let mask2 = eq2.movemask();
-            let mask3 = eq3.movemask();
-            Some(cur.add(mask_to_offset(mask1.or(mask2).or(mask3))))
+            Some(cur.add(mask_to_offset(mask)))
         } else {
             None
         }
