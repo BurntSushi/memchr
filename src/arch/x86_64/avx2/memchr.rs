@@ -84,28 +84,7 @@ impl One {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(not(target_feature = "sse2"))]
-        {
-            false
-        }
-        #[cfg(target_feature = "sse2")]
-        {
-            #[cfg(target_feature = "avx2")]
-            {
-                true
-            }
-            #[cfg(not(target_feature = "avx2"))]
-            {
-                #[cfg(feature = "std")]
-                {
-                    std::is_x86_feature_detected!("avx2")
-                }
-                #[cfg(not(feature = "std"))]
-                {
-                    false
-                }
-            }
-        }
+        crate::arch::x86_64::avx2::detect::has_avx2()
     }
 
     /// Return the first occurrence of one of the needle bytes in the given
@@ -571,28 +550,7 @@ impl Two {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(not(target_feature = "sse2"))]
-        {
-            false
-        }
-        #[cfg(target_feature = "sse2")]
-        {
-            #[cfg(target_feature = "avx2")]
-            {
-                true
-            }
-            #[cfg(not(target_feature = "avx2"))]
-            {
-                #[cfg(feature = "std")]
-                {
-                    std::is_x86_feature_detected!("avx2")
-                }
-                #[cfg(not(feature = "std"))]
-                {
-                    false
-                }
-            }
-        }
+        crate::arch::x86_64::avx2::detect::has_avx2()
     }
 
     /// Return the first occurrence of one of the needle bytes in the given
@@ -954,28 +912,7 @@ impl Three {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(not(target_feature = "sse2"))]
-        {
-            false
-        }
-        #[cfg(target_feature = "sse2")]
-        {
-            #[cfg(target_feature = "avx2")]
-            {
-                true
-            }
-            #[cfg(not(target_feature = "avx2"))]
-            {
-                #[cfg(feature = "std")]
-                {
-                    std::is_x86_feature_detected!("avx2")
-                }
-                #[cfg(not(feature = "std"))]
-                {
-                    false
-                }
-            }
-        }
+        crate::arch::x86_64::avx2::detect::has_avx2()
     }
 
     /// Return the first occurrence of one of the needle bytes in the given
