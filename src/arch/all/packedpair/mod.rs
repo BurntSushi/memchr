@@ -54,6 +54,7 @@ impl Finder {
     /// bytes is used as a predicate.
     #[inline]
     pub fn with_pair(needle: &[u8], pair: Pair) -> Option<Finder> {
+        debug_assert!(needle.len() >= 2, "needle must have length at least 2");
         let byte1 = needle[usize::from(pair.index1())];
         let byte2 = needle[usize::from(pair.index2())];
         // Currently this can never fail so we could just return a Finder,
@@ -355,5 +356,15 @@ mod tests {
             Some(f.find_prefilter(haystack))
         }
         crate::tests::packedpair::Runner::new().fwd(find).run()
+    }
+
+    #[test]
+    fn empty_needle() {
+        assert!(Finder::new(b"").is_none());
+    }
+
+    #[test]
+    fn single_byte_needle() {
+        assert!(Finder::new(b"x").is_none());
     }
 }
