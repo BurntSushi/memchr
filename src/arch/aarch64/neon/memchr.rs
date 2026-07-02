@@ -952,6 +952,88 @@ impl<'a, 'h> DoubleEndedIterator for ThreeIter<'a, 'h> {
 
 impl<'a, 'h> core::iter::FusedIterator for ThreeIter<'a, 'h> {}
 
+/// Hi
+#[derive(Clone, Debug)]
+pub struct Multiple<'raw>(&'raw [u8], generic::Multiple<uint8x16_t>);
+
+impl<'raw> Multiple<'raw> {
+    /// Safety:
+    ///     1. size of low_tab, high_tab must be 16
+    ///     2. len must be exact the size of bytes
+    #[inline]
+    pub fn new_unchecked(
+        bytes: *const u8,
+        len: usize,
+        low_tab: *const u8,
+        high_tab: *const u8,
+        mask: u8,
+    ) -> Self {
+        unsafe {
+            let raw = core::mem::transmute((bytes, len));
+            let lo = uint8x16_t::load_aligned(low_tab);
+            let hi = uint8x16_t::load_aligned(high_tab);
+            Self(raw, generic::Multiple::new(lo, hi, mask))
+        }
+    }
+
+    /// Hi
+    #[inline]
+    pub fn is_available() -> bool {
+        #[cfg(target_feature = "neon")]
+        {
+            true
+        }
+        #[cfg(not(target_feature = "neon"))]
+        {
+            false
+        }
+    }
+
+    /// Hi
+    #[inline]
+    pub fn find(&self, haystack: &[u8]) -> Option<usize> {
+        // SAFETY: `find_raw` guarantees that if a pointer is returned, it
+        // falls within the bounds of the start and end pointers.
+        unsafe {
+            generic::search_slice_with_raw(haystack, |s, e| {
+                self.find_raw(s, e)
+            })
+        }
+    }
+
+    /// Hi
+    #[inline]
+    pub unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        if start >= end {
+            return None;
+        }
+        if end.distance(start) < uint8x16_t::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                self.0.iter().any(|c| *c == b)
+            });
+        }
+        // SAFETY: Building a `Three` means it's safe to call 'neon' routines.
+        // Also, we've checked that our haystack is big enough to run on the
+        // vector routine. Pointer validity is caller's responsibility.
+        self.find_raw_impl(start, end)
+    }
+
+    #[target_feature(enable = "neon")]
+    #[inline]
+    unsafe fn find_raw_impl(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        self.1.find_raw(start, end)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1027,5 +1109,11 @@ mod tests {
                 Some(Three::new(n1, n2, n3)?.iter(haystack).rev().collect())
             },
         )
+    }
+
+    #[test]
+    fn test_multiple() {
+        let s = "12345678".repeat(8);
+        // Multiple::new(bytes, low_tab, high_tab, mask)
     }
 }
