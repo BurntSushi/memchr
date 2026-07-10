@@ -1,0 +1,20 @@
+$ git describe
+2.8.3
+
+$ uname -a
+FreeBSD cfarm427.jing.rocks 16.0-CURRENT FreeBSD 16.0-CURRENT main-n286086-4d125ed6e7d4 GENERIC arm64
+
+$ lscpu
+Architecture:            aarch64
+Byte Order:              Little Endian
+Total CPU(s):            16
+Model name:              ARM Neoverse-N1 r3p1
+
+$ rustc -vV
+rustc 1.96.0 (ac68faa20 2026-05-25) (built from a source tarball)
+binary: rustc
+commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+commit-date: 2026-05-25
+host: aarch64-unknown-freebsd
+release: 1.96.0
+LLVM version: 22.1.2
