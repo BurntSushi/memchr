@@ -1,0 +1,14 @@
+$ git describe
+2.8.3
+
+$ rustc -Vv
+rustc 1.96.1 (31fca3adb 2026-06-26)
+binary: rustc
+commit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd
+commit-date: 2026-06-26
+host: x86_64-pc-windows-msvc
+release: 1.96.1
+LLVM version: 22.1.
+
+Build: 10.0-26200
+Extensions: MMX(+), SSE (1, 2, 3, 4.1, 4.2, 4A), SSSE3, x86-64, AES, AVX, AVX2, FMA3, SHA
