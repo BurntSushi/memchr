@@ -38,6 +38,12 @@ test = false
 doc = false
 
 [[bin]]
+name = "memchrn"
+path = "fuzz_targets/memchrn.rs"
+test = false
+doc = false
+
+[[bin]]
 name = "memrchr"
 path = "fuzz_targets/memrchr.rs"
 test = false

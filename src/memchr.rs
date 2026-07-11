@@ -274,6 +274,16 @@ pub fn memrchr3_iter(
     Memchr3::new(needle1, needle2, needle3, haystack).rev()
 }
 
+/// Returns an iterator over all occurrences of the needles in a haystack, in
+/// reverse.
+#[inline]
+pub fn memchrn_iter<'n, 'h>(
+    needles: &'n [u8],
+    haystack: &'h [u8],
+) -> MemchrN<'n, 'h> {
+    MultiByteFinder::new(needles).unwrap().iter(haystack)
+}
+
 /// An iterator over all occurrences of a single byte in a haystack.
 ///
 /// This iterator implements `DoubleEndedIterator`, which means it can also be
@@ -750,6 +760,194 @@ unsafe fn count_raw(needle: u8, start: *const u8, end: *const u8) -> usize {
     }
 }
 
+pub struct MultiByteFinder<'n> {
+    needles: &'n [u8],
+    low_tab: [u8; 16],
+    high_tab: [u8; 16],
+    bit_mask: u8,
+}
+
+impl<'n> MultiByteFinder<'n> {
+    pub fn new(needles: &'n [u8]) -> Result<Self, ()> {
+        if needles.len() <= 8 {
+            Ok(Self::build_impl_fast(needles))
+        } else {
+            Self::build_impl_slow(needles)
+        }
+    }
+
+    fn build_impl_fast(needles: &'n [u8]) -> Self {
+        // TODO: add uniqueness check
+        assert!(needles.len() <= 8);
+        let mut low_tab = [0u8; 16];
+        let mut high_tab = [0u8; 16];
+
+        for (i, &byte) in needles.iter().enumerate() {
+            let bit = 1u8 << i;
+            low_tab[(byte & 0x0f) as usize] |= bit;
+            high_tab[(byte >> 4) as usize] |= bit;
+        }
+
+        let bit_mask = (1u32 << needles.len()).wrapping_sub(1) as u8;
+        Self { needles, low_tab, high_tab, bit_mask }
+    }
+
+    fn build_impl_slow(needles: &'n [u8]) -> Result<Self, ()> {
+        /// for a bit(bucket), suppose there are chars [s1, s2, s3]
+        /// we have the low parts and high parts:
+        ///     [s1_low, s2_low, s3_low]
+        ///     [s1_high, s2_high, s3_high]
+        /// we have to make sure: for any c = high<<4 + s1_low, c must belongs to this bucket
+        /// in other words, if it's well-formed after adding candidate to the `bit_index`,
+        /// then it's ok to do so.
+        fn is_safe(
+            bit_index: u8,
+            candidate: u8,
+            targets: &[u8],
+            current_low: &[u8; 16],
+            current_high: &[u8; 16],
+        ) -> bool {
+            let c_hi = (candidate >> 4) as usize;
+            let c_lo = (candidate & 0x0F) as usize;
+            let bit = 1 << bit_index;
+
+            for other_hi in 0..16 {
+                for other_lo in 0..16 {
+                    if (current_high[other_hi] & bit != 0)
+                        && (current_low[other_lo] & bit != 0)
+                    {
+                        let ghost1 = ((c_hi << 4) | other_lo) as u8;
+                        let ghost2 = ((other_hi << 4) | c_lo) as u8;
+
+                        if !targets.contains(&ghost1)
+                            || !targets.contains(&ghost2)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            true
+        }
+
+        let mut low_tab = [0u8; 16];
+        let mut high_tab = [0u8; 16];
+        let mut current_bit = 0;
+        let mut bit_mask = 0u8;
+
+        for &c in needles {
+            if current_bit >= 8 {
+                return Err(());
+            }
+
+            let hi = (c >> 4) as usize;
+            let lo = (c & 0x0F) as usize;
+
+            let mut placed = false;
+            for b in 0..current_bit {
+                if is_safe(b, c, needles, &low_tab, &high_tab) {
+                    low_tab[lo] |= 1 << b;
+                    high_tab[hi] |= 1 << b;
+                    placed = true;
+                    break;
+                }
+            }
+
+            if !placed && current_bit < 8 {
+                low_tab[lo] |= 1 << current_bit;
+                high_tab[hi] |= 1 << current_bit;
+                bit_mask |= 1 << current_bit;
+                current_bit += 1;
+            }
+        }
+        Ok(Self { needles, low_tab, high_tab, bit_mask })
+    }
+
+    pub fn iter<'h>(&self, haystack: &'h [u8]) -> MemchrN<'n, 'h> {
+        MemchrN {
+            needles: self.needles,
+            low_tab: self.low_tab,
+            high_tab: self.high_tab,
+            bit_mask: self.bit_mask,
+            it: crate::arch::generic::memchr::Iter::new(haystack),
+        }
+    }
+}
+
+/// Hi
+pub struct MemchrN<'n, 'h> {
+    needles: &'n [u8],
+    low_tab: [u8; 16],
+    high_tab: [u8; 16],
+    bit_mask: u8,
+    it: crate::arch::generic::memchr::Iter<'h>,
+}
+
+#[inline]
+unsafe fn memchrn_raw(
+    raw: *const u8,
+    raw_len: usize,
+    low_tab: *const u8,
+    high_tab: *const u8,
+    mask: u8,
+    start: *const u8,
+    end: *const u8,
+) -> Option<*const u8> {
+    #[cfg(target_arch = "x86_64")]
+    {
+        crate::arch::x86_64::memchr::memchrn_raw(
+            raw, raw_len, low_tab, high_tab, mask, start, end,
+        )
+    }
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+    {
+        todo!()
+    }
+    #[cfg(target_arch = "aarch64")]
+    {
+        crate::arch::aarch64::memchr::memchrn_raw(
+            raw, raw_len, low_tab, high_tab, mask, start, end,
+        )
+    }
+    #[cfg(not(any(
+        target_arch = "x86_64",
+        all(target_arch = "wasm32", target_feature = "simd128"),
+        target_arch = "aarch64"
+    )))]
+    {
+        todo!()
+    }
+}
+
+impl<'n, 'h> Iterator for MemchrN<'n, 'h> {
+    type Item = usize;
+
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
+        // SAFETY: All of our implementations of memchr ensure that any
+        // pointers returns will fall within the start and end bounds, and this
+        // upholds the safety contract of `self.it.next`.
+        unsafe {
+            self.it.next(|s, e| {
+                memchrn_raw(
+                    self.needles.as_ptr(),
+                    self.needles.len(),
+                    self.low_tab.as_ptr(),
+                    self.high_tab.as_ptr(),
+                    self.bit_mask,
+                    s,
+                    e,
+                )
+            })
+        }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.it.size_hint()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -898,6 +1096,45 @@ mod tests {
         fn assert_send_sync<T: Send + Sync + UnwindSafe + RefUnwindSafe>() {}
         assert_send_sync::<Memchr>();
         assert_send_sync::<Memchr2>();
-        assert_send_sync::<Memchr3>()
+        assert_send_sync::<Memchr3>();
+        assert_send_sync::<MemchrN>();
+    }
+
+    #[test]
+    fn forwardn_iter() {
+        crate::tests::memchr::Runner::new(6).forward_iter(
+            |haystack, needles| {
+                Some(memchrn_iter(needles, haystack).collect())
+            },
+        )
+    }
+
+    #[test]
+    fn forwardn_oneshot() {
+        crate::tests::memchr::Runner::new(6).forward_oneshot(
+            |haystack, needles| Some(memchrn_iter(needles, haystack).next()),
+        )
+    }
+
+    #[test]
+    fn test_memchrn() {
+        fn test_one(needles: &[u8], haystack: &[u8], expect_cnt: usize) {
+            let memchrn = MultiByteFinder::new(needles).unwrap();
+            assert_eq!(memchrn.iter(haystack).into_iter().count(), expect_cnt);
+        }
+
+        let mut haystack = "@".repeat(14);
+        haystack.push_str("aa");
+        test_one(&[b'a'], haystack.as_bytes(), 2);
+
+        test_one(
+            &[196, 110, 1, 206, 192, 7, 39, 0],
+            &[
+                0, 0, 0, 0, 0, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
+                99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
+                99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 196, 63, 255,
+            ],
+            6,
+        );
     }
 }

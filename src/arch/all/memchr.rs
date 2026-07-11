@@ -867,6 +867,84 @@ impl<'a, 'h> DoubleEndedIterator for ThreeIter<'a, 'h> {
     }
 }
 
+/// HI
+#[derive(Clone, Debug)]
+pub struct Multiple {
+    raw: alloc::vec::Vec<u8>,
+    splat: alloc::vec::Vec<usize>,
+}
+
+impl Multiple {
+    /// Hi
+    pub fn new(
+        bytes: *const u8,
+        len: usize,
+        _low_tab: *const u8,
+        _high_tab: *const u8,
+        _mask: u8,
+    ) -> Self {
+        let slice: &[u8] = unsafe { core::mem::transmute((bytes, len)) };
+        let raw = slice.to_vec();
+        let splat =
+            slice.iter().map(|v| splat(*v)).collect::<alloc::vec::Vec<_>>();
+        Self { raw, splat }
+    }
+
+    /// Hi
+    #[inline]
+    pub unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        if start >= end {
+            return None;
+        }
+        let confirm = |b| self.confirm(b);
+        let len = end.distance(start);
+        if len < USIZE_BYTES {
+            return generic::fwd_byte_by_byte(start, end, confirm);
+        }
+
+        // The start of the search may not be aligned to `*const usize`,
+        // so we do an unaligned load here.
+        let chunk = start.cast::<usize>().read_unaligned();
+        if self.has_needle(chunk) {
+            return generic::fwd_byte_by_byte(start, end, confirm);
+        }
+
+        // And now we start our search at a guaranteed aligned position.
+        // The first iteration of the loop below will overlap with the
+        // unaligned chunk above in cases where the search starts at an
+        // unaligned offset, but that's okay as we're only here if that
+        // above didn't find a match.
+        let mut cur =
+            start.add(USIZE_BYTES - (start.as_usize() & USIZE_ALIGN));
+        debug_assert!(cur > start);
+        debug_assert!(end.sub(USIZE_BYTES) >= start);
+        while cur <= end.sub(USIZE_BYTES) {
+            debug_assert_eq!(0, cur.as_usize() % USIZE_BYTES);
+
+            let chunk = cur.cast::<usize>().read();
+            if self.has_needle(chunk) {
+                break;
+            }
+            cur = cur.add(USIZE_BYTES);
+        }
+        generic::fwd_byte_by_byte(cur, end, confirm)
+    }
+
+    #[inline(always)]
+    fn has_needle(&self, chunk: usize) -> bool {
+        self.splat.iter().any(|v| *v ^ chunk != 0)
+    }
+
+    #[inline(always)]
+    fn confirm(&self, haystack_byte: u8) -> bool {
+        self.raw.iter().any(|s| *s == haystack_byte)
+    }
+}
+
 /// Return `true` if `x` contains any zero byte.
 ///
 /// That is, this routine treats `x` as a register of 8-bit lanes and returns
