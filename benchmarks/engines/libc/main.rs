@@ -37,9 +37,13 @@ fn memchr_oneshot_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
 }
 
 fn memmem_oneshot_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
-    let haystack = &b.haystack;
-    let needle = b.one_needle()?;
-    shared::run(b, || Ok(shared::count_memmem(haystack, needle, libc_memmem)))
+	if cfg!(all(windows, target_env = "msvc")) {
+		anyhow::bail!("libc::memmem is not supported on this platform")
+	} else {	
+		let haystack = &b.haystack;
+		let needle = b.one_needle()?;
+		shared::run(b, || Ok(shared::count_memmem(haystack, needle, libc_memmem)))
+	}
 }
 
 /// A safe wrapper around libc's `memchr` function. In particular, this
@@ -62,6 +66,7 @@ fn libc_memchr(haystack: &[u8], needle: u8) -> Option<usize> {
 
 /// A safe wrapper around libc's `memmem` function. In particular, this
 /// converts memmem's pointer return to an index offset into `haystack`.
+#[cfg(not(all(windows, target_env = "msvc")))]
 fn libc_memmem(haystack: &[u8], needle: &[u8]) -> Option<usize> {
     // SAFETY: We know that both our haystack and needle pointers are valid and
     // non-null, and we also know that the lengths of each corresponds to the
@@ -80,4 +85,9 @@ fn libc_memmem(haystack: &[u8], needle: &[u8]) -> Option<usize> {
         let start = (p as isize) - (haystack.as_ptr() as isize);
         Some(start as usize)
     }
+}
+
+#[cfg(all(windows, target_env = "msvc"))]
+fn libc_memmem(_haystack: &[u8], _needle: &[u8]) -> Option<usize> {
+	unimplemented!()
 }
