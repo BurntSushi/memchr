@@ -980,6 +980,215 @@ impl<V: Vector> Three<V> {
     }
 }
 
+/// Finds the first occurrence of a byte that is not equal to the given needle
+/// in a haystack.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct OneInv<V> {
+    s1: u8,
+    v1: V,
+}
+
+impl<V: Vector> OneInv<V> {
+    /// The number of bytes we examine per each iteration of our search loop.
+    const LOOP_SIZE: usize = 4 * V::BYTES;
+
+    /// Create a new searcher that finds occurrences of a byte NOT equal to the
+    /// one given.
+    #[inline(always)]
+    pub(crate) unsafe fn new(needle: u8) -> OneInv<V> {
+        OneInv { s1: needle, v1: V::splat(needle) }
+    }
+
+    /// Returns the needle given to `OneInv::new`.
+    #[inline(always)]
+    pub(crate) fn needle1(&self) -> u8 {
+        self.s1
+    }
+
+    /// Return a pointer to the first occurrence of a non-needle byte in the
+    /// given haystack. If all bytes equal the needle, then `None` is returned.
+    ///
+    /// When a match is found, the pointer returned is guaranteed to be
+    /// `>= start` and `< end`.
+    ///
+    /// # Safety
+    ///
+    /// Same as `One::find_raw`.
+    #[inline(always)]
+    pub(crate) unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+
+        let topos = V::Mask::first_offset;
+        let len = end.distance(start);
+        debug_assert!(
+            len >= V::BYTES,
+            "haystack has length {}, but must be at least {}",
+            len,
+            V::BYTES
+        );
+
+        if let Some(cur) = self.search_chunk(start, topos) {
+            return Some(cur);
+        }
+        let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+        debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+        if len >= Self::LOOP_SIZE {
+            while cur <= end.sub(Self::LOOP_SIZE) {
+                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+
+                let a = V::load_aligned(cur);
+                let b = V::load_aligned(cur.add(1 * V::BYTES));
+                let c = V::load_aligned(cur.add(2 * V::BYTES));
+                let d = V::load_aligned(cur.add(3 * V::BYTES));
+                let eqa = self.v1.cmpeq(a);
+                let eqb = self.v1.cmpeq(b);
+                let eqc = self.v1.cmpeq(c);
+                let eqd = self.v1.cmpeq(d);
+                let and1 = eqa.and(eqb);
+                let and2 = eqc.and(eqd);
+                let and3 = and1.and(and2);
+                if and3.not().movemask_will_have_non_zero() {
+                    let mask = eqa.not().movemask();
+                    if mask.has_non_zero() {
+                        return Some(cur.add(topos(mask)));
+                    }
+
+                    let mask = eqb.not().movemask();
+                    if mask.has_non_zero() {
+                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+                    }
+
+                    let mask = eqc.not().movemask();
+                    if mask.has_non_zero() {
+                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
+                    }
+
+                    let mask = eqd.not().movemask();
+                    debug_assert!(mask.has_non_zero());
+                    return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+                }
+                cur = cur.add(Self::LOOP_SIZE);
+            }
+        }
+        while cur <= end.sub(V::BYTES) {
+            debug_assert!(end.distance(cur) >= V::BYTES);
+            if let Some(cur) = self.search_chunk(cur, topos) {
+                return Some(cur);
+            }
+            cur = cur.add(V::BYTES);
+        }
+        if cur < end {
+            debug_assert!(end.distance(cur) < V::BYTES);
+            cur = cur.sub(V::BYTES - end.distance(cur));
+            debug_assert_eq!(end.distance(cur), V::BYTES);
+            return self.search_chunk(cur, topos);
+        }
+        None
+    }
+
+    /// Return a pointer to the last occurrence of a non-needle byte in the
+    /// given haystack. If all bytes equal the needle, then `None` is returned.
+    ///
+    /// When a match is found, the pointer returned is guaranteed to be
+    /// `>= start` and `< end`.
+    ///
+    /// # Safety
+    ///
+    /// Same as `One::rfind_raw`.
+    #[inline(always)]
+    pub(crate) unsafe fn rfind_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+
+        let topos = V::Mask::last_offset;
+        let len = end.distance(start);
+        debug_assert!(
+            len >= V::BYTES,
+            "haystack has length {}, but must be at least {}",
+            len,
+            V::BYTES
+        );
+
+        if let Some(cur) = self.search_chunk(end.sub(V::BYTES), topos) {
+            return Some(cur);
+        }
+        let mut cur = end.sub(end.as_usize() & V::ALIGN);
+        debug_assert!(start <= cur && cur <= end);
+        if len >= Self::LOOP_SIZE {
+            while cur >= start.add(Self::LOOP_SIZE) {
+                debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+
+                cur = cur.sub(Self::LOOP_SIZE);
+                let a = V::load_aligned(cur);
+                let b = V::load_aligned(cur.add(1 * V::BYTES));
+                let c = V::load_aligned(cur.add(2 * V::BYTES));
+                let d = V::load_aligned(cur.add(3 * V::BYTES));
+                let eqa = self.v1.cmpeq(a);
+                let eqb = self.v1.cmpeq(b);
+                let eqc = self.v1.cmpeq(c);
+                let eqd = self.v1.cmpeq(d);
+                let and1 = eqa.and(eqb);
+                let and2 = eqc.and(eqd);
+                let and3 = and1.and(and2);
+                if and3.not().movemask_will_have_non_zero() {
+                    let mask = eqd.not().movemask();
+                    if mask.has_non_zero() {
+                        return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+                    }
+
+                    let mask = eqc.not().movemask();
+                    if mask.has_non_zero() {
+                        return Some(cur.add(2 * V::BYTES).add(topos(mask)));
+                    }
+
+                    let mask = eqb.not().movemask();
+                    if mask.has_non_zero() {
+                        return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+                    }
+
+                    let mask = eqa.not().movemask();
+                    debug_assert!(mask.has_non_zero());
+                    return Some(cur.add(topos(mask)));
+                }
+            }
+        }
+        while cur >= start.add(V::BYTES) {
+            debug_assert!(cur.distance(start) >= V::BYTES);
+            cur = cur.sub(V::BYTES);
+            if let Some(cur) = self.search_chunk(cur, topos) {
+                return Some(cur);
+            }
+        }
+        if cur > start {
+            debug_assert!(cur.distance(start) < V::BYTES);
+            return self.search_chunk(start, topos);
+        }
+        None
+    }
+
+    #[inline(always)]
+    unsafe fn search_chunk(
+        &self,
+        cur: *const u8,
+        mask_to_offset: impl Fn(V::Mask) -> usize,
+    ) -> Option<*const u8> {
+        let chunk = V::load_unaligned(cur);
+        let mask = self.v1.cmpeq(chunk).not().movemask();
+        if mask.has_non_zero() {
+            Some(cur.add(mask_to_offset(mask)))
+        } else {
+            None
+        }
+    }
+}
+
 /// An iterator over all occurrences of a set of bytes in a haystack.
 ///
 /// This iterator implements the routines necessary to provide a

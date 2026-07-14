@@ -41,6 +41,28 @@ macro_rules! define_memchr_quickcheck {
                 TestResult::from_bool(expected == got)
             }
 
+            fn qc_memchr_inv_matches_naive(
+                n1: u8, corpus: Vec<u8>
+            ) -> TestResult {
+                let expected = naive::memchr_inv(n1, &corpus);
+                let got = match $mod::OneInv::$cons(n1) {
+                    None => return TestResult::discard(),
+                    Some(f) => f.find(&corpus),
+                };
+                TestResult::from_bool(expected == got)
+            }
+
+            fn qc_memrchr_inv_matches_naive(
+                n1: u8, corpus: Vec<u8>
+            ) -> TestResult {
+                let expected = naive::memrchr_inv(n1, &corpus);
+                let got = match $mod::OneInv::$cons(n1) {
+                    None => return TestResult::discard(),
+                    Some(f) => f.rfind(&corpus),
+                };
+                TestResult::from_bool(expected == got)
+            }
+
             fn qc_memchr2_matches_naive(n1: u8, n2: u8, corpus: Vec<u8>) -> TestResult {
                 let expected = naive::memchr2(n1, n2, &corpus);
                 let got = match $mod::Two::$cons(n1, n2) {

@@ -1273,6 +1273,112 @@ impl<'a, 'h> DoubleEndedIterator for ThreeIter<'a, 'h> {
 
 impl<'a, 'h> core::iter::FusedIterator for ThreeIter<'a, 'h> {}
 
+/// Finds first non-matching byte using AVX2.
+#[derive(Clone, Copy, Debug)]
+pub struct OneInv(generic::OneInv<__m256i>);
+
+impl OneInv {
+    /// Create a new searcher for non-matching bytes.
+    #[inline]
+    pub fn new(needle: u8) -> Option<OneInv> {
+        if OneInv::is_available() {
+            unsafe { Some(OneInv::new_unchecked(needle)) }
+        } else {
+            None
+        }
+    }
+
+    /// Create without checking.
+    #[target_feature(enable = "sse2", enable = "avx2")]
+    #[inline]
+    pub unsafe fn new_unchecked(needle: u8) -> OneInv {
+        OneInv(generic::OneInv::new(needle))
+    }
+
+    /// Whether this impl is available.
+    #[inline]
+    pub fn is_available() -> bool {
+        #[cfg(not(target_feature = "sse2"))]
+        {
+            false
+        }
+        #[cfg(target_feature = "sse2")]
+        {
+            #[cfg(target_feature = "avx2")]
+            {
+                true
+            }
+            #[cfg(not(target_feature = "avx2"))]
+            {
+                #[cfg(feature = "std")]
+                {
+                    std::is_x86_feature_detected!("avx2")
+                }
+                #[cfg(not(feature = "std"))]
+                {
+                    false
+                }
+            }
+        }
+    }
+
+    /// Return the first non-needle byte in `haystack`.
+    #[inline]
+    pub fn find(&self, haystack: &[u8]) -> Option<usize> {
+        unsafe {
+            generic::search_slice_with_raw(haystack, |s, e| {
+                self.find_raw(s, e)
+            })
+        }
+    }
+
+    /// Return the last non-needle byte in `haystack`.
+    #[inline]
+    pub fn rfind(&self, haystack: &[u8]) -> Option<usize> {
+        unsafe {
+            generic::search_slice_with_raw(haystack, |s, e| {
+                self.rfind_raw(s, e)
+            })
+        }
+    }
+
+    /// Raw find.
+    #[inline]
+    pub unsafe fn find_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        if start >= end {
+            return None;
+        }
+        if end.distance(start) < __m256i::BYTES {
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                b != self.0.needle1()
+            });
+        }
+        self.0.find_raw(start, end)
+    }
+
+    /// Raw rfind.
+    #[inline]
+    pub unsafe fn rfind_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> Option<*const u8> {
+        if start >= end {
+            return None;
+        }
+        if end.distance(start) < __m256i::BYTES {
+            return generic::rev_byte_by_byte(start, end, |b| {
+                b != self.0.needle1()
+            });
+        }
+        self.0.rfind_raw(start, end)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1347,6 +1453,20 @@ mod tests {
                 let n3 = needles.get(2).copied()?;
                 Some(Three::new(n1, n2, n3)?.iter(haystack).rev().collect())
             },
+        )
+    }
+
+    #[test]
+    fn forward_one_inv() {
+        crate::tests::memchr::Runner::new(1).forward_inv_oneshot(
+            |haystack, needle| Some(OneInv::new(needle)?.find(haystack)),
+        )
+    }
+
+    #[test]
+    fn reverse_one_inv() {
+        crate::tests::memchr::Runner::new(1).reverse_inv_oneshot(
+            |haystack, needle| Some(OneInv::new(needle)?.rfind(haystack)),
         )
     }
 }
