@@ -88,14 +88,7 @@ impl Finder {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(target_feature = "neon")]
-        {
-            true
-        }
-        #[cfg(not(target_feature = "neon"))]
-        {
-            false
-        }
+        cfg!(target_feature = "neon")
     }
 
     /// Execute a search using neon vectors and routines.
