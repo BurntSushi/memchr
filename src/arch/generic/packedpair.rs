@@ -302,7 +302,7 @@ impl<V: Vector> Finder<V> {
 /// Accepts a chunk-relative offset and returns a haystack relative offset.
 ///
 /// This used to be marked `#[cold]` and `#[inline(never)]`, but I couldn't
-/// observe a consistent measureable difference between that and just inlining
+/// observe a consistent measurable difference between that and just inlining
 /// it. So we go with inlining it.
 ///
 /// # Safety
