@@ -654,6 +654,27 @@ impl<V: Vector> Two<V> {
         None
     }
 
+    /// Return a count of all matching bytes in the given haystack.
+    ///
+    /// # Safety
+    ///
+    /// The distance between `start` and `end` must be at least `V::BYTES`,
+    /// and both pointers must satisfy the validity requirements documented on
+    /// [`Two::find_raw`].
+    #[inline(always)]
+    pub(crate) unsafe fn count_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        count_raw::<V>(
+            start,
+            end,
+            |b| b == self.needle1() || b == self.needle2(),
+            |chunk| self.v1.cmpeq(chunk).or(self.v2.cmpeq(chunk)),
+        )
+    }
+
     /// Search `V::BYTES` starting at `cur` via an unaligned load.
     ///
     /// `mask_to_offset` should be a function that converts a `movemask` to
@@ -946,6 +967,36 @@ impl<V: Vector> Three<V> {
         None
     }
 
+    /// Return a count of all matching bytes in the given haystack.
+    ///
+    /// # Safety
+    ///
+    /// The distance between `start` and `end` must be at least `V::BYTES`,
+    /// and both pointers must satisfy the validity requirements documented on
+    /// [`Three::find_raw`].
+    #[inline(always)]
+    pub(crate) unsafe fn count_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        count_raw::<V>(
+            start,
+            end,
+            |b| {
+                b == self.needle1()
+                    || b == self.needle2()
+                    || b == self.needle3()
+            },
+            |chunk| {
+                self.v1
+                    .cmpeq(chunk)
+                    .or(self.v2.cmpeq(chunk))
+                    .or(self.v3.cmpeq(chunk))
+            },
+        )
+    }
+
     /// Search `V::BYTES` starting at `cur` via an unaligned load.
     ///
     /// `mask_to_offset` should be a function that converts a `movemask` to
@@ -978,6 +1029,57 @@ impl<V: Vector> Three<V> {
             None
         }
     }
+}
+
+/// Count matches with vector masks, using scalar code only for alignment and
+/// the final partial vector.
+///
+/// # Safety
+///
+/// `start` and `end` must delimit one valid allocation, and their distance
+/// must be at least `V::BYTES`.
+#[inline(always)]
+unsafe fn count_raw<V: Vector>(
+    start: *const u8,
+    end: *const u8,
+    confirm: impl Fn(u8) -> bool,
+    matches: impl Fn(V) -> V,
+) -> usize {
+    debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+    let len = end.distance(start);
+    debug_assert!(
+        len >= V::BYTES,
+        "haystack has length {}, but must be at least {}",
+        len,
+        V::BYTES
+    );
+
+    let loop_size = 4 * V::BYTES;
+    let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+    let mut count = count_byte_by_byte(start, cur, &confirm);
+    debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+    if len >= loop_size {
+        while cur <= end.sub(loop_size) {
+            debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+            let a = matches(V::load_aligned(cur));
+            let b = matches(V::load_aligned(cur.add(V::BYTES)));
+            let c = matches(V::load_aligned(cur.add(2 * V::BYTES)));
+            let d = matches(V::load_aligned(cur.add(3 * V::BYTES)));
+            if a.or(b).or(c).or(d).movemask_will_have_non_zero() {
+                count += a.movemask().count_ones();
+                count += b.movemask().count_ones();
+                count += c.movemask().count_ones();
+                count += d.movemask().count_ones();
+            }
+            cur = cur.add(loop_size);
+        }
+    }
+    while cur <= end.sub(V::BYTES) {
+        debug_assert!(end.distance(cur) >= V::BYTES);
+        count += matches(V::load_unaligned(cur)).movemask().count_ones();
+        cur = cur.add(V::BYTES);
+    }
+    count + count_byte_by_byte(cur, end, confirm)
 }
 
 /// An iterator over all occurrences of a set of bytes in a haystack.

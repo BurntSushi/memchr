@@ -135,3 +135,26 @@ pub(crate) unsafe fn count_raw(
 ) -> usize {
     defraw!(One, count_raw, start, end, n1)
 }
+
+/// Count all bytes matching either needle, using raw pointers.
+#[inline(always)]
+pub(crate) unsafe fn count2_raw(
+    n1: u8,
+    n2: u8,
+    start: *const u8,
+    end: *const u8,
+) -> usize {
+    defraw!(Two, count_raw, start, end, n1, n2)
+}
+
+/// Count all bytes matching any needle, using raw pointers.
+#[inline(always)]
+pub(crate) unsafe fn count3_raw(
+    n1: u8,
+    n2: u8,
+    n3: u8,
+    start: *const u8,
+    end: *const u8,
+) -> usize {
+    defraw!(Three, count_raw, start, end, n1, n2, n3)
+}

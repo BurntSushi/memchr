@@ -596,6 +596,24 @@ impl Two {
         self.rfind_raw_impl(start, end)
     }
 
+    /// Counts all occurrences of either needle in the pointer range.
+    #[inline]
+    pub(crate) unsafe fn count_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        if start >= end {
+            return 0;
+        }
+        if end.distance(start) < __m128i::BYTES {
+            return generic::count_byte_by_byte(start, end, |b| {
+                b == self.0.needle1() || b == self.0.needle2()
+            });
+        }
+        self.count_raw_impl(start, end)
+    }
+
     /// Execute a search using SSE2 vectors and routines.
     ///
     /// # Safety
@@ -634,6 +652,16 @@ impl Two {
         end: *const u8,
     ) -> Option<*const u8> {
         self.0.rfind_raw(start, end)
+    }
+
+    #[target_feature(enable = "sse2")]
+    #[inline]
+    unsafe fn count_raw_impl(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        self.0.count_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle bytes in the
@@ -901,6 +929,26 @@ impl Three {
         self.rfind_raw_impl(start, end)
     }
 
+    /// Counts all occurrences of any needle in the pointer range.
+    #[inline]
+    pub(crate) unsafe fn count_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        if start >= end {
+            return 0;
+        }
+        if end.distance(start) < __m128i::BYTES {
+            return generic::count_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+                    || b == self.0.needle2()
+                    || b == self.0.needle3()
+            });
+        }
+        self.count_raw_impl(start, end)
+    }
+
     /// Execute a search using SSE2 vectors and routines.
     ///
     /// # Safety
@@ -939,6 +987,16 @@ impl Three {
         end: *const u8,
     ) -> Option<*const u8> {
         self.0.rfind_raw(start, end)
+    }
+
+    #[target_feature(enable = "sse2")]
+    #[inline]
+    unsafe fn count_raw_impl(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        self.0.count_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle byte in the
