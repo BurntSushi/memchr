@@ -20,10 +20,10 @@ dependencies = [
 
 [[package]]
 name = "main"
-version = "2.8.1"
+version = "2.8.3"
 dependencies = [
  "anyhow",
- "memchr 2.8.1",
+ "memchr 2.8.3",
  "shared",
 ]
 
@@ -35,7 +35,7 @@ checksum = "f52b00d39961fc5b2736ea853c9cc86238e165017a493d1d5c8eac6bdc4cc273"
 
 [[package]]
 name = "memchr"
-version = "2.8.1"
+version = "2.8.3"
 
 [[package]]
 name = "proc-macro2"

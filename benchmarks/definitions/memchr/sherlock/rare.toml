@@ -29,6 +29,7 @@ haystack = { path = "sherlock/huge.txt" }
 count = 426
 engines = [
   "rust/memchr/memchr2",
+  "rust/memchr/memchr2/onlycount",
   "rust/memchr/memchr2/fallback",
   "rust/memchr/memchr2/naive",
   "rust/memchr/memchr2/wasm32",
@@ -45,6 +46,7 @@ haystack = { path = "sherlock/huge.txt" }
 count = 546
 engines = [
   "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
   "rust/memchr/memchr3/fallback",
   "rust/memchr/memchr3/naive",
   "rust/memchr/memchr3/wasm32",
@@ -85,6 +87,7 @@ haystack = { path = "sherlock/small.txt" }
 count = 2
 engines = [
   "rust/memchr/memchr2",
+  "rust/memchr/memchr2/onlycount",
   "rust/memchr/memchr2/fallback",
   "rust/memchr/memchr2/naive",
   "rust/memchr/memchr2/wasm32",
@@ -101,6 +104,7 @@ haystack = { path = "sherlock/small.txt" }
 count = 3
 engines = [
   "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
   "rust/memchr/memchr3/fallback",
   "rust/memchr/memchr3/naive",
   "rust/memchr/memchr3/wasm32",
@@ -141,6 +145,7 @@ haystack = { path = "sherlock/tiny.txt" }
 count = 2
 engines = [
   "rust/memchr/memchr2",
+  "rust/memchr/memchr2/onlycount",
   "rust/memchr/memchr2/fallback",
   "rust/memchr/memchr2/naive",
   "rust/memchr/memchr2/wasm32",
@@ -157,6 +162,7 @@ haystack = { path = "sherlock/tiny.txt" }
 count = 3
 engines = [
   "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
   "rust/memchr/memchr3/fallback",
   "rust/memchr/memchr3/naive",
   "rust/memchr/memchr3/wasm32",
