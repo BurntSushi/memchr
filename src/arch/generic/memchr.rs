@@ -667,7 +667,7 @@ impl<V: Vector> Two<V> {
         start: *const u8,
         end: *const u8,
     ) -> usize {
-        count_raw::<V>(
+        count_raw(
             start,
             end,
             |b| b == self.needle1() || b == self.needle2(),
@@ -980,7 +980,7 @@ impl<V: Vector> Three<V> {
         start: *const u8,
         end: *const u8,
     ) -> usize {
-        count_raw::<V>(
+        count_raw(
             start,
             end,
             |b| {
