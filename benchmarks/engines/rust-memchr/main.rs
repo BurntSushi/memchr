@@ -30,9 +30,11 @@ fn main() -> anyhow::Result<()> {
         ("memchr-fallback", "count-bytes") => memchr_fallback_count(&b)?,
         ("memchr-naive", "count-bytes") => memchr_naive_count(&b)?,
         ("memchr2", "count-bytes") => memchr2_count(&b)?,
+        ("memchr2-onlycount", "count-bytes") => memchr2_only_count(&b)?,
         ("memchr2-fallback", "count-bytes") => memchr2_fallback_count(&b)?,
         ("memchr2-naive", "count-bytes") => memchr2_naive_count(&b)?,
         ("memchr3", "count-bytes") => memchr3_count(&b)?,
+        ("memchr3-onlycount", "count-bytes") => memchr3_only_count(&b)?,
         ("memchr3-fallback", "count-bytes") => memchr3_fallback_count(&b)?,
         ("memchr3-naive", "count-bytes") => memchr3_naive_count(&b)?,
         ("memrchr", "count-bytes") => memrchr_count(&b)?,
@@ -108,6 +110,12 @@ fn memchr2_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
     shared::run(b, || Ok(memchr::memchr2_iter(n1, n2, haystack).count_slow()))
 }
 
+fn memchr2_only_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
+    let haystack = &b.haystack;
+    let (n1, n2) = b.two_needle_bytes()?;
+    shared::run(b, || Ok(memchr::memchr2_iter(n1, n2, haystack).count()))
+}
+
 fn memchr2_fallback_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
     let haystack = &b.haystack;
     let (n1, n2) = b.two_needle_bytes()?;
@@ -130,6 +138,14 @@ fn memchr3_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
     let (n1, n2, n3) = b.three_needle_bytes()?;
     shared::run(b, || {
         Ok(memchr::memchr3_iter(n1, n2, n3, haystack).count_slow())
+    })
+}
+
+fn memchr3_only_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
+    let haystack = &b.haystack;
+    let (n1, n2, n3) = b.three_needle_bytes()?;
+    shared::run(b, || {
+        Ok(memchr::memchr3_iter(n1, n2, n3, haystack).count())
     })
 }
 

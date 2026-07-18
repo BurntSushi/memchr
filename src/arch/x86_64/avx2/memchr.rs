@@ -749,6 +749,29 @@ impl Two {
         self.rfind_raw_avx2(start, end)
     }
 
+    /// Counts all occurrences of either needle in the pointer range.
+    #[inline]
+    pub(crate) unsafe fn count_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        if start >= end {
+            return 0;
+        }
+        let len = end.distance(start);
+        if len < __m256i::BYTES {
+            return if len < __m128i::BYTES {
+                generic::count_byte_by_byte(start, end, |b| {
+                    b == self.sse2.needle1() || b == self.sse2.needle2()
+                })
+            } else {
+                self.count_raw_sse2(start, end)
+            };
+        }
+        self.count_raw_avx2(start, end)
+    }
+
     /// Execute a search using SSE2 vectors and routines.
     ///
     /// # Safety
@@ -789,6 +812,16 @@ impl Two {
         self.sse2.rfind_raw(start, end)
     }
 
+    #[target_feature(enable = "sse2")]
+    #[inline]
+    unsafe fn count_raw_sse2(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        self.sse2.count_raw(start, end)
+    }
+
     /// Execute a search using AVX2 vectors and routines.
     ///
     /// # Safety
@@ -827,6 +860,16 @@ impl Two {
         end: *const u8,
     ) -> Option<*const u8> {
         self.avx2.rfind_raw(start, end)
+    }
+
+    #[target_feature(enable = "avx2")]
+    #[inline]
+    unsafe fn count_raw_avx2(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        self.avx2.count_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle bytes in the
@@ -1136,6 +1179,31 @@ impl Three {
         self.rfind_raw_avx2(start, end)
     }
 
+    /// Counts all occurrences of any needle in the pointer range.
+    #[inline]
+    pub(crate) unsafe fn count_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        if start >= end {
+            return 0;
+        }
+        let len = end.distance(start);
+        if len < __m256i::BYTES {
+            return if len < __m128i::BYTES {
+                generic::count_byte_by_byte(start, end, |b| {
+                    b == self.sse2.needle1()
+                        || b == self.sse2.needle2()
+                        || b == self.sse2.needle3()
+                })
+            } else {
+                self.count_raw_sse2(start, end)
+            };
+        }
+        self.count_raw_avx2(start, end)
+    }
+
     /// Execute a search using SSE2 vectors and routines.
     ///
     /// # Safety
@@ -1176,6 +1244,16 @@ impl Three {
         self.sse2.rfind_raw(start, end)
     }
 
+    #[target_feature(enable = "sse2")]
+    #[inline]
+    unsafe fn count_raw_sse2(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        self.sse2.count_raw(start, end)
+    }
+
     /// Execute a search using AVX2 vectors and routines.
     ///
     /// # Safety
@@ -1214,6 +1292,16 @@ impl Three {
         end: *const u8,
     ) -> Option<*const u8> {
         self.avx2.rfind_raw(start, end)
+    }
+
+    #[target_feature(enable = "avx2")]
+    #[inline]
+    unsafe fn count_raw_avx2(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        self.avx2.count_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle bytes in the

@@ -337,3 +337,45 @@ pub(crate) unsafe fn count_raw(
         n1
     )
 }
+
+/// Count all bytes matching either needle, using raw pointers.
+#[inline(always)]
+pub(crate) unsafe fn count2_raw(
+    n1: u8,
+    n2: u8,
+    start: *const u8,
+    end: *const u8,
+) -> usize {
+    unsafe_ifunc!(
+        Two,
+        count_raw,
+        unsafe fn(u8, u8, *const u8, *const u8) -> usize,
+        usize,
+        start,
+        end,
+        n1,
+        n2
+    )
+}
+
+/// Count all bytes matching any needle, using raw pointers.
+#[inline(always)]
+pub(crate) unsafe fn count3_raw(
+    n1: u8,
+    n2: u8,
+    n3: u8,
+    start: *const u8,
+    end: *const u8,
+) -> usize {
+    unsafe_ifunc!(
+        Three,
+        count_raw,
+        unsafe fn(u8, u8, u8, *const u8, *const u8) -> usize,
+        usize,
+        start,
+        end,
+        n1,
+        n2,
+        n3
+    )
+}

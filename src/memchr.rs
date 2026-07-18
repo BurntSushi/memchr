@@ -397,6 +397,15 @@ impl<'h> Iterator for Memchr2<'h> {
     }
 
     #[inline]
+    fn count(self) -> usize {
+        self.it.count(|s, e| {
+            // SAFETY: We rely on our generic iterator to return valid start
+            // and end pointers.
+            unsafe { count2_raw(self.needle1, self.needle2, s, e) }
+        })
+    }
+
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         self.it.size_hint()
     }
@@ -471,6 +480,17 @@ impl<'h> Iterator for Memchr3<'h> {
                 memchr3_raw(self.needle1, self.needle2, self.needle3, s, e)
             })
         }
+    }
+
+    #[inline]
+    fn count(self) -> usize {
+        self.it.count(|s, e| {
+            // SAFETY: We rely on our generic iterator to return valid start
+            // and end pointers.
+            unsafe {
+                count3_raw(self.needle1, self.needle2, self.needle3, s, e)
+            }
+        })
     }
 
     #[inline]
@@ -750,6 +770,75 @@ unsafe fn count_raw(needle: u8, start: *const u8, end: *const u8) -> usize {
     }
 }
 
+/// Count matches for two needles using raw pointers.
+#[inline]
+unsafe fn count2_raw(
+    needle1: u8,
+    needle2: u8,
+    start: *const u8,
+    end: *const u8,
+) -> usize {
+    #[cfg(target_arch = "x86_64")]
+    {
+        crate::arch::x86_64::memchr::count2_raw(needle1, needle2, start, end)
+    }
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+    {
+        crate::arch::wasm32::memchr::count2_raw(needle1, needle2, start, end)
+    }
+    #[cfg(target_arch = "aarch64")]
+    {
+        crate::arch::aarch64::memchr::count2_raw(needle1, needle2, start, end)
+    }
+    #[cfg(not(any(
+        target_arch = "x86_64",
+        all(target_arch = "wasm32", target_feature = "simd128"),
+        target_arch = "aarch64"
+    )))]
+    {
+        crate::arch::all::memchr::Two::new(needle1, needle2)
+            .count_raw(start, end)
+    }
+}
+
+/// Count matches for three needles using raw pointers.
+#[inline]
+unsafe fn count3_raw(
+    needle1: u8,
+    needle2: u8,
+    needle3: u8,
+    start: *const u8,
+    end: *const u8,
+) -> usize {
+    #[cfg(target_arch = "x86_64")]
+    {
+        crate::arch::x86_64::memchr::count3_raw(
+            needle1, needle2, needle3, start, end,
+        )
+    }
+    #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
+    {
+        crate::arch::wasm32::memchr::count3_raw(
+            needle1, needle2, needle3, start, end,
+        )
+    }
+    #[cfg(target_arch = "aarch64")]
+    {
+        crate::arch::aarch64::memchr::count3_raw(
+            needle1, needle2, needle3, start, end,
+        )
+    }
+    #[cfg(not(any(
+        target_arch = "x86_64",
+        all(target_arch = "wasm32", target_feature = "simd128"),
+        target_arch = "aarch64"
+    )))]
+    {
+        crate::arch::all::memchr::Three::new(needle1, needle2, needle3)
+            .count_raw(start, end)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -838,6 +927,15 @@ mod tests {
     }
 
     #[test]
+    fn count2_iter() {
+        crate::tests::memchr::Runner::new(2).count_iter(|haystack, needles| {
+            let n1 = needles.first().copied()?;
+            let n2 = needles.get(1).copied()?;
+            Some(memchr2_iter(n1, n2, haystack).count())
+        })
+    }
+
+    #[test]
     fn forward3_iter() {
         crate::tests::memchr::Runner::new(3).forward_iter(
             |haystack, needles| {
@@ -883,6 +981,37 @@ mod tests {
                 Some(memrchr3(n1, n2, n3, haystack))
             },
         )
+    }
+
+    #[test]
+    fn count3_iter() {
+        crate::tests::memchr::Runner::new(3).count_iter(|haystack, needles| {
+            let n1 = needles.first().copied()?;
+            let n2 = needles.get(1).copied()?;
+            let n3 = needles.get(2).copied()?;
+            Some(memchr3_iter(n1, n2, n3, haystack).count())
+        })
+    }
+
+    #[test]
+    fn count_multi_duplicate_needles() {
+        for len in 0..=515 {
+            let haystack = alloc::vec![b'a'; len];
+            assert_eq!(len, memchr2_iter(b'a', b'a', &haystack).count());
+            assert_eq!(len, memchr3_iter(b'a', b'a', b'a', &haystack).count());
+            assert_eq!(len, memchr3_iter(b'a', b'a', b'z', &haystack).count());
+        }
+    }
+
+    #[test]
+    fn count_multi_after_iteration_started() {
+        let mut two = memchr2_iter(b'a', b'b', b"abca");
+        assert_eq!(Some(0), two.next());
+        assert_eq!(2, two.count());
+
+        let mut three = memchr3_iter(b'a', b'b', b'c', b"abcda");
+        assert_eq!(Some(0), three.next());
+        assert_eq!(3, three.count());
     }
 
     // Prior to memchr 2.6, the memchr iterators both implemented Send and
