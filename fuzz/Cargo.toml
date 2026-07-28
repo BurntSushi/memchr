@@ -4,7 +4,6 @@ cargo-features = ['named-profiles']
 publish = false
 name = "memchr-fuzz"
 version = "0.0.0"
-authors = ["Andrew Gallant <jamslam@gmail.com>"]
 edition = "2018"
 
 [package.metadata]
