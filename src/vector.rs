@@ -22,11 +22,13 @@ pub(crate) trait Vector: Copy + core::fmt::Debug {
     /// correctly aligned to read vector values.
     const ALIGN: usize;
 
-    /// The type of the value returned by `Vector::movemask`.
+    /// The type of the value returned by `Vector::cmpeq`.
     ///
-    /// This supports abstracting over the specific representation used in
-    /// order to accommodate different representations in different ISAs.
-    type Mask: MoveMask;
+    /// This supports abstracting over comparisons. For SSE2 and AVX2,
+    /// comparisons return vectors. But in AVX-512, comparisons return scalar
+    /// masks directly. The latter avoids the need for a separate `movemask`
+    /// operation.
+    type Eq: CmpEq;
 
     /// Create a vector with 8-bit lanes with the given byte repeated into each
     /// lane.
@@ -50,14 +52,26 @@ pub(crate) trait Vector: Copy + core::fmt::Debug {
     /// `data`.
     unsafe fn load_unaligned(data: *const u8) -> Self;
 
+    /// _mm_cmpeq_epi8 or _mm256_cmpeq_epi8
+    unsafe fn cmpeq(self, vector2: Self) -> Self::Eq;
+}
+
+pub(crate) trait CmpEq: Copy + core::fmt::Debug {
+    /// The type of the value returned by `CmpEq::movemask`.
+    ///
+    /// This supports abstracting over the specific representation used in
+    /// order to accommodate different representations in different ISAs.
+    type Mask: MoveMask;
+
     /// _mm_movemask_epi8 or _mm256_movemask_epi8
     unsafe fn movemask(self) -> Self::Mask;
-    /// _mm_cmpeq_epi8 or _mm256_cmpeq_epi8
-    unsafe fn cmpeq(self, vector2: Self) -> Self;
+
     /// _mm_and_si128 or _mm256_and_si256
     unsafe fn and(self, vector2: Self) -> Self;
+
     /// _mm_or or _mm256_or_si256
     unsafe fn or(self, vector2: Self) -> Self;
+
     /// Returns true if and only if `Self::movemask` would return a mask that
     /// contains at least one non-zero bit.
     unsafe fn movemask_will_have_non_zero(self) -> bool {
@@ -195,13 +209,13 @@ impl MoveMask for SensibleMoveMask {
 mod x86sse2 {
     use core::arch::x86_64::*;
 
-    use super::{SensibleMoveMask, Vector};
+    use super::{CmpEq, SensibleMoveMask, Vector};
 
     impl Vector for __m128i {
         const BYTES: usize = 16;
         const ALIGN: usize = Self::BYTES - 1;
 
-        type Mask = SensibleMoveMask;
+        type Eq = __m128i;
 
         #[inline(always)]
         unsafe fn splat(byte: u8) -> __m128i {
@@ -219,13 +233,17 @@ mod x86sse2 {
         }
 
         #[inline(always)]
-        unsafe fn movemask(self) -> SensibleMoveMask {
-            SensibleMoveMask(_mm_movemask_epi8(self) as u32)
-        }
-
-        #[inline(always)]
         unsafe fn cmpeq(self, vector2: Self) -> __m128i {
             _mm_cmpeq_epi8(self, vector2)
+        }
+    }
+
+    impl CmpEq for __m128i {
+        type Mask = SensibleMoveMask;
+
+        #[inline(always)]
+        unsafe fn movemask(self) -> SensibleMoveMask {
+            SensibleMoveMask(_mm_movemask_epi8(self) as u32)
         }
 
         #[inline(always)]
@@ -244,13 +262,13 @@ mod x86sse2 {
 mod x86avx2 {
     use core::arch::x86_64::*;
 
-    use super::{SensibleMoveMask, Vector};
+    use super::{CmpEq, SensibleMoveMask, Vector};
 
     impl Vector for __m256i {
         const BYTES: usize = 32;
         const ALIGN: usize = Self::BYTES - 1;
 
-        type Mask = SensibleMoveMask;
+        type Eq = __m256i;
 
         #[inline(always)]
         unsafe fn splat(byte: u8) -> __m256i {
@@ -268,13 +286,17 @@ mod x86avx2 {
         }
 
         #[inline(always)]
-        unsafe fn movemask(self) -> SensibleMoveMask {
-            SensibleMoveMask(_mm256_movemask_epi8(self) as u32)
-        }
-
-        #[inline(always)]
         unsafe fn cmpeq(self, vector2: Self) -> __m256i {
             _mm256_cmpeq_epi8(self, vector2)
+        }
+    }
+
+    impl CmpEq for __m256i {
+        type Mask = SensibleMoveMask;
+
+        #[inline(always)]
+        unsafe fn movemask(self) -> SensibleMoveMask {
+            SensibleMoveMask(_mm256_movemask_epi8(self) as u32)
         }
 
         #[inline(always)]
@@ -293,13 +315,13 @@ mod x86avx2 {
 mod aarch64neon {
     use core::arch::aarch64::*;
 
-    use super::{MoveMask, Vector};
+    use super::{CmpEq, MoveMask, Vector};
 
     impl Vector for uint8x16_t {
         const BYTES: usize = 16;
         const ALIGN: usize = Self::BYTES - 1;
 
-        type Mask = NeonMoveMask;
+        type Eq = uint8x16_t;
 
         #[inline(always)]
         unsafe fn splat(byte: u8) -> uint8x16_t {
@@ -317,6 +339,15 @@ mod aarch64neon {
         unsafe fn load_unaligned(data: *const u8) -> uint8x16_t {
             vld1q_u8(data)
         }
+
+        #[inline(always)]
+        unsafe fn cmpeq(self, vector2: Self) -> uint8x16_t {
+            vceqq_u8(self, vector2)
+        }
+    }
+
+    impl CmpEq for uint8x16_t {
+        type Mask = NeonMoveMask;
 
         #[inline(always)]
         #[cfg(target_endian = "little")]
@@ -338,11 +369,6 @@ mod aarch64neon {
             // Use `swap_bytes` to swap the endianness of the 64-bit output.
             let scalar64 = vget_lane_u64(asu64, 0).swap_bytes();
             NeonMoveMask(scalar64 & 0x8888888888888888)
-        }
-
-        #[inline(always)]
-        unsafe fn cmpeq(self, vector2: Self) -> uint8x16_t {
-            vceqq_u8(self, vector2)
         }
 
         #[inline(always)]
@@ -468,13 +494,13 @@ mod aarch64neon {
 mod wasm_simd128 {
     use core::arch::wasm32::*;
 
-    use super::{SensibleMoveMask, Vector};
+    use super::{CmpEq, SensibleMoveMask, Vector};
 
     impl Vector for v128 {
         const BYTES: usize = 16;
         const ALIGN: usize = Self::BYTES - 1;
 
-        type Mask = SensibleMoveMask;
+        type Eq = v128;
 
         #[inline(always)]
         unsafe fn splat(byte: u8) -> v128 {
@@ -492,13 +518,17 @@ mod wasm_simd128 {
         }
 
         #[inline(always)]
-        unsafe fn movemask(self) -> SensibleMoveMask {
-            SensibleMoveMask(u8x16_bitmask(self).into())
-        }
-
-        #[inline(always)]
         unsafe fn cmpeq(self, vector2: Self) -> v128 {
             u8x16_eq(self, vector2)
+        }
+    }
+
+    impl CmpEq for v128 {
+        type Mask = SensibleMoveMask;
+
+        #[inline(always)]
+        unsafe fn movemask(self) -> SensibleMoveMask {
+            SensibleMoveMask(u8x16_bitmask(self).into())
         }
 
         #[inline(always)]

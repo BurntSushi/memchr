@@ -11,7 +11,7 @@ frequencies to heuristically select the pair of bytes to search for.
 use crate::{
     arch::all::{is_equal_raw, packedpair::Pair},
     ext::Pointer,
-    vector::{MoveMask, Vector},
+    vector::{CmpEq, MoveMask, Vector},
 };
 
 /// A generic architecture dependent "packed pair" finder.
@@ -89,7 +89,7 @@ impl<V: Vector> Finder<V> {
             haystack.len(),
         );
 
-        let all = V::Mask::all_zeros_except_least_significant(0);
+        let all = <<V as Vector>::Eq as CmpEq>::Mask::all_zeros_except_least_significant(0);
         let start = haystack.as_ptr();
         let end = start.add(haystack.len());
         let max = end.sub(self.min_haystack_len);
@@ -139,7 +139,7 @@ impl<V: Vector> Finder<V> {
             // significant bits, where N=overlap. This way, any matches that
             // occur in find_in_chunk within the overlap are automatically
             // ignored.
-            let mask = V::Mask::all_zeros_except_least_significant(overlap);
+            let mask = <<V as Vector>::Eq as CmpEq>::Mask::all_zeros_except_least_significant(overlap);
             cur = max;
             let m = self.find_in_chunk(needle, cur, end, mask);
             if let Some(chunki) = m {
@@ -231,7 +231,7 @@ impl<V: Vector> Finder<V> {
         needle: &[u8],
         cur: *const u8,
         end: *const u8,
-        mask: V::Mask,
+        mask: <<V as Vector>::Eq as CmpEq>::Mask,
     ) -> Option<usize> {
         let index1 = usize::from(self.pair.index1());
         let index2 = usize::from(self.pair.index2());

@@ -92,7 +92,7 @@ Generic crate-internal routines for the `memchr` family of functions.
 
 use crate::{
     ext::Pointer,
-    vector::{MoveMask, Vector},
+    vector::{CmpEq, MoveMask, Vector},
 };
 
 /// Finds all occurrences of a single byte in a haystack.
@@ -151,7 +151,7 @@ impl<V: Vector> One<V> {
         // bigger than 32 bits. Overall unclear until there's a use case.
         debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
 
-        let topos = V::Mask::first_offset;
+        let topos = <<V as Vector>::Eq as CmpEq>::Mask::first_offset;
         let len = end.distance(start);
         debug_assert!(
             len >= V::BYTES,
@@ -262,7 +262,7 @@ impl<V: Vector> One<V> {
         // bigger than 32 bits. Overall unclear until there's a use case.
         debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
 
-        let topos = V::Mask::last_offset;
+        let topos = <<V as Vector>::Eq as CmpEq>::Mask::last_offset;
         let len = end.distance(start);
         debug_assert!(
             len >= V::BYTES,
@@ -416,7 +416,7 @@ impl<V: Vector> One<V> {
     unsafe fn search_chunk(
         &self,
         cur: *const u8,
-        mask_to_offset: impl Fn(V::Mask) -> usize,
+        mask_to_offset: impl Fn(<<V as Vector>::Eq as CmpEq>::Mask) -> usize,
     ) -> Option<*const u8> {
         let chunk = V::load_unaligned(cur);
         let mask = self.v1.cmpeq(chunk).movemask();
@@ -501,7 +501,7 @@ impl<V: Vector> Two<V> {
         // bigger than 32 bits. Overall unclear until there's a use case.
         debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
 
-        let topos = V::Mask::first_offset;
+        let topos = <<V as Vector>::Eq as CmpEq>::Mask::first_offset;
         let len = end.distance(start);
         debug_assert!(
             len >= V::BYTES,
@@ -600,7 +600,7 @@ impl<V: Vector> Two<V> {
         // bigger than 32 bits. Overall unclear until there's a use case.
         debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
 
-        let topos = V::Mask::last_offset;
+        let topos = <<V as Vector>::Eq as CmpEq>::Mask::last_offset;
         let len = end.distance(start);
         debug_assert!(
             len >= V::BYTES,
@@ -670,7 +670,7 @@ impl<V: Vector> Two<V> {
     unsafe fn search_chunk(
         &self,
         cur: *const u8,
-        mask_to_offset: impl Fn(V::Mask) -> usize,
+        mask_to_offset: impl Fn(<<V as Vector>::Eq as CmpEq>::Mask) -> usize,
     ) -> Option<*const u8> {
         let chunk = V::load_unaligned(cur);
         let eq1 = self.v1.cmpeq(chunk);
@@ -773,7 +773,7 @@ impl<V: Vector> Three<V> {
         // bigger than 32 bits. Overall unclear until there's a use case.
         debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
 
-        let topos = V::Mask::first_offset;
+        let topos = <<V as Vector>::Eq as CmpEq>::Mask::first_offset;
         let len = end.distance(start);
         debug_assert!(
             len >= V::BYTES,
@@ -882,7 +882,7 @@ impl<V: Vector> Three<V> {
         // bigger than 32 bits. Overall unclear until there's a use case.
         debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
 
-        let topos = V::Mask::last_offset;
+        let topos = <<V as Vector>::Eq as CmpEq>::Mask::last_offset;
         let len = end.distance(start);
         debug_assert!(
             len >= V::BYTES,
@@ -962,7 +962,7 @@ impl<V: Vector> Three<V> {
     unsafe fn search_chunk(
         &self,
         cur: *const u8,
-        mask_to_offset: impl Fn(V::Mask) -> usize,
+        mask_to_offset: impl Fn(<<V as Vector>::Eq as CmpEq>::Mask) -> usize,
     ) -> Option<*const u8> {
         let chunk = V::load_unaligned(cur);
         let eq1 = self.v1.cmpeq(chunk);
