@@ -128,9 +128,11 @@ pub(crate) trait MoveMask: Copy + core::fmt::Debug {
 ///
 /// We call this "sensible" because this is what we get using native sse/avx
 /// movemask instructions. But neon has no such native equivalent.
+#[cfg(not(target_arch = "aarch64"))]
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct SensibleMoveMask(u32);
 
+#[cfg(not(target_arch = "aarch64"))]
 impl SensibleMoveMask {
     /// Get the mask in a form suitable for computing offsets.
     ///
@@ -149,6 +151,7 @@ impl SensibleMoveMask {
     }
 }
 
+#[cfg(not(target_arch = "aarch64"))]
 impl MoveMask for SensibleMoveMask {
     #[inline(always)]
     fn all_zeros_except_least_significant(n: usize) -> SensibleMoveMask {
