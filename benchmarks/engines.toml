@@ -872,3 +872,26 @@
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
+
+# Engines based on the `quick-strings` Rust crate.
+#
+# Note that this crate only supports "does the haystack match or not." It does
+# not report offsets at which a match occurs.
+#
+# Ref: https://github.com/samuelcolvin/quick-strings
+
+[[engine]]
+  name = "rust/quick-strings/memmem/oneshot"
+  cwd = "./engines/quick-strings"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
