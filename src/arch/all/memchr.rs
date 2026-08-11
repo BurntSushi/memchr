@@ -533,6 +533,25 @@ impl Two {
         generic::rev_byte_by_byte(start, cur, confirm)
     }
 
+    /// Counts all occurrences of either needle in the given pointer range.
+    ///
+    /// # Safety
+    ///
+    /// The pointers must satisfy the requirements documented on
+    /// [`Two::find_raw`].
+    #[allow(dead_code)]
+    #[inline]
+    pub(crate) unsafe fn count_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        if start >= end {
+            return 0;
+        }
+        generic::count_byte_by_byte(start, end, |b| self.confirm(b))
+    }
+
     /// Returns an iterator over all occurrences of one of the needle bytes in
     /// the given haystack.
     ///
@@ -797,6 +816,25 @@ impl Three {
         generic::rev_byte_by_byte(start, cur, confirm)
     }
 
+    /// Counts all occurrences of any needle in the given pointer range.
+    ///
+    /// # Safety
+    ///
+    /// The pointers must satisfy the requirements documented on
+    /// [`Three::find_raw`].
+    #[allow(dead_code)]
+    #[inline]
+    pub(crate) unsafe fn count_raw(
+        &self,
+        start: *const u8,
+        end: *const u8,
+    ) -> usize {
+        if start >= end {
+            return 0;
+        }
+        generic::count_byte_by_byte(start, end, |b| self.confirm(b))
+    }
+
     /// Returns an iterator over all occurrences of one of the needle bytes in
     /// the given haystack.
     ///
@@ -922,6 +960,31 @@ mod tests {
     fn count_one() {
         crate::tests::memchr::Runner::new(1).count_iter(|haystack, needles| {
             Some(One::new(needles[0]).iter(haystack).count())
+        })
+    }
+
+    #[test]
+    fn count_two() {
+        crate::tests::memchr::Runner::new(2).count_iter(|haystack, needles| {
+            let n1 = needles.first().copied()?;
+            let n2 = needles.get(1).copied()?;
+            let finder = Two::new(n1, n2);
+            let start = haystack.as_ptr();
+            let end = unsafe { start.add(haystack.len()) };
+            Some(unsafe { finder.count_raw(start, end) })
+        })
+    }
+
+    #[test]
+    fn count_three() {
+        crate::tests::memchr::Runner::new(3).count_iter(|haystack, needles| {
+            let n1 = needles.first().copied()?;
+            let n2 = needles.get(1).copied()?;
+            let n3 = needles.get(2).copied()?;
+            let finder = Three::new(n1, n2, n3);
+            let start = haystack.as_ptr();
+            let end = unsafe { start.add(haystack.len()) };
+            Some(unsafe { finder.count_raw(start, end) })
         })
     }
 

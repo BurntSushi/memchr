@@ -321,6 +321,22 @@
     args = ["clean"]
 
 [[engine]]
+  name = "rust/memchr/memchr2/onlycount"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
   name = "rust/memchr/memchr2/fallback"
   cwd = "./engines/rust-memchr"
   [engine.version]
@@ -361,6 +377,22 @@
   [engine.run]
     bin = "./target/release/main"
     args = ["memchr3"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr3/onlycount"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3-onlycount"]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]
