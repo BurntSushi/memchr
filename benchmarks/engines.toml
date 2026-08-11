@@ -287,6 +287,22 @@
   [[engine.clean]]
     bin = "cargo"
     args = ["clean"]
+    
+[[engine]]
+  name = "rust/memchr/memchr/fallback/onlycount"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-fallback-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
 
 [[engine]]
   name = "rust/memchr/memchr/naive"
