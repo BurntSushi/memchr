@@ -250,4 +250,31 @@ mod tests {
         let long_needle = alloc::vec![b'X'; haystack.len() + 100];
         let _ = finder.find(&haystack, &long_needle);
     }
+
+    #[test]
+    fn regression_undefined_behavior_2() {
+        let construct_needle: &[u8] = b"ab";
+        let pair = Pair::new(construct_needle).unwrap();
+        let Some(finder) = Finder::with_pair(construct_needle, pair) else {
+            return;
+        };
+        let mhl = finder.min_haystack_len();
+        let haystack_len = mhl + 5; // e.g., 22
+        let mut haystack = alloc::vec![0; haystack_len];
+        haystack[0] = b'a';
+        haystack[1] = b'b';
+        for i in 2..haystack_len {
+            haystack[i] = (i % 26) as u8 + b'c';
+        }
+
+        let long_needle_len = haystack_len + 100;
+        let mut long_needle = alloc::vec![0; long_needle_len];
+        long_needle[0..haystack_len].copy_from_slice(&haystack);
+        for i in haystack_len..long_needle_len {
+            long_needle[i] = b'X';
+        }
+
+        let result = finder.find(&haystack, &long_needle);
+        assert_eq!(result, None);
+    }
 }
