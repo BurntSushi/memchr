@@ -70,14 +70,7 @@ impl One {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(target_feature = "simd128")]
-        {
-            true
-        }
-        #[cfg(not(target_feature = "simd128"))]
-        {
-            false
-        }
+        cfg!(target_feature = "simd128")
     }
 
     /// Return the first occurrence of one of the needle bytes in the given
@@ -429,14 +422,7 @@ impl Two {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(target_feature = "simd128")]
-        {
-            true
-        }
-        #[cfg(not(target_feature = "simd128"))]
-        {
-            false
-        }
+        cfg!(target_feature = "simd128")
     }
 
     /// Return the first occurrence of one of the needle bytes in the given
@@ -710,14 +696,7 @@ impl Three {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(target_feature = "simd128")]
-        {
-            true
-        }
-        #[cfg(not(target_feature = "simd128"))]
-        {
-            false
-        }
+        cfg!(target_feature = "simd128")
     }
 
     /// Return the first occurrence of one of the needle bytes in the given

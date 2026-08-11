@@ -81,14 +81,7 @@ impl Finder {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(not(target_feature = "sse2"))]
-        {
-            false
-        }
-        #[cfg(target_feature = "sse2")]
-        {
-            true
-        }
+        cfg!(target_feature = "sse2")
     }
 
     /// Execute a search using SSE2 vectors and routines.
