@@ -76,3 +76,4 @@ debug = true
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--generate-link-to-definition"]
+targets = ["x86_64-unknown-linux-gnu", "i686-unknown-linux-gnu", "aarch64-unknown-linux-gnu", "powerpc64-unknown-linux-gnu", "s390x-unknown-linux-gnu", "wasm32-wasip1"]
