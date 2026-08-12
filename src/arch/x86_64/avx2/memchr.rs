@@ -27,9 +27,9 @@ use crate::{arch::generic::memchr as generic, ext::Pointer, vector::Vector};
 /// Finds all occurrences of a single byte in a haystack.
 #[derive(Clone, Copy, Debug)]
 pub struct One {
-    /// Used for haystacks less than 32 bytes.
+    /// Used for haystacks smaller than 32 bytes.
     sse2: generic::One<__m128i>,
-    /// Used for haystacks bigger than 32 bytes.
+    /// Used for haystacks of 32 bytes or more.
     avx2: generic::One<__m256i>,
 }
 

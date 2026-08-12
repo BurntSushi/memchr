@@ -129,7 +129,7 @@ pub(crate) trait MoveMask: Copy + core::fmt::Debug {
 /// We call this "sensible" because this is what we get using native sse/avx
 /// movemask instructions. But neon has no such native equivalent.
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct SensibleMoveMask(u32);
+pub(crate) struct SensibleMoveMask(u64);
 
 impl SensibleMoveMask {
     /// Get the mask in a form suitable for computing offsets.
@@ -137,7 +137,7 @@ impl SensibleMoveMask {
     /// Basically, this normalizes to little endian. On big endian, this swaps
     /// the bytes.
     #[inline(always)]
-    fn get_for_offset(self) -> u32 {
+    fn get_for_offset(self) -> u64 {
         #[cfg(target_endian = "big")]
         {
             self.0.swap_bytes()
@@ -152,8 +152,8 @@ impl SensibleMoveMask {
 impl MoveMask for SensibleMoveMask {
     #[inline(always)]
     fn all_zeros_except_least_significant(n: usize) -> SensibleMoveMask {
-        debug_assert!(n < 32);
-        SensibleMoveMask(!((1 << n) - 1))
+        debug_assert!(n < 64);
+        SensibleMoveMask(!((1u64 << n) - 1))
     }
 
     #[inline(always)]
@@ -199,9 +199,9 @@ impl MoveMask for SensibleMoveMask {
         // at a higher address. That means the most significant bit that is set
         // corresponds to the position of our last matching byte. The position
         // from the end of the mask is therefore the number of leading zeros
-        // in a 32 bit integer, and the position from the start of the mask is
-        // therefore 32 - (leading zeros) - 1.
-        32 - self.get_for_offset().leading_zeros() as usize - 1
+        // in a 64 bit integer, and the position from the start of the mask is
+        // therefore 64 - (leading zeros) - 1.
+        64 - self.get_for_offset().leading_zeros() as usize - 1
     }
 }
 
@@ -233,7 +233,7 @@ mod x86sse2 {
         }
 
         #[inline(always)]
-        unsafe fn cmpeq(self, vector2: Self) -> __m128i {
+        unsafe fn cmpeq(self, vector2: Self) -> Self::Eq {
             _mm_cmpeq_epi8(self, vector2)
         }
     }
@@ -243,7 +243,7 @@ mod x86sse2 {
 
         #[inline(always)]
         unsafe fn movemask(self) -> SensibleMoveMask {
-            SensibleMoveMask(_mm_movemask_epi8(self) as u32)
+            SensibleMoveMask(_mm_movemask_epi8(self) as u32 as u64)
         }
 
         #[inline(always)]
@@ -286,7 +286,7 @@ mod x86avx2 {
         }
 
         #[inline(always)]
-        unsafe fn cmpeq(self, vector2: Self) -> __m256i {
+        unsafe fn cmpeq(self, vector2: Self) -> Self::Eq {
             _mm256_cmpeq_epi8(self, vector2)
         }
     }
@@ -296,7 +296,7 @@ mod x86avx2 {
 
         #[inline(always)]
         unsafe fn movemask(self) -> SensibleMoveMask {
-            SensibleMoveMask(_mm256_movemask_epi8(self) as u32)
+            SensibleMoveMask(_mm256_movemask_epi8(self) as u32 as u64)
         }
 
         #[inline(always)]
@@ -307,6 +307,59 @@ mod x86avx2 {
         #[inline(always)]
         unsafe fn or(self, vector2: Self) -> __m256i {
             _mm256_or_si256(self, vector2)
+        }
+    }
+}
+
+#[cfg(target_arch = "x86_64")]
+mod x86avx512 {
+    use core::arch::x86_64::*;
+
+    use super::{CmpEq, SensibleMoveMask, Vector};
+
+    impl Vector for __m512i {
+        const BYTES: usize = 64;
+        const ALIGN: usize = Self::BYTES - 1;
+
+        type Eq = __mmask64;
+
+        #[inline(always)]
+        unsafe fn splat(byte: u8) -> __m512i {
+            _mm512_set1_epi8(byte as i8)
+        }
+
+        #[inline(always)]
+        unsafe fn load_aligned(data: *const u8) -> __m512i {
+            _mm512_load_si512(data as *const __m512i)
+        }
+
+        #[inline(always)]
+        unsafe fn load_unaligned(data: *const u8) -> __m512i {
+            _mm512_loadu_si512(data as *const __m512i)
+        }
+
+        #[inline(always)]
+        unsafe fn cmpeq(self, vector2: Self) -> Self::Eq {
+            _mm512_cmpeq_epi8_mask(self, vector2)
+        }
+    }
+
+    impl CmpEq for __mmask64 {
+        type Mask = SensibleMoveMask;
+
+        #[inline(always)]
+        unsafe fn movemask(self) -> SensibleMoveMask {
+            SensibleMoveMask(self)
+        }
+
+        #[inline(always)]
+        unsafe fn and(self, vector2: Self) -> __mmask64 {
+            _kand_mask64(self, vector2)
+        }
+
+        #[inline(always)]
+        unsafe fn or(self, vector2: Self) -> __mmask64 {
+            _kor_mask64(self, vector2)
         }
     }
 }
