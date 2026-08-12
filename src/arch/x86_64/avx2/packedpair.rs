@@ -85,27 +85,21 @@ impl Finder {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
-        #[cfg(not(target_feature = "sse2"))]
+        if !cfg!(target_feature = "sse2") {
+            return false;
+        }
+
+        if cfg!(target_feature = "avx2") {
+            return true;
+        }
+
+        #[cfg(feature = "std")]
+        {
+            std::is_x86_feature_detected!("avx2")
+        }
+        #[cfg(not(feature = "std"))]
         {
             false
-        }
-        #[cfg(target_feature = "sse2")]
-        {
-            #[cfg(target_feature = "avx2")]
-            {
-                true
-            }
-            #[cfg(not(target_feature = "avx2"))]
-            {
-                #[cfg(feature = "std")]
-                {
-                    std::is_x86_feature_detected!("avx2")
-                }
-                #[cfg(not(feature = "std"))]
-                {
-                    false
-                }
-            }
         }
     }
 
@@ -116,7 +110,7 @@ impl Finder {
     /// When `haystack.len()` is less than [`Finder::min_haystack_len`].
     #[inline]
     pub fn find(&self, haystack: &[u8], needle: &[u8]) -> Option<usize> {
-        // SAFETY: Building a `Finder` means it's safe to call 'sse2' routines.
+        // SAFETY: Building a `Finder` means it's safe to call 'avx2' routines.
         unsafe { self.find_impl(haystack, needle) }
     }
 
@@ -130,7 +124,7 @@ impl Finder {
     /// When `haystack.len()` is less than [`Finder::min_haystack_len`].
     #[inline]
     pub fn find_prefilter(&self, haystack: &[u8]) -> Option<usize> {
-        // SAFETY: Building a `Finder` means it's safe to call 'sse2' routines.
+        // SAFETY: Building a `Finder` means it's safe to call 'avx2' routines.
         unsafe { self.find_prefilter_impl(haystack) }
     }
 

@@ -145,11 +145,7 @@ impl<V: Vector> One<V> {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        // If we want to support vectors bigger than 256 bits, we probably
-        // need to move up to using a u64 for the masks used below. Currently
-        // they are 32 bits, which means we're SOL for vectors that need masks
-        // bigger than 32 bits. Overall unclear until there's a use case.
-        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+        debug_assert!(V::BYTES <= 64, "vector cannot be bigger than 64 bytes");
 
         let topos = <<V as Vector>::Eq as CmpEq>::Mask::first_offset;
         let len = end.distance(start);
@@ -256,11 +252,7 @@ impl<V: Vector> One<V> {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        // If we want to support vectors bigger than 256 bits, we probably
-        // need to move up to using a u64 for the masks used below. Currently
-        // they are 32 bits, which means we're SOL for vectors that need masks
-        // bigger than 32 bits. Overall unclear until there's a use case.
-        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+        debug_assert!(V::BYTES <= 64, "vector cannot be bigger than 32 bytes");
 
         let topos = <<V as Vector>::Eq as CmpEq>::Mask::last_offset;
         let len = end.distance(start);
@@ -351,7 +343,7 @@ impl<V: Vector> One<V> {
         start: *const u8,
         end: *const u8,
     ) -> usize {
-        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+        debug_assert!(V::BYTES <= 64, "vector cannot be bigger than 64 bytes");
 
         let confirm = |b| b == self.needle1();
         let len = end.distance(start);
@@ -495,11 +487,7 @@ impl<V: Vector> Two<V> {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        // If we want to support vectors bigger than 256 bits, we probably
-        // need to move up to using a u64 for the masks used below. Currently
-        // they are 32 bits, which means we're SOL for vectors that need masks
-        // bigger than 32 bits. Overall unclear until there's a use case.
-        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+        debug_assert!(V::BYTES <= 64, "vector cannot be bigger than 32 bytes");
 
         let topos = <<V as Vector>::Eq as CmpEq>::Mask::first_offset;
         let len = end.distance(start);
@@ -594,11 +582,7 @@ impl<V: Vector> Two<V> {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        // If we want to support vectors bigger than 256 bits, we probably
-        // need to move up to using a u64 for the masks used below. Currently
-        // they are 32 bits, which means we're SOL for vectors that need masks
-        // bigger than 32 bits. Overall unclear until there's a use case.
-        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+        debug_assert!(V::BYTES <= 64, "vector cannot be bigger than 64 bytes");
 
         let topos = <<V as Vector>::Eq as CmpEq>::Mask::last_offset;
         let len = end.distance(start);
@@ -767,11 +751,7 @@ impl<V: Vector> Three<V> {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        // If we want to support vectors bigger than 256 bits, we probably
-        // need to move up to using a u64 for the masks used below. Currently
-        // they are 32 bits, which means we're SOL for vectors that need masks
-        // bigger than 32 bits. Overall unclear until there's a use case.
-        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+        debug_assert!(V::BYTES <= 64, "vector cannot be bigger than 64 bytes");
 
         let topos = <<V as Vector>::Eq as CmpEq>::Mask::first_offset;
         let len = end.distance(start);
@@ -876,11 +856,7 @@ impl<V: Vector> Three<V> {
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        // If we want to support vectors bigger than 256 bits, we probably
-        // need to move up to using a u64 for the masks used below. Currently
-        // they are 32 bits, which means we're SOL for vectors that need masks
-        // bigger than 32 bits. Overall unclear until there's a use case.
-        debug_assert!(V::BYTES <= 32, "vector cannot be bigger than 32 bytes");
+        debug_assert!(V::BYTES <= 64, "vector cannot be bigger than 64 bytes");
 
         let topos = <<V as Vector>::Eq as CmpEq>::Mask::last_offset;
         let len = end.distance(start);
