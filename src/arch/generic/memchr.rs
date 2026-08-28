@@ -367,6 +367,9 @@ impl<V: Vector> One<V> {
         // Count any matching bytes before we start our aligned loop.
         let mut count = count_byte_by_byte(start, cur, confirm);
         debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+        // Instead of a mask extraction per vector, accumulate matching bytes
+        // in the vector domain (SAD on x86) and fold to a scalar once below.
+        let mut acc = <<V as Vector>::Eq as CmpEq>::count_zero();
         if len >= Self::LOOP_SIZE {
             while cur <= end.sub(Self::LOOP_SIZE) {
                 debug_assert_eq!(0, cur.as_usize() % V::BYTES);
@@ -375,14 +378,10 @@ impl<V: Vector> One<V> {
                 let b = V::load_aligned(cur.add(1 * V::BYTES));
                 let c = V::load_aligned(cur.add(2 * V::BYTES));
                 let d = V::load_aligned(cur.add(3 * V::BYTES));
-                let eqa = self.v1.cmpeq(a);
-                let eqb = self.v1.cmpeq(b);
-                let eqc = self.v1.cmpeq(c);
-                let eqd = self.v1.cmpeq(d);
-                count += eqa.movemask().count_ones();
-                count += eqb.movemask().count_ones();
-                count += eqc.movemask().count_ones();
-                count += eqd.movemask().count_ones();
+                acc = self.v1.cmpeq(a).count_add(acc);
+                acc = self.v1.cmpeq(b).count_add(acc);
+                acc = self.v1.cmpeq(c).count_add(acc);
+                acc = self.v1.cmpeq(d).count_add(acc);
                 cur = cur.add(Self::LOOP_SIZE);
             }
         }
@@ -392,9 +391,10 @@ impl<V: Vector> One<V> {
         while cur <= end.sub(V::BYTES) {
             debug_assert!(end.distance(cur) >= V::BYTES);
             let chunk = V::load_unaligned(cur);
-            count += self.v1.cmpeq(chunk).movemask().count_ones();
+            acc = self.v1.cmpeq(chunk).count_add(acc);
             cur = cur.add(V::BYTES);
         }
+        count += <<V as Vector>::Eq as CmpEq>::count_total(acc);
         // And finally count any leftovers that weren't caught above.
         count += count_byte_by_byte(cur, end, confirm);
         count
