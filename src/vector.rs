@@ -63,6 +63,19 @@ pub(crate) trait CmpEq: Copy + core::fmt::Debug {
     /// order to accommodate different representations in different ISAs.
     type Mask: MoveMask;
 
+    /// The type of an accumulator for counting matching bytes across one or
+    /// more vectors: a vector of lane sums on x86, a scalar elsewhere.
+    type Acc: Copy + core::fmt::Debug;
+
+    /// Create an accumulator initialized to zero matches.
+    unsafe fn count_zero() -> Self::Acc;
+
+    /// Add the matches to the accumulator and return it.
+    unsafe fn count_add(self, acc: Self::Acc) -> Self::Acc;
+
+    /// Convert the accumulator into the total number of matches.
+    unsafe fn count_total(acc: Self::Acc) -> usize;
+
     /// _mm_movemask_epi8 or _mm256_movemask_epi8
     unsafe fn movemask(self) -> Self::Mask;
 
@@ -100,9 +113,6 @@ pub(crate) trait MoveMask: Copy + core::fmt::Debug {
 
     /// Returns true if and only if this mask has a a non-zero bit anywhere.
     fn has_non_zero(self) -> bool;
-
-    /// Returns the number of bits set to 1 in this mask.
-    fn count_ones(self) -> usize;
 
     /// Does a bitwise `and` operation between `self` and `other`.
     fn and(self, other: Self) -> Self;
@@ -159,11 +169,6 @@ impl MoveMask for SensibleMoveMask {
     #[inline(always)]
     fn has_non_zero(self) -> bool {
         self.0 != 0
-    }
-
-    #[inline(always)]
-    fn count_ones(self) -> usize {
-        self.0.count_ones() as usize
     }
 
     #[inline(always)]
@@ -240,6 +245,26 @@ mod x86sse2 {
 
     impl CmpEq for __m128i {
         type Mask = SensibleMoveMask;
+        type Acc = __m128i;
+
+        #[inline(always)]
+        unsafe fn count_zero() -> __m128i {
+            _mm_setzero_si128()
+        }
+
+        #[inline(always)]
+        unsafe fn count_add(self, acc: __m128i) -> __m128i {
+            // Each match adds 255 to a 64-bit lane (max 2040 per add)
+            _mm_add_epi64(acc, _mm_sad_epu8(self, _mm_setzero_si128()))
+        }
+
+        #[inline(always)]
+        unsafe fn count_total(acc: __m128i) -> usize {
+            // `_mm_extract_epi64` is SSE4.1, so use an unpack instead.
+            let hi = _mm_unpackhi_epi64(acc, _mm_setzero_si128());
+            let sum = _mm_cvtsi128_si64(acc) + _mm_cvtsi128_si64(hi);
+            usize::try_from(sum / 255).unwrap()
+        }
 
         #[inline(always)]
         unsafe fn movemask(self) -> SensibleMoveMask {
@@ -293,6 +318,31 @@ mod x86avx2 {
 
     impl CmpEq for __m256i {
         type Mask = SensibleMoveMask;
+        type Acc = __m256i;
+
+        #[inline(always)]
+        unsafe fn count_zero() -> __m256i {
+            _mm256_setzero_si256()
+        }
+
+        #[inline(always)]
+        unsafe fn count_add(self, acc: __m256i) -> __m256i {
+            // Each match adds 255 to a 64-bit lane (max 2040 per add)
+            _mm256_add_epi64(
+                acc,
+                _mm256_sad_epu8(self, _mm256_setzero_si256()),
+            )
+        }
+
+        #[inline(always)]
+        unsafe fn count_total(acc: __m256i) -> usize {
+            let lo = _mm256_castsi256_si128(acc);
+            let hi = _mm256_extracti128_si256(acc, 1);
+            let sums = _mm_add_epi64(lo, hi);
+            let hi = _mm_unpackhi_epi64(sums, _mm_setzero_si128());
+            let sum = _mm_cvtsi128_si64(sums) + _mm_cvtsi128_si64(hi);
+            usize::try_from(sum / 255).unwrap()
+        }
 
         #[inline(always)]
         unsafe fn movemask(self) -> SensibleMoveMask {
@@ -348,6 +398,22 @@ mod aarch64neon {
 
     impl CmpEq for uint8x16_t {
         type Mask = NeonMoveMask;
+        type Acc = u64;
+
+        #[inline(always)]
+        unsafe fn count_zero() -> u64 {
+            0
+        }
+
+        #[inline(always)]
+        unsafe fn count_add(self, acc: u64) -> u64 {
+            acc + u64::from(vaddlvq_u8(self))
+        }
+
+        #[inline(always)]
+        unsafe fn count_total(acc: u64) -> usize {
+            usize::try_from(acc / 255).unwrap()
+        }
 
         #[inline(always)]
         #[cfg(target_endian = "little")]
@@ -432,11 +498,6 @@ mod aarch64neon {
         #[inline(always)]
         fn has_non_zero(self) -> bool {
             self.0 != 0
-        }
-
-        #[inline(always)]
-        fn count_ones(self) -> usize {
-            self.0.count_ones() as usize
         }
 
         #[inline(always)]
@@ -525,6 +586,22 @@ mod wasm_simd128 {
 
     impl CmpEq for v128 {
         type Mask = SensibleMoveMask;
+        type Acc = u64;
+
+        #[inline(always)]
+        unsafe fn count_zero() -> u64 {
+            0
+        }
+
+        #[inline(always)]
+        unsafe fn count_add(self, acc: u64) -> u64 {
+            acc + u64::from(u8x16_bitmask(self).count_ones())
+        }
+
+        #[inline(always)]
+        unsafe fn count_total(acc: u64) -> usize {
+            usize::try_from(acc).unwrap()
+        }
 
         #[inline(always)]
         unsafe fn movemask(self) -> SensibleMoveMask {
