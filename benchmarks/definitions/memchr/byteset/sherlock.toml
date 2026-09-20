@@ -1,0 +1,25 @@
+analysis = '''
+Byte set searches for lowercase vowels and mixed-case vowels over Sherlock Holmes.
+'''
+
+[[bench]]
+model = "count-bytes"
+name = "huge-smallset5"
+regex = ['a', 'e', 'i', 'o', 'u']
+haystack = { path = "sherlock/huge.txt" }
+count = 165_302
+engines = [
+  "rust/memchr-n/byteset",
+  "rust/memchr-n/byteset/onlycount",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge-anybyte10"
+regex = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
+haystack = { path = "sherlock/huge.txt" }
+count = 170_839
+engines = [
+  "rust/memchr-n/byteset",
+  "rust/memchr-n/byteset/onlycount",
+]

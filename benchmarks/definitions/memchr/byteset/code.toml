@@ -1,0 +1,14 @@
+analysis = '''
+Inclusive digit-range search over Rust source code.
+'''
+
+[[bench]]
+model = "count-bytes"
+name = "range-digit"
+regex = '\x30\x39'
+haystack = { path = "code/rust-library.rs" }
+count = 28_928
+engines = [
+  "rust/memchr-n/range",
+  "rust/memchr-n/range/onlycount",
+]

@@ -321,6 +321,22 @@
     args = ["clean"]
 
 [[engine]]
+  name = "rust/memchr/memchr2/onlycount"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
   name = "rust/memchr/memchr2/fallback"
   cwd = "./engines/rust-memchr"
   [engine.version]
@@ -361,6 +377,22 @@
   [engine.run]
     bin = "./target/release/main"
     args = ["memchr3"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr/memchr3/onlycount"
+  cwd = "./engines/rust-memchr"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3-onlycount"]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]
@@ -866,6 +898,247 @@
   [engine.run]
     bin = "./target/release/main"
     args = ["memmem-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+# Engines based on the `memchr_n` crate, a byte set searcher built on
+# `fearless_simd`.
+#
+# The 'fallback' engines force the word-at-a-time kernels, so that they can be
+# measured on a target whose runtime SIMD level would never select them. They
+# are the counterpart of the `rust/memchr/*/fallback` engines.
+
+[[engine]]
+  name = "rust/memchr-n/memchr/oneshot"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-oneshot"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/memchr/prebuilt"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-prebuilt"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/memchr/fallback"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-fallback"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/memchr2"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/memchr2/onlycount"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/memchr2/fallback"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr2-fallback"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/memchr3"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/memchr3/onlycount"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/memchr3/fallback"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr3-fallback"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+# The byte set engines search for any byte in a set of arbitrary size. Which
+# kernel `memchr_n` picks is a function of the set itself, so the benchmark
+# definitions are what choose between the nibble shuffles and the bitset probe.
+#
+# The 'onlycount' engines use the specialized counting kernel, which tallies
+# matches without reporting where they are, like `rust/memchr/memchr/onlycount`.
+
+[[engine]]
+  name = "rust/memchr-n/memchr/onlycount"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["memchr-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/byteset"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["byteset"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/byteset/onlycount"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["byteset-onlycount"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+# The range engines take a single two byte needle, '<first><last>', and search
+# for any byte in that inclusive range.
+
+[[engine]]
+  name = "rust/memchr-n/range"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["range"]
+  [[engine.build]]
+    bin = "cargo"
+    args = ["build", "--release"]
+  [[engine.clean]]
+    bin = "cargo"
+    args = ["clean"]
+
+[[engine]]
+  name = "rust/memchr-n/range/onlycount"
+  cwd = "./engines/rust-memchr-n"
+  [engine.version]
+    bin = "./target/release/main"
+    args = ["--version"]
+  [engine.run]
+    bin = "./target/release/main"
+    args = ["range-onlycount"]
   [[engine.build]]
     bin = "cargo"
     args = ["build", "--release"]

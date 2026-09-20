@@ -5,6 +5,7 @@
     "benchmarks/engines/rust-bytecount/Cargo.toml",
     "benchmarks/engines/rust-jetscii/Cargo.toml",
     "benchmarks/engines/rust-memchr/Cargo.toml",
+    "benchmarks/engines/rust-memchr-n/Cargo.toml",
     "benchmarks/engines/rust-memchrold/Cargo.toml",
     "benchmarks/engines/rust-sliceslice/Cargo.toml",
     "benchmarks/engines/rust-std/Cargo.toml",

@@ -1,0 +1,112 @@
+analysis = '''
+One-, two-, and three-byte searches comparing runtime-dispatched APIs, forced
+SWAR implementations, and naive scans over Sherlock Holmes.
+'''
+
+[[bench]]
+model = "count-bytes"
+name = "huge-never1"
+regex = '<'
+haystack = { path = "sherlock/huge.txt" }
+count = 0
+engines = [
+  "rust/memchr/memchr/prebuilt",
+  "rust/memchr/memchr/fallback",
+  "rust/memchr/memchr/naive",
+  "rust/memchr-n/memchr/prebuilt",
+  "rust/memchr-n/memchr/fallback",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge-never2"
+regex = ['<', '>']
+haystack = { path = "sherlock/huge.txt" }
+count = 0
+engines = [
+  "rust/memchr/memchr2",
+  "rust/memchr/memchr2/onlycount",
+  "rust/memchr/memchr2/fallback",
+  "rust/memchr/memchr2/naive",
+  "rust/memchr-n/memchr2",
+  "rust/memchr-n/memchr2/onlycount",
+  "rust/memchr-n/memchr2/fallback",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge-never3"
+regex = ['<', '>', '=']
+haystack = { path = "sherlock/huge.txt" }
+count = 0
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr-n/memchr3",
+  "rust/memchr-n/memchr3/onlycount",
+  "rust/memchr-n/memchr3/fallback",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge-common1"
+regex = 'a'
+haystack = { path = "sherlock/huge.txt" }
+count = 35_301
+engines = [
+  "rust/memchr/memchr/prebuilt",
+  "rust/memchr/memchr/fallback",
+  "rust/memchr/memchr/naive",
+  "rust/memchr-n/memchr/prebuilt",
+  "rust/memchr-n/memchr/fallback",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge-common2"
+regex = ['a', 't']
+haystack = { path = "sherlock/huge.txt" }
+count = 74_569
+engines = [
+  "rust/memchr/memchr2",
+  "rust/memchr/memchr2/onlycount",
+  "rust/memchr/memchr2/fallback",
+  "rust/memchr/memchr2/naive",
+  "rust/memchr-n/memchr2",
+  "rust/memchr-n/memchr2/onlycount",
+  "rust/memchr-n/memchr2/fallback",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "huge-common3"
+regex = ['a', 't', 'o']
+haystack = { path = "sherlock/huge.txt" }
+count = 109_064
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr-n/memchr3",
+  "rust/memchr-n/memchr3/onlycount",
+  "rust/memchr-n/memchr3/fallback",
+]
+
+[[bench]]
+model = "count-bytes"
+name = "small-common3"
+regex = ['a', 't', 'o']
+haystack = { path = "sherlock/small.txt" }
+count = 117
+engines = [
+  "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
+  "rust/memchr/memchr3/fallback",
+  "rust/memchr/memchr3/naive",
+  "rust/memchr-n/memchr3",
+  "rust/memchr-n/memchr3/onlycount",
+  "rust/memchr-n/memchr3/fallback",
+]

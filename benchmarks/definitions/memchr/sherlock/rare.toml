@@ -16,6 +16,10 @@ engines = [
   "rust/memchr/memchr/naive",
   "rust/memchr/memchr/wasm32",
   "rust/memchr/memrchr",
+  "rust/memchr-n/memchr/oneshot",
+  "rust/memchr-n/memchr/prebuilt",
+  "rust/memchr-n/memchr/fallback",
+  "rust/memchr-n/memchr/onlycount",
   "rust/memchrold/memchr/oneshot",
   "rust/memchrold/memchr/prebuilt",
   "rust/memchrold/memrchr",
@@ -29,10 +33,14 @@ haystack = { path = "sherlock/huge.txt" }
 count = 426
 engines = [
   "rust/memchr/memchr2",
+  "rust/memchr/memchr2/onlycount",
   "rust/memchr/memchr2/fallback",
   "rust/memchr/memchr2/naive",
   "rust/memchr/memchr2/wasm32",
   "rust/memchr/memrchr2",
+  "rust/memchr-n/memchr2",
+  "rust/memchr-n/memchr2/onlycount",
+  "rust/memchr-n/memchr2/fallback",
   "rust/memchrold/memchr2",
   "rust/memchrold/memrchr2",
 ]
@@ -45,10 +53,14 @@ haystack = { path = "sherlock/huge.txt" }
 count = 546
 engines = [
   "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
   "rust/memchr/memchr3/fallback",
   "rust/memchr/memchr3/naive",
   "rust/memchr/memchr3/wasm32",
   "rust/memchr/memrchr3",
+  "rust/memchr-n/memchr3",
+  "rust/memchr-n/memchr3/onlycount",
+  "rust/memchr-n/memchr3/fallback",
   "rust/memchrold/memchr3",
   "rust/memchrold/memrchr3",
 ]
@@ -71,6 +83,10 @@ engines = [
   "rust/memchr/memchr/naive",
   "rust/memchr/memchr/wasm32",
   "rust/memchr/memrchr",
+  "rust/memchr-n/memchr/oneshot",
+  "rust/memchr-n/memchr/prebuilt",
+  "rust/memchr-n/memchr/fallback",
+  "rust/memchr-n/memchr/onlycount",
   "rust/memchrold/memchr/oneshot",
   "rust/memchrold/memchr/prebuilt",
   "rust/memchrold/memchr/naive",
@@ -85,10 +101,14 @@ haystack = { path = "sherlock/small.txt" }
 count = 2
 engines = [
   "rust/memchr/memchr2",
+  "rust/memchr/memchr2/onlycount",
   "rust/memchr/memchr2/fallback",
   "rust/memchr/memchr2/naive",
   "rust/memchr/memchr2/wasm32",
   "rust/memchr/memrchr2",
+  "rust/memchr-n/memchr2",
+  "rust/memchr-n/memchr2/onlycount",
+  "rust/memchr-n/memchr2/fallback",
   "rust/memchrold/memchr2",
   "rust/memchrold/memrchr2",
 ]
@@ -101,10 +121,14 @@ haystack = { path = "sherlock/small.txt" }
 count = 3
 engines = [
   "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
   "rust/memchr/memchr3/fallback",
   "rust/memchr/memchr3/naive",
   "rust/memchr/memchr3/wasm32",
   "rust/memchr/memrchr3",
+  "rust/memchr-n/memchr3",
+  "rust/memchr-n/memchr3/onlycount",
+  "rust/memchr-n/memchr3/fallback",
   "rust/memchrold/memchr3",
   "rust/memchrold/memrchr3",
 ]
@@ -127,6 +151,10 @@ engines = [
   "rust/memchr/memchr/naive",
   "rust/memchr/memchr/wasm32",
   "rust/memchr/memrchr",
+  "rust/memchr-n/memchr/oneshot",
+  "rust/memchr-n/memchr/prebuilt",
+  "rust/memchr-n/memchr/fallback",
+  "rust/memchr-n/memchr/onlycount",
   "rust/memchrold/memchr/oneshot",
   "rust/memchrold/memchr/prebuilt",
   "rust/memchrold/memchr/naive",
@@ -141,10 +169,14 @@ haystack = { path = "sherlock/tiny.txt" }
 count = 2
 engines = [
   "rust/memchr/memchr2",
+  "rust/memchr/memchr2/onlycount",
   "rust/memchr/memchr2/fallback",
   "rust/memchr/memchr2/naive",
   "rust/memchr/memchr2/wasm32",
   "rust/memchr/memrchr2",
+  "rust/memchr-n/memchr2",
+  "rust/memchr-n/memchr2/onlycount",
+  "rust/memchr-n/memchr2/fallback",
   "rust/memchrold/memchr2",
   "rust/memchrold/memrchr2",
 ]
@@ -157,10 +189,14 @@ haystack = { path = "sherlock/tiny.txt" }
 count = 3
 engines = [
   "rust/memchr/memchr3",
+  "rust/memchr/memchr3/onlycount",
   "rust/memchr/memchr3/fallback",
   "rust/memchr/memchr3/naive",
   "rust/memchr/memchr3/wasm32",
   "rust/memchr/memrchr3",
+  "rust/memchr-n/memchr3",
+  "rust/memchr-n/memchr3/onlycount",
+  "rust/memchr-n/memchr3/fallback",
   "rust/memchrold/memchr3",
   "rust/memchrold/memrchr3",
 ]
