@@ -426,7 +426,7 @@ mod aarch64neon {
         #[inline(always)]
         fn all_zeros_except_least_significant(n: usize) -> NeonMoveMask {
             debug_assert!(n < 16);
-            NeonMoveMask(!(((1 << n) << 2) - 1))
+            NeonMoveMask(!((1u64 << (n << 2)) - 1))
         }
 
         #[inline(always)]
@@ -486,6 +486,26 @@ mod aarch64neon {
             // See comment in `first_offset` above. This is basically the same,
             // but coming from the other direction.
             16 - (self.get_for_offset().leading_zeros() >> 2) as usize - 1
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn all_zeros_except_least_significant() {
+            let all_lanes = NeonMoveMask(0x8888_8888_8888_8888);
+            for n in 0..16 {
+                let mask = NeonMoveMask::all_zeros_except_least_significant(n);
+                let filtered = all_lanes.and(mask);
+                assert_eq!(
+                    filtered.first_offset(),
+                    n,
+                    "first_offset mismatch for n = {}",
+                    n
+                );
+            }
         }
     }
 }
