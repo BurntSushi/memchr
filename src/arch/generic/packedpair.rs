@@ -314,4 +314,4 @@ unsafe fn matched(start: *const u8, cur: *const u8, chunki: usize) -> usize {
 }
 
 // If you're looking for tests, those are run for each instantiation of the
-// above code. So for example, see arch::x86_64::sse2::packedpair.
+// above code. So for example, see arch::x86::sse2::packedpair.

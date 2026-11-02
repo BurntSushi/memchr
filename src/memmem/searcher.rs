@@ -8,9 +8,7 @@ use crate::arch::aarch64::neon::packedpair as neon;
 #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
 use crate::arch::wasm32::simd128::packedpair as simd128;
 #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
-use crate::arch::x86_64::{
-    avx2::packedpair as avx2, sse2::packedpair as sse2,
-};
+use crate::arch::x86::{avx2::packedpair as avx2, sse2::packedpair as sse2};
 
 /// A "meta" substring searcher.
 ///
@@ -248,9 +246,9 @@ union SearcherKind {
     two_way: twoway::Finder,
     two_way_with_prefilter: TwoWayWithPrefilter,
     #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
-    sse2: crate::arch::x86_64::sse2::packedpair::Finder,
+    sse2: crate::arch::x86::sse2::packedpair::Finder,
     #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
-    avx2: crate::arch::x86_64::avx2::packedpair::Finder,
+    avx2: crate::arch::x86::avx2::packedpair::Finder,
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     simd128: crate::arch::wasm32::simd128::packedpair::Finder,
     #[cfg(target_arch = "aarch64")]
@@ -756,9 +754,9 @@ impl core::fmt::Debug for Prefilter {
 union PrefilterKind {
     fallback: crate::arch::all::packedpair::Finder,
     #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
-    sse2: crate::arch::x86_64::sse2::packedpair::Finder,
+    sse2: crate::arch::x86::sse2::packedpair::Finder,
     #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
-    avx2: crate::arch::x86_64::avx2::packedpair::Finder,
+    avx2: crate::arch::x86::avx2::packedpair::Finder,
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     simd128: crate::arch::wasm32::simd128::packedpair::Finder,
     #[cfg(target_arch = "aarch64")]
