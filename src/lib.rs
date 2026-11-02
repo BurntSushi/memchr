@@ -131,7 +131,7 @@ implementation in the standard library, even if only for searching on UTF-8?
 The reason is that the implementation details for using SIMD in the standard
 library haven't quite been worked out yet.
 
-**NOTE:** Currently, only `x86_64`, `wasm32` and `aarch64` targets have vector
+**NOTE:** Currently, only `x86`, `wasm32` and `aarch64` targets have vector
 accelerated implementations of `memchr` (and friends) and `memmem`.
 
 # Crate features
@@ -139,9 +139,9 @@ accelerated implementations of `memchr` (and friends) and `memmem`.
 * **std** - When enabled (the default), this will permit features specific to
 the standard library. Currently, the only thing used from the standard library
 is runtime SIMD CPU feature detection. This means that this feature must be
-enabled to get AVX2 accelerated routines on `x86_64` targets without enabling
+enabled to get AVX2 accelerated routines on x86 targets without enabling
 the `avx2` feature at compile time, for example. When `std` is not enabled,
-this crate will still attempt to use SSE2 accelerated routines on `x86_64`. It
+this crate will still attempt to use SSE2 accelerated routines on x86. It
 will also use AVX2 accelerated routines when the `avx2` feature is enabled at
 compile time. In general, enable this feature if you can.
 * **alloc** - When enabled (the default), APIs in this crate requiring some
@@ -151,8 +151,8 @@ kind of allocation will become available. For example, the
 implementation. Otherwise, this crate is designed from the ground up to be
 usable in core-only contexts, so the `alloc` feature doesn't add much
 currently. Notably, disabling `std` but enabling `alloc` will **not** result
-in the use of AVX2 on `x86_64` targets unless the `avx2` feature is enabled
-at compile time. (With `std` enabled, AVX2 can be used even without the `avx2`
+in the use of AVX2 on x86 targets unless the `avx2` feature is enabled at
+compile time. (With `std` enabled, AVX2 can be used even without the `avx2`
 feature enabled at compile time by way of runtime CPU feature detection.)
 * **logging** - When enabled (disabled by default), the `log` crate is used
 to emit log messages about what kinds of `memchr` and `memmem` algorithms
@@ -176,6 +176,7 @@ Originally, this crate was literally just a safe wrapper function around the
 // live with it or sprinkle a whole mess of `cfg` annotations everywhere.
 #![cfg_attr(
     not(any(
+        all(target_arch = "x86", target_feature = "sse2"),
         all(target_arch = "x86_64", target_feature = "sse2"),
         all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64",

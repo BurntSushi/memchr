@@ -44,7 +44,7 @@ fn main() -> anyhow::Result<()> {
 // but it does not seem worth it.)
 
 fn memmem_prebuilt_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
         use sliceslice::x86::DynamicAvx2Searcher;
         anyhow::ensure!(
@@ -81,7 +81,7 @@ fn memmem_prebuilt_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
 }
 
 fn memmem_prebuilt_needles(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
         use sliceslice::x86::DynamicAvx2Searcher;
 
@@ -142,7 +142,7 @@ fn memmem_prebuilt_needles(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
 }
 
 fn memmem_prebuilt_haystack(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
         use sliceslice::x86::DynamicAvx2Searcher;
 
@@ -201,7 +201,7 @@ fn memmem_prebuilt_haystack(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
 }
 
 fn memmem_oneshot_count(b: &Benchmark) -> anyhow::Result<Vec<Sample>> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
         use sliceslice::x86::DynamicAvx2Searcher;
 

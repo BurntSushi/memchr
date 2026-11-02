@@ -7,7 +7,10 @@ use crate::arch::all::{
 use crate::arch::aarch64::neon::packedpair as neon;
 #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
 use crate::arch::wasm32::simd128::packedpair as simd128;
-#[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+#[cfg(all(
+    any(target_arch = "x86", target_arch = "x86_64"),
+    target_feature = "sse2"
+))]
 use crate::arch::x86::{avx2::packedpair as avx2, sse2::packedpair as sse2};
 
 /// A "meta" substring searcher.
@@ -72,11 +75,14 @@ impl Searcher {
             pair.index2(),
             "pair offsets should not be equivalent"
         );
-        #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+        #[cfg(all(
+            any(target_arch = "x86", target_arch = "x86_64"),
+            target_feature = "sse2"
+        ))]
         {
             if let Some(pp) = avx2::Finder::with_pair(needle, pair) {
                 if do_packed_search(needle) {
-                    trace!("building x86_64 AVX2 substring searcher");
+                    trace!("building x86 AVX2 substring searcher");
                     let kind = SearcherKind { avx2: pp };
                     Searcher { call: searcher_kind_avx2, kind, rabinkarp }
                 } else if prefilter.is_none() {
@@ -87,7 +93,7 @@ impl Searcher {
                 }
             } else if let Some(pp) = sse2::Finder::with_pair(needle, pair) {
                 if do_packed_search(needle) {
-                    trace!("building x86_64 SSE2 substring searcher");
+                    trace!("building x86 SSE2 substring searcher");
                     let kind = SearcherKind { sse2: pp };
                     Searcher { call: searcher_kind_sse2, kind, rabinkarp }
                 } else if prefilter.is_none() {
@@ -100,7 +106,7 @@ impl Searcher {
                 Searcher::twoway(needle, rabinkarp, None)
             } else {
                 // We're pretty unlikely to get to this point, but it is
-                // possible to be running on x86_64 without SSE2. Namely, it's
+                // possible to be running on x86 without SSE2. Namely, it's
                 // really up to the OS whether it wants to support vector
                 // registers or not.
                 let prestrat = Prefilter::fallback(ranker, pair, needle);
@@ -148,6 +154,7 @@ impl Searcher {
             }
         }
         #[cfg(not(any(
+            all(target_arch = "x86", target_feature = "sse2"),
             all(target_arch = "x86_64", target_feature = "sse2"),
             all(target_arch = "wasm32", target_feature = "simd128"),
             target_arch = "aarch64"
@@ -245,9 +252,15 @@ union SearcherKind {
     one_byte: u8,
     two_way: twoway::Finder,
     two_way_with_prefilter: TwoWayWithPrefilter,
-    #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+    #[cfg(all(
+        any(target_arch = "x86", target_arch = "x86_64"),
+        target_feature = "sse2"
+    ))]
     sse2: crate::arch::x86::sse2::packedpair::Finder,
-    #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+    #[cfg(all(
+        any(target_arch = "x86", target_arch = "x86_64"),
+        target_feature = "sse2"
+    ))]
     avx2: crate::arch::x86::avx2::packedpair::Finder,
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     simd128: crate::arch::wasm32::simd128::packedpair::Finder,
@@ -350,13 +363,16 @@ unsafe fn searcher_kind_two_way_with_prefilter(
     }
 }
 
-/// Reads from the `sse2` field of `SearcherKind` to execute the x86_64 SSE2
+/// Reads from the `sse2` field of `SearcherKind` to execute the x86 SSE2
 /// vectorized substring search implementation.
 ///
 /// # Safety
 ///
 /// Callers must ensure that the `searcher.kind.sse2` union field is set.
-#[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+#[cfg(all(
+    any(target_arch = "x86", target_arch = "x86_64"),
+    target_feature = "sse2"
+))]
 unsafe fn searcher_kind_sse2(
     searcher: &Searcher,
     _prestate: &mut PrefilterState,
@@ -371,13 +387,16 @@ unsafe fn searcher_kind_sse2(
     }
 }
 
-/// Reads from the `avx2` field of `SearcherKind` to execute the x86_64 AVX2
+/// Reads from the `avx2` field of `SearcherKind` to execute the x86 AVX2
 /// vectorized substring search implementation.
 ///
 /// # Safety
 ///
 /// Callers must ensure that the `searcher.kind.avx2` union field is set.
-#[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+#[cfg(all(
+    any(target_arch = "x86", target_arch = "x86_64"),
+    target_feature = "sse2"
+))]
 unsafe fn searcher_kind_avx2(
     searcher: &Searcher,
     _prestate: &mut PrefilterState,
@@ -636,11 +655,14 @@ impl Prefilter {
         }
     }
 
-    /// Return a prefilter using a x86_64 SSE2 vector algorithm.
-    #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+    /// Return a prefilter using a x86 SSE2 vector algorithm.
+    #[cfg(all(
+        any(target_arch = "x86", target_arch = "x86_64"),
+        target_feature = "sse2"
+    ))]
     #[inline]
     fn sse2(finder: sse2::Finder, needle: &[u8]) -> Prefilter {
-        trace!("building x86_64 SSE2 prefilter");
+        trace!("building x86 SSE2 prefilter");
         let rarest_offset = finder.pair().index1();
         let rarest_byte = needle[usize::from(rarest_offset)];
         Prefilter {
@@ -651,11 +673,14 @@ impl Prefilter {
         }
     }
 
-    /// Return a prefilter using a x86_64 AVX2 vector algorithm.
-    #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+    /// Return a prefilter using a x86 AVX2 vector algorithm.
+    #[cfg(all(
+        any(target_arch = "x86", target_arch = "x86_64"),
+        target_feature = "sse2"
+    ))]
     #[inline]
     fn avx2(finder: avx2::Finder, needle: &[u8]) -> Prefilter {
-        trace!("building x86_64 AVX2 prefilter");
+        trace!("building x86 AVX2 prefilter");
         let rarest_offset = finder.pair().index1();
         let rarest_byte = needle[usize::from(rarest_offset)];
         Prefilter {
@@ -753,9 +778,15 @@ impl core::fmt::Debug for Prefilter {
 #[derive(Clone, Copy)]
 union PrefilterKind {
     fallback: crate::arch::all::packedpair::Finder,
-    #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+    #[cfg(all(
+        any(target_arch = "x86", target_arch = "x86_64"),
+        target_feature = "sse2"
+    ))]
     sse2: crate::arch::x86::sse2::packedpair::Finder,
-    #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+    #[cfg(all(
+        any(target_arch = "x86", target_arch = "x86_64"),
+        target_feature = "sse2"
+    ))]
     avx2: crate::arch::x86::avx2::packedpair::Finder,
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     simd128: crate::arch::wasm32::simd128::packedpair::Finder,
@@ -785,13 +816,16 @@ unsafe fn prefilter_kind_fallback(
     strat.kind.fallback.find_prefilter(haystack)
 }
 
-/// Reads from the `sse2` field of `PrefilterKind` to execute the x86_64 SSE2
+/// Reads from the `sse2` field of `PrefilterKind` to execute the x86 SSE2
 /// prefilter.
 ///
 /// # Safety
 ///
 /// Callers must ensure that the `strat.kind.sse2` union field is set.
-#[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+#[cfg(all(
+    any(target_arch = "x86", target_arch = "x86_64"),
+    target_feature = "sse2"
+))]
 unsafe fn prefilter_kind_sse2(
     strat: &Prefilter,
     haystack: &[u8],
@@ -804,13 +838,16 @@ unsafe fn prefilter_kind_sse2(
     }
 }
 
-/// Reads from the `avx2` field of `PrefilterKind` to execute the x86_64 AVX2
+/// Reads from the `avx2` field of `PrefilterKind` to execute the x86 AVX2
 /// prefilter.
 ///
 /// # Safety
 ///
 /// Callers must ensure that the `strat.kind.avx2` union field is set.
-#[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+#[cfg(all(
+    any(target_arch = "x86", target_arch = "x86_64"),
+    target_feature = "sse2"
+))]
 unsafe fn prefilter_kind_avx2(
     strat: &Prefilter,
     haystack: &[u8],

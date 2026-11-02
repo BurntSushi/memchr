@@ -8,6 +8,9 @@ frequencies to heuristically select the pair of bytes to search for.
 [generic SIMD]: http://0x80.pl/articles/simd-strfind.html#first-and-last
 */
 
+#[cfg(target_arch = "x86")]
+use core::arch::x86::{__m128i, __m256i};
+#[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::{__m128i, __m256i};
 
 use crate::arch::{all::packedpair::Pair, generic::packedpair};

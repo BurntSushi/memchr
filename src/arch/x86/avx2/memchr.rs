@@ -20,6 +20,9 @@ or similar. However, it depends mightily on the specific work-load and the
 expected match frequency.
 */
 
+#[cfg(target_arch = "x86")]
+use core::arch::x86::{__m128i, __m256i};
+#[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::{__m128i, __m256i};
 
 use crate::{arch::generic::memchr as generic, ext::Pointer, vector::Vector};

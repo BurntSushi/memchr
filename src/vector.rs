@@ -82,11 +82,11 @@ pub(crate) trait CmpEq: Copy + core::fmt::Debug {
 /// A trait that abstracts over a vector-to-scalar operation called
 /// "move mask."
 ///
-/// On x86-64, this is `_mm_movemask_epi8` for SSE2 and `_mm256_movemask_epi8`
-/// for AVX2. It takes a vector of `u8` lanes and returns a scalar where the
-/// `i`th bit is set if and only if the most significant bit in the `i`th lane
-/// of the vector is set. The simd128 ISA for wasm32 also supports this
-/// exact same operation natively.
+/// On x86, this is `_mm_movemask_epi8` for SSE2 and `_mm256_movemask_epi8` for
+/// AVX2. It takes a vector of `u8` lanes and returns a scalar where the `i`th
+/// bit is set if and only if the most significant bit in the `i`th lane of the
+/// vector is set. The simd128 ISA for wasm32 also supports this exact same
+/// operation natively.
 ///
 /// ... But aarch64 doesn't. So we have to fake it with more instructions and
 /// a slightly different representation. We could do extra work to unify the
@@ -123,7 +123,7 @@ pub(crate) trait MoveMask: Copy + core::fmt::Debug {
 
 /// This is a "sensible" movemask implementation where each bit represents
 /// whether the most significant bit is set in each corresponding lane of a
-/// vector. This is used on x86-64 and wasm, but such a mask is more expensive
+/// vector. This is used on x86 and wasm, but such a mask is more expensive
 /// to get on aarch64 so we use something a little different.
 ///
 /// We call this "sensible" because this is what we get using native sse/avx
@@ -205,8 +205,11 @@ impl MoveMask for SensibleMoveMask {
     }
 }
 
-#[cfg(target_arch = "x86_64")]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod x86sse2 {
+    #[cfg(target_arch = "x86")]
+    use core::arch::x86::*;
+    #[cfg(target_arch = "x86_64")]
     use core::arch::x86_64::*;
 
     use super::{CmpEq, SensibleMoveMask, Vector};
@@ -258,8 +261,11 @@ mod x86sse2 {
     }
 }
 
-#[cfg(target_arch = "x86_64")]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod x86avx2 {
+    #[cfg(target_arch = "x86")]
+    use core::arch::x86::*;
+    #[cfg(target_arch = "x86_64")]
     use core::arch::x86_64::*;
 
     use super::{CmpEq, SensibleMoveMask, Vector};
@@ -394,11 +400,11 @@ mod aarch64neon {
         }
     }
 
-    /// Neon doesn't have a `movemask` that works like the one in x86-64, so we
+    /// Neon doesn't have a `movemask` that works like the one in x86, so we
     /// wind up using a different method[1]. The different method also produces
     /// a mask, but 4 bits are set in the neon case instead of a single bit set
-    /// in the x86-64 case. We do an extra step to zero out 3 of the 4 bits,
-    /// but we still wind up with at least 3 zeroes between each set bit. This
+    /// in the x86 case. We do an extra step to zero out 3 of the 4 bits, but
+    /// we still wind up with at least 3 zeroes between each set bit. This
     /// generally means that we need to do some division by 4 before extracting
     /// offsets.
     ///
@@ -465,7 +471,7 @@ mod aarch64neon {
             //
             // Note that unlike `SensibleMoveMask`, this mask has its bits
             // spread out over 64 bits instead of 16 bits (for a 128 bit
-            // vector). Namely, where as x86-64 will turn
+            // vector). Namely, where as x86 will turn
             //
             //   0x00 0xFF 0x00 0x00 0xFF
             //

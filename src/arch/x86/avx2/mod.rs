@@ -1,5 +1,5 @@
 /*!
-Algorithms for the `x86_64` target using 256-bit vectors via AVX2.
+Algorithms for x86 targets using 256-bit vectors via AVX2.
 */
 
 pub mod memchr;
