@@ -506,13 +506,13 @@ unsafe fn memchr_raw(
     start: *const u8,
     end: *const u8,
 ) -> Option<*const u8> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
-        // x86_64 does CPU feature detection at runtime in order to use AVX2
+        // x86 does CPU feature detection at runtime in order to use AVX2
         // instructions even when the `avx2` feature isn't enabled at compile
         // time. This function also handles using a fallback if neither AVX2
         // nor SSE2 (unusual) are available.
-        crate::arch::x86_64::memchr::memchr_raw(needle, start, end)
+        crate::arch::x86::memchr::memchr_raw(needle, start, end)
     }
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
@@ -523,6 +523,7 @@ unsafe fn memchr_raw(
         crate::arch::aarch64::memchr::memchr_raw(needle, start, end)
     }
     #[cfg(not(any(
+        target_arch = "x86",
         target_arch = "x86_64",
         all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
@@ -543,9 +544,9 @@ unsafe fn memrchr_raw(
     start: *const u8,
     end: *const u8,
 ) -> Option<*const u8> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
-        crate::arch::x86_64::memchr::memrchr_raw(needle, start, end)
+        crate::arch::x86::memchr::memrchr_raw(needle, start, end)
     }
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
@@ -556,6 +557,7 @@ unsafe fn memrchr_raw(
         crate::arch::aarch64::memchr::memrchr_raw(needle, start, end)
     }
     #[cfg(not(any(
+        target_arch = "x86",
         target_arch = "x86_64",
         all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
@@ -577,9 +579,9 @@ unsafe fn memchr2_raw(
     start: *const u8,
     end: *const u8,
 ) -> Option<*const u8> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
-        crate::arch::x86_64::memchr::memchr2_raw(needle1, needle2, start, end)
+        crate::arch::x86::memchr::memchr2_raw(needle1, needle2, start, end)
     }
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
@@ -590,6 +592,7 @@ unsafe fn memchr2_raw(
         crate::arch::aarch64::memchr::memchr2_raw(needle1, needle2, start, end)
     }
     #[cfg(not(any(
+        target_arch = "x86",
         target_arch = "x86_64",
         all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
@@ -612,9 +615,9 @@ unsafe fn memrchr2_raw(
     start: *const u8,
     end: *const u8,
 ) -> Option<*const u8> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
-        crate::arch::x86_64::memchr::memrchr2_raw(needle1, needle2, start, end)
+        crate::arch::x86::memchr::memrchr2_raw(needle1, needle2, start, end)
     }
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
@@ -627,6 +630,7 @@ unsafe fn memrchr2_raw(
         )
     }
     #[cfg(not(any(
+        target_arch = "x86",
         target_arch = "x86_64",
         all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
@@ -650,9 +654,9 @@ unsafe fn memchr3_raw(
     start: *const u8,
     end: *const u8,
 ) -> Option<*const u8> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
-        crate::arch::x86_64::memchr::memchr3_raw(
+        crate::arch::x86::memchr::memchr3_raw(
             needle1, needle2, needle3, start, end,
         )
     }
@@ -669,6 +673,7 @@ unsafe fn memchr3_raw(
         )
     }
     #[cfg(not(any(
+        target_arch = "x86",
         target_arch = "x86_64",
         all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
@@ -692,9 +697,9 @@ unsafe fn memrchr3_raw(
     start: *const u8,
     end: *const u8,
 ) -> Option<*const u8> {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
-        crate::arch::x86_64::memchr::memrchr3_raw(
+        crate::arch::x86::memchr::memrchr3_raw(
             needle1, needle2, needle3, start, end,
         )
     }
@@ -711,6 +716,7 @@ unsafe fn memrchr3_raw(
         )
     }
     #[cfg(not(any(
+        target_arch = "x86",
         target_arch = "x86_64",
         all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"
@@ -728,9 +734,9 @@ unsafe fn memrchr3_raw(
 /// Pointers must be valid. See `One::count_raw`.
 #[inline]
 unsafe fn count_raw(needle: u8, start: *const u8, end: *const u8) -> usize {
-    #[cfg(target_arch = "x86_64")]
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
     {
-        crate::arch::x86_64::memchr::count_raw(needle, start, end)
+        crate::arch::x86::memchr::count_raw(needle, start, end)
     }
     #[cfg(all(target_arch = "wasm32", target_feature = "simd128"))]
     {
@@ -741,6 +747,7 @@ unsafe fn count_raw(needle: u8, start: *const u8, end: *const u8) -> usize {
         crate::arch::aarch64::memchr::count_raw(needle, start, end)
     }
     #[cfg(not(any(
+        target_arch = "x86",
         target_arch = "x86_64",
         all(target_arch = "wasm32", target_feature = "simd128"),
         target_arch = "aarch64"

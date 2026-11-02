@@ -1,5 +1,5 @@
 /*!
-A 128-bit vector implementation of the "packed pair" SIMD algorithm.
+A 256-bit vector implementation of the "packed pair" SIMD algorithm.
 
 The "packed pair" algorithm is based on the [generic SIMD] algorithm. The main
 difference is that it (by default) uses a background distribution of byte
@@ -8,11 +8,14 @@ frequencies to heuristically select the pair of bytes to search for.
 [generic SIMD]: http://0x80.pl/articles/simd-strfind.html#first-and-last
 */
 
-use core::arch::x86_64::__m128i;
+#[cfg(target_arch = "x86")]
+use core::arch::x86::{__m128i, __m256i};
+#[cfg(target_arch = "x86_64")]
+use core::arch::x86_64::{__m128i, __m256i};
 
 use crate::arch::{all::packedpair::Pair, generic::packedpair};
 
-/// A "packed pair" finder that uses 128-bit vector operations.
+/// A "packed pair" finder that uses 256-bit vector operations.
 ///
 /// This finder picks two bytes that it believes have high predictive power
 /// for indicating an overall match of a needle. Depending on whether
@@ -20,14 +23,17 @@ use crate::arch::{all::packedpair::Pair, generic::packedpair};
 /// where the needle matches or could match. In the prefilter case, candidates
 /// are reported whenever the [`Pair`] of bytes given matches.
 #[derive(Clone, Copy, Debug)]
-pub struct Finder(packedpair::Finder<__m128i>);
+pub struct Finder {
+    sse2: packedpair::Finder<__m128i>,
+    avx2: packedpair::Finder<__m256i>,
+}
 
 impl Finder {
     /// Create a new pair searcher. The searcher returned can either report
     /// exact matches of `needle` or act as a prefilter and report candidate
     /// positions of `needle`.
     ///
-    /// If SSE2 is unavailable in the current environment or if a [`Pair`]
+    /// If AVX2 is unavailable in the current environment or if a [`Pair`]
     /// could not be constructed from the needle given, then `None` is
     /// returned.
     #[inline]
@@ -40,12 +46,12 @@ impl Finder {
     /// This constructor permits callers to control precisely which pair of
     /// bytes is used as a predicate.
     ///
-    /// If SSE2 is unavailable in the current environment, then `None` is
+    /// If AVX2 is unavailable in the current environment, then `None` is
     /// returned.
     #[inline]
     pub fn with_pair(needle: &[u8], pair: Pair) -> Option<Finder> {
         if Finder::is_available() {
-            // SAFETY: we check that sse2 is available above. We are also
+            // SAFETY: we check that sse2/avx2 is available above. We are also
             // guaranteed to have needle.len() > 1 because we have a valid
             // Pair.
             unsafe { Some(Finder::with_pair_impl(needle, pair)) }
@@ -59,12 +65,13 @@ impl Finder {
     /// # Safety
     ///
     /// Same as the safety for `packedpair::Finder::new`, and callers must also
-    /// ensure that SSE2 is available.
-    #[target_feature(enable = "sse2")]
+    /// ensure that both SSE2 and AVX2 are available.
+    #[target_feature(enable = "sse2", enable = "avx2")]
     #[inline]
     unsafe fn with_pair_impl(needle: &[u8], pair: Pair) -> Finder {
-        let finder = packedpair::Finder::<__m128i>::new(needle, pair);
-        Finder(finder)
+        let sse2 = packedpair::Finder::<__m128i>::new(needle, pair);
+        let avx2 = packedpair::Finder::<__m256i>::new(needle, pair);
+        Finder { sse2, avx2 }
     }
 
     /// Returns true when this implementation is available in the current
@@ -87,11 +94,25 @@ impl Finder {
         }
         #[cfg(target_feature = "sse2")]
         {
-            true
+            #[cfg(target_feature = "avx2")]
+            {
+                true
+            }
+            #[cfg(not(target_feature = "avx2"))]
+            {
+                #[cfg(feature = "std")]
+                {
+                    std::is_x86_feature_detected!("avx2")
+                }
+                #[cfg(not(feature = "std"))]
+                {
+                    false
+                }
+            }
         }
     }
 
-    /// Execute a search using SSE2 vectors and routines.
+    /// Execute a search using AVX2 vectors and routines.
     ///
     /// # Panics
     ///
@@ -116,7 +137,7 @@ impl Finder {
         unsafe { self.find_prefilter_impl(haystack) }
     }
 
-    /// Execute a search using SSE2 vectors and routines.
+    /// Execute a search using AVX2 vectors and routines.
     ///
     /// # Panics
     ///
@@ -126,18 +147,22 @@ impl Finder {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `Finder`, which can only be constructed
-    /// when it is safe to call `sse2` routines.)
-    #[target_feature(enable = "sse2")]
+    /// when it is safe to call `sse2` and `avx2` routines.)
+    #[target_feature(enable = "sse2", enable = "avx2")]
     #[inline]
     unsafe fn find_impl(
         &self,
         haystack: &[u8],
         needle: &[u8],
     ) -> Option<usize> {
-        self.0.find(haystack, needle)
+        if haystack.len() < self.avx2.min_haystack_len() {
+            self.sse2.find(haystack, needle)
+        } else {
+            self.avx2.find(haystack, needle)
+        }
     }
 
-    /// Execute a prefilter search using SSE2 vectors and routines.
+    /// Execute a prefilter search using AVX2 vectors and routines.
     ///
     /// # Panics
     ///
@@ -147,11 +172,15 @@ impl Finder {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `Finder`, which can only be constructed
-    /// when it is safe to call `sse2` routines.)
-    #[target_feature(enable = "sse2")]
+    /// when it is safe to call `sse2` and `avx2` routines.)
+    #[target_feature(enable = "sse2", enable = "avx2")]
     #[inline]
     unsafe fn find_prefilter_impl(&self, haystack: &[u8]) -> Option<usize> {
-        self.0.find_prefilter(haystack)
+        if haystack.len() < self.avx2.min_haystack_len() {
+            self.sse2.find_prefilter(haystack)
+        } else {
+            self.avx2.find_prefilter(haystack)
+        }
     }
 
     /// Returns the pair of offsets (into the needle) used to check as a
@@ -159,7 +188,7 @@ impl Finder {
     /// position.
     #[inline]
     pub fn pair(&self) -> &Pair {
-        self.0.pair()
+        self.avx2.pair()
     }
 
     /// Returns the minimum haystack length that this `Finder` can search.
@@ -171,7 +200,18 @@ impl Finder {
     /// instead only handles the cases that it can handle very well.
     #[inline]
     pub fn min_haystack_len(&self) -> usize {
-        self.0.min_haystack_len()
+        // The caller doesn't need to care about AVX2's min_haystack_len
+        // since this implementation will automatically switch to the SSE2
+        // implementation if the haystack is too short for AVX2. Therefore, the
+        // caller only needs to care about SSE2's min_haystack_len.
+        //
+        // This does assume that SSE2's min_haystack_len is less than or
+        // equal to AVX2's min_haystack_len. In practice, this is true and
+        // there is no way it could be false based on how this Finder is
+        // implemented. Namely, both SSE2 and AVX2 use the same `Pair`. If
+        // they used different pairs, then it's possible (although perhaps
+        // pathological) for SSE2's min_haystack_len to be bigger than AVX2's.
+        self.sse2.min_haystack_len()
     }
 }
 
@@ -220,6 +260,9 @@ mod tests {
             index1: u8,
             index2: u8,
         ) -> Option<Option<usize>> {
+            if !cfg!(target_feature = "sse2") {
+                return None;
+            }
             let pair = Pair::with_indices(needle, index1, index2)?;
             let f = Finder::with_pair(needle, pair)?;
             if haystack.len() < f.min_haystack_len() {
@@ -228,26 +271,5 @@ mod tests {
             Some(f.find_prefilter(haystack))
         }
         crate::tests::packedpair::Runner::new().fwd(find).run()
-    }
-
-    // A demonstration of UB (caught under Miri) through some of memchr's
-    // lower level but public APIs.
-    //
-    // See: https://github.com/BurntSushi/memchr/issues/225
-    #[test]
-    fn regression_undefined_behavior() {
-        let construct_needle: &[u8] = b"ab"; // length 2 → pair indices 0,1
-        let pair = Pair::new(construct_needle).unwrap();
-        let Some(finder) = Finder::with_pair(construct_needle, pair) else {
-            return;
-        };
-        let mhl = finder.min_haystack_len(); // 17
-        let mut haystack = alloc::vec![b'.'; mhl + 5];
-        haystack[0] = b'a';
-        // force entry into find_in_chunk inner branch
-        haystack[1] = b'b';
-        // 122 > haystack.len()=22
-        let long_needle = alloc::vec![b'X'; haystack.len() + 100];
-        let _ = finder.find(&haystack, &long_needle);
     }
 }

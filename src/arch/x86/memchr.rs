@@ -80,7 +80,7 @@ macro_rules! unsafe_ifunc {
             $hay_start: *const u8,
             $hay_end: *const u8,
         ) -> $retty {
-            use crate::arch::x86_64::avx2::memchr::$memchrty;
+            use crate::arch::x86::avx2::memchr::$memchrty;
             $memchrty::new_unchecked($($needle),+)
                 .$memchrfind($hay_start, $hay_end)
         }
@@ -92,7 +92,7 @@ macro_rules! unsafe_ifunc {
             $hay_start: *const u8,
             $hay_end: *const u8,
         ) -> $retty {
-            use crate::arch::x86_64::sse2::memchr::$memchrty;
+            use crate::arch::x86::sse2::memchr::$memchrty;
             $memchrty::new_unchecked($($needle),+)
                 .$memchrfind($hay_start, $hay_end)
         }
@@ -122,7 +122,7 @@ macro_rules! unsafe_ifunc {
                 }
                 #[cfg(target_feature = "sse2")]
                 {
-                    use crate::arch::x86_64::{sse2, avx2};
+                    use crate::arch::x86::{sse2, avx2};
                     if avx2::memchr::$memchrty::is_available() {
                         debug!("chose AVX2 for {}", stringify!($memchrty));
                         find_avx2 as RealFn

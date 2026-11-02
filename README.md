@@ -35,7 +35,7 @@ memchr links to the standard library by default, but you can disable the
 memchr = { version = "2", default-features = false }
 ```
 
-On `x86_64` platforms, when the `std` feature is disabled, the SSE2 accelerated
+On x86 platforms, when the `std` feature is disabled, the SSE2 accelerated
 implementations will be used. When `std` is enabled, AVX2 accelerated
 implementations will be used if the CPU is determined to support it at runtime.
 

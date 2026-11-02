@@ -1,5 +1,5 @@
 /*!
-This module defines 256-bit vector implementations of `memchr` and friends.
+This module defines 128-bit vector implementations of `memchr` and friends.
 
 The main types in this module are [`One`], [`Two`] and [`Three`]. They are for
 searching for one, two or three distinct bytes, respectively, in a haystack.
@@ -10,7 +10,7 @@ The `One` searcher also provides a [`One::count`] routine for efficiently
 counting the number of times a single byte occurs in a haystack. This is
 useful, for example, for counting the number of lines in a haystack. This
 routine exists because it is usually faster, especially with a high match
-count, then using [`One::find`] repeatedly. ([`OneIter`] specializes its
+count, than using [`One::find`] repeatedly. ([`OneIter`] specializes its
 `Iterator::count` implementation to use this routine.)
 
 Only one, two and three bytes are supported because three bytes is about
@@ -20,57 +20,51 @@ or similar. However, it depends mightily on the specific work-load and the
 expected match frequency.
 */
 
-use core::arch::x86_64::{__m128i, __m256i};
+#[cfg(target_arch = "x86")]
+use core::arch::x86::__m128i;
+#[cfg(target_arch = "x86_64")]
+use core::arch::x86_64::__m128i;
 
 use crate::{arch::generic::memchr as generic, ext::Pointer, vector::Vector};
 
 /// Finds all occurrences of a single byte in a haystack.
 #[derive(Clone, Copy, Debug)]
-pub struct One {
-    /// Used for haystacks less than 32 bytes.
-    sse2: generic::One<__m128i>,
-    /// Used for haystacks bigger than 32 bytes.
-    avx2: generic::One<__m256i>,
-}
+pub struct One(generic::One<__m128i>);
 
 impl One {
     /// Create a new searcher that finds occurrences of the needle byte given.
     ///
-    /// This particular searcher is specialized to use AVX2 vector instructions
-    /// that typically make it quite fast. (SSE2 is used for haystacks that
-    /// are too short to accommodate an AVX2 vector.)
+    /// This particular searcher is specialized to use SSE2 vector instructions
+    /// that typically make it quite fast.
     ///
-    /// If either SSE2 or AVX2 is unavailable in the current environment, then
-    /// `None` is returned.
+    /// If SSE2 is unavailable in the current environment, then `None` is
+    /// returned.
     #[inline]
     pub fn new(needle: u8) -> Option<One> {
         if One::is_available() {
-            // SAFETY: we check that sse2 and avx2 are available above.
+            // SAFETY: we check that sse2 is available above.
             unsafe { Some(One::new_unchecked(needle)) }
         } else {
             None
         }
     }
 
-    /// Create a new finder specific to AVX2 vectors and routines without
-    /// checking that either SSE2 or AVX2 is available.
+    /// Create a new finder specific to SSE2 vectors and routines without
+    /// checking that SSE2 is available.
     ///
     /// # Safety
     ///
-    /// Callers must guarantee that it is safe to execute both `sse2` and
-    /// `avx2` instructions in the current environment.
+    /// Callers must guarantee that it is safe to execute `sse2` instructions
+    /// in the current environment.
     ///
     /// Note that it is a common misconception that if one compiles for an
     /// `x86_64` target, then they therefore automatically have access to SSE2
     /// instructions. While this is almost always the case, it isn't true in
     /// 100% of cases.
-    #[target_feature(enable = "sse2", enable = "avx2")]
+    #[target_feature(enable = "sse2")]
     #[inline]
     pub unsafe fn new_unchecked(needle: u8) -> One {
-        One {
-            sse2: generic::One::new(needle),
-            avx2: generic::One::new(needle),
-        }
+        One(generic::One::new(needle))
     }
 
     /// Returns true when this implementation is available in the current
@@ -84,27 +78,13 @@ impl One {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
+        #[cfg(target_feature = "sse2")]
+        {
+            true
+        }
         #[cfg(not(target_feature = "sse2"))]
         {
             false
-        }
-        #[cfg(target_feature = "sse2")]
-        {
-            #[cfg(target_feature = "avx2")]
-            {
-                true
-            }
-            #[cfg(not(target_feature = "avx2"))]
-            {
-                #[cfg(feature = "std")]
-                {
-                    std::is_x86_feature_detected!("avx2")
-                }
-                #[cfg(not(feature = "std"))]
-                {
-                    false
-                }
-            }
         }
     }
 
@@ -131,7 +111,7 @@ impl One {
     /// value is `haystack.len() - 1`.
     #[inline]
     pub fn rfind(&self, haystack: &[u8]) -> Option<usize> {
-        // SAFETY: `find_raw` guarantees that if a pointer is returned, it
+        // SAFETY: `rfind_raw` guarantees that if a pointer is returned, it
         // falls within the bounds of the start and end pointers.
         unsafe {
             generic::search_slice_with_raw(haystack, |s, e| {
@@ -184,38 +164,28 @@ impl One {
         if start >= end {
             return None;
         }
-        let len = end.distance(start);
-        if len < __m256i::BYTES {
-            return if len < __m128i::BYTES {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                generic::fwd_byte_by_byte(start, end, |b| {
-                    b == self.sse2.needle1()
-                })
-            } else {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                self.find_raw_sse2(start, end)
-            };
+        if end.distance(start) < __m128i::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+            });
         }
-        // SAFETY: Building a `One` means it's safe to call both 'sse2' and
-        // 'avx2' routines. Also, we've checked that our haystack is big
-        // enough to run on the vector routine. Pointer validity is caller's
-        // responsibility.
+        // SAFETY: Building a `One` means it's safe to call 'sse2' routines.
+        // Also, we've checked that our haystack is big enough to run on the
+        // vector routine. Pointer validity is caller's responsibility.
         //
-        // Note that we could call `self.avx2.find_raw` directly here. But that
+        // Note that we could call `self.0.find_raw` directly here. But that
         // means we'd have to annotate this routine with `target_feature`.
         // Which is fine, because this routine is `unsafe` anyway and the
         // `target_feature` obligation is met by virtue of building a `One`.
         // The real problem is that a routine with a `target_feature`
-        // annotation generally can't be inlined into caller code unless
-        // the caller code has the same target feature annotations. Namely,
-        // the common case (at time of writing) is for calling code to not
-        // have the `avx2` target feature enabled *at compile time*. Without
-        // `target_feature` on this routine, it can be inlined which will
-        // handle some of the short-haystack cases above without touching the
-        // architecture specific code.
-        self.find_raw_avx2(start, end)
+        // annotation generally can't be inlined into caller code unless the
+        // caller code has the same target feature annotations. Which is maybe
+        // okay for SSE2, but we do the same thing for AVX2 where caller code
+        // probably usually doesn't have AVX2 enabled. That means that this
+        // routine can be inlined which will handle some of the short-haystack
+        // cases above without touching the architecture specific code.
+        self.find_raw_impl(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -250,28 +220,19 @@ impl One {
         if start >= end {
             return None;
         }
-        let len = end.distance(start);
-        if len < __m256i::BYTES {
-            return if len < __m128i::BYTES {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                generic::rev_byte_by_byte(start, end, |b| {
-                    b == self.sse2.needle1()
-                })
-            } else {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                self.rfind_raw_sse2(start, end)
-            };
+        if end.distance(start) < __m128i::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::rev_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+            });
         }
-        // SAFETY: Building a `One` means it's safe to call both 'sse2' and
-        // 'avx2' routines. Also, we've checked that our haystack is big
-        // enough to run on the vector routine. Pointer validity is caller's
-        // responsibility.
+        // SAFETY: Building a `One` means it's safe to call 'sse2' routines.
+        // Also, we've checked that our haystack is big enough to run on the
+        // vector routine. Pointer validity is caller's responsibility.
         //
         // See note in forward routine above for why we don't just call
-        // `self.avx2.rfind_raw` directly here.
-        self.rfind_raw_avx2(start, end)
+        // `self.0.rfind_raw` directly here.
+        self.rfind_raw_impl(start, end)
     }
 
     /// Counts all occurrences of this byte in the given haystack represented
@@ -300,25 +261,16 @@ impl One {
         if start >= end {
             return 0;
         }
-        let len = end.distance(start);
-        if len < __m256i::BYTES {
-            return if len < __m128i::BYTES {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                generic::count_byte_by_byte(start, end, |b| {
-                    b == self.sse2.needle1()
-                })
-            } else {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                self.count_raw_sse2(start, end)
-            };
+        if end.distance(start) < __m128i::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::count_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+            });
         }
-        // SAFETY: Building a `One` means it's safe to call both 'sse2' and
-        // 'avx2' routines. Also, we've checked that our haystack is big
-        // enough to run on the vector routine. Pointer validity is caller's
-        // responsibility.
-        self.count_raw_avx2(start, end)
+        // SAFETY: Building a `One` means it's safe to call 'sse2' routines.
+        // Also, we've checked that our haystack is big enough to run on the
+        // vector routine. Pointer validity is caller's responsibility.
+        self.count_raw_impl(start, end)
     }
 
     /// Execute a search using SSE2 vectors and routines.
@@ -330,15 +282,15 @@ impl One {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `One`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
+    /// when it is safe to call `sse2` routines.)
     #[target_feature(enable = "sse2")]
     #[inline]
-    unsafe fn find_raw_sse2(
+    unsafe fn find_raw_impl(
         &self,
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.sse2.find_raw(start, end)
+        self.0.find_raw(start, end)
     }
 
     /// Execute a search using SSE2 vectors and routines.
@@ -350,15 +302,15 @@ impl One {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `One`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
+    /// when it is safe to call `sse2` routines.)
     #[target_feature(enable = "sse2")]
     #[inline]
-    unsafe fn rfind_raw_sse2(
+    unsafe fn rfind_raw_impl(
         &self,
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.sse2.rfind_raw(start, end)
+        self.0.rfind_raw(start, end)
     }
 
     /// Execute a count using SSE2 vectors and routines.
@@ -370,75 +322,15 @@ impl One {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `One`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
+    /// when it is safe to call `sse2` routines.)
     #[target_feature(enable = "sse2")]
     #[inline]
-    unsafe fn count_raw_sse2(
+    unsafe fn count_raw_impl(
         &self,
         start: *const u8,
         end: *const u8,
     ) -> usize {
-        self.sse2.count_raw(start, end)
-    }
-
-    /// Execute a search using AVX2 vectors and routines.
-    ///
-    /// # Safety
-    ///
-    /// Same as [`One::find_raw`], except the distance between `start` and
-    /// `end` must be at least the size of an AVX2 vector (in bytes).
-    ///
-    /// (The target feature safety obligation is automatically fulfilled by
-    /// virtue of being a method on `One`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
-    #[target_feature(enable = "avx2")]
-    #[inline]
-    unsafe fn find_raw_avx2(
-        &self,
-        start: *const u8,
-        end: *const u8,
-    ) -> Option<*const u8> {
-        self.avx2.find_raw(start, end)
-    }
-
-    /// Execute a search using AVX2 vectors and routines.
-    ///
-    /// # Safety
-    ///
-    /// Same as [`One::rfind_raw`], except the distance between `start` and
-    /// `end` must be at least the size of an AVX2 vector (in bytes).
-    ///
-    /// (The target feature safety obligation is automatically fulfilled by
-    /// virtue of being a method on `One`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
-    #[target_feature(enable = "avx2")]
-    #[inline]
-    unsafe fn rfind_raw_avx2(
-        &self,
-        start: *const u8,
-        end: *const u8,
-    ) -> Option<*const u8> {
-        self.avx2.rfind_raw(start, end)
-    }
-
-    /// Execute a count using AVX2 vectors and routines.
-    ///
-    /// # Safety
-    ///
-    /// Same as [`One::count_raw`], except the distance between `start` and
-    /// `end` must be at least the size of an AVX2 vector (in bytes).
-    ///
-    /// (The target feature safety obligation is automatically fulfilled by
-    /// virtue of being a method on `One`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
-    #[target_feature(enable = "avx2")]
-    #[inline]
-    unsafe fn count_raw_avx2(
-        &self,
-        start: *const u8,
-        end: *const u8,
-    ) -> usize {
-        self.avx2.count_raw(start, end)
+        self.0.count_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle byte in the
@@ -513,51 +405,42 @@ impl<'a, 'h> core::iter::FusedIterator for OneIter<'a, 'h> {}
 /// searching for `a` or `b` in `afoobar` would report matches at offsets `0`,
 /// `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub struct Two {
-    /// Used for haystacks less than 32 bytes.
-    sse2: generic::Two<__m128i>,
-    /// Used for haystacks bigger than 32 bytes.
-    avx2: generic::Two<__m256i>,
-}
+pub struct Two(generic::Two<__m128i>);
 
 impl Two {
     /// Create a new searcher that finds occurrences of the needle bytes given.
     ///
-    /// This particular searcher is specialized to use AVX2 vector instructions
-    /// that typically make it quite fast. (SSE2 is used for haystacks that
-    /// are too short to accommodate an AVX2 vector.)
+    /// This particular searcher is specialized to use SSE2 vector instructions
+    /// that typically make it quite fast.
     ///
-    /// If either SSE2 or AVX2 is unavailable in the current environment, then
-    /// `None` is returned.
+    /// If SSE2 is unavailable in the current environment, then `None` is
+    /// returned.
     #[inline]
     pub fn new(needle1: u8, needle2: u8) -> Option<Two> {
         if Two::is_available() {
-            // SAFETY: we check that sse2 and avx2 are available above.
+            // SAFETY: we check that sse2 is available above.
             unsafe { Some(Two::new_unchecked(needle1, needle2)) }
         } else {
             None
         }
     }
 
-    /// Create a new finder specific to AVX2 vectors and routines without
-    /// checking that either SSE2 or AVX2 is available.
+    /// Create a new finder specific to SSE2 vectors and routines without
+    /// checking that SSE2 is available.
     ///
     /// # Safety
     ///
-    /// Callers must guarantee that it is safe to execute both `sse2` and
-    /// `avx2` instructions in the current environment.
+    /// Callers must guarantee that it is safe to execute `sse2` instructions
+    /// in the current environment.
     ///
     /// Note that it is a common misconception that if one compiles for an
     /// `x86_64` target, then they therefore automatically have access to SSE2
     /// instructions. While this is almost always the case, it isn't true in
     /// 100% of cases.
-    #[target_feature(enable = "sse2", enable = "avx2")]
+    #[target_feature(enable = "sse2")]
     #[inline]
     pub unsafe fn new_unchecked(needle1: u8, needle2: u8) -> Two {
-        Two {
-            sse2: generic::Two::new(needle1, needle2),
-            avx2: generic::Two::new(needle1, needle2),
-        }
+        Two(generic::Two::new(needle1, needle2))
     }
 
     /// Returns true when this implementation is available in the current
@@ -571,27 +454,13 @@ impl Two {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
+        #[cfg(target_feature = "sse2")]
+        {
+            true
+        }
         #[cfg(not(target_feature = "sse2"))]
         {
             false
-        }
-        #[cfg(target_feature = "sse2")]
-        {
-            #[cfg(target_feature = "avx2")]
-            {
-                true
-            }
-            #[cfg(not(target_feature = "avx2"))]
-            {
-                #[cfg(feature = "std")]
-                {
-                    std::is_x86_feature_detected!("avx2")
-                }
-                #[cfg(not(feature = "std"))]
-                {
-                    false
-                }
-            }
         }
     }
 
@@ -618,7 +487,7 @@ impl Two {
     /// value is `haystack.len() - 1`.
     #[inline]
     pub fn rfind(&self, haystack: &[u8]) -> Option<usize> {
-        // SAFETY: `find_raw` guarantees that if a pointer is returned, it
+        // SAFETY: `rfind_raw` guarantees that if a pointer is returned, it
         // falls within the bounds of the start and end pointers.
         unsafe {
             generic::search_slice_with_raw(haystack, |s, e| {
@@ -659,38 +528,28 @@ impl Two {
         if start >= end {
             return None;
         }
-        let len = end.distance(start);
-        if len < __m256i::BYTES {
-            return if len < __m128i::BYTES {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                generic::fwd_byte_by_byte(start, end, |b| {
-                    b == self.sse2.needle1() || b == self.sse2.needle2()
-                })
-            } else {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                self.find_raw_sse2(start, end)
-            };
+        if end.distance(start) < __m128i::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                b == self.0.needle1() || b == self.0.needle2()
+            });
         }
-        // SAFETY: Building a `Two` means it's safe to call both 'sse2' and
-        // 'avx2' routines. Also, we've checked that our haystack is big
-        // enough to run on the vector routine. Pointer validity is caller's
-        // responsibility.
+        // SAFETY: Building a `Two` means it's safe to call 'sse2' routines.
+        // Also, we've checked that our haystack is big enough to run on the
+        // vector routine. Pointer validity is caller's responsibility.
         //
-        // Note that we could call `self.avx2.find_raw` directly here. But that
+        // Note that we could call `self.0.find_raw` directly here. But that
         // means we'd have to annotate this routine with `target_feature`.
         // Which is fine, because this routine is `unsafe` anyway and the
         // `target_feature` obligation is met by virtue of building a `Two`.
         // The real problem is that a routine with a `target_feature`
-        // annotation generally can't be inlined into caller code unless
-        // the caller code has the same target feature annotations. Namely,
-        // the common case (at time of writing) is for calling code to not
-        // have the `avx2` target feature enabled *at compile time*. Without
-        // `target_feature` on this routine, it can be inlined which will
-        // handle some of the short-haystack cases above without touching the
-        // architecture specific code.
-        self.find_raw_avx2(start, end)
+        // annotation generally can't be inlined into caller code unless the
+        // caller code has the same target feature annotations. Which is maybe
+        // okay for SSE2, but we do the same thing for AVX2 where caller code
+        // probably usually doesn't have AVX2 enabled. That means that this
+        // routine can be inlined which will handle some of the short-haystack
+        // cases above without touching the architecture specific code.
+        self.find_raw_impl(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -725,28 +584,19 @@ impl Two {
         if start >= end {
             return None;
         }
-        let len = end.distance(start);
-        if len < __m256i::BYTES {
-            return if len < __m128i::BYTES {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                generic::rev_byte_by_byte(start, end, |b| {
-                    b == self.sse2.needle1() || b == self.sse2.needle2()
-                })
-            } else {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                self.rfind_raw_sse2(start, end)
-            };
+        if end.distance(start) < __m128i::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::rev_byte_by_byte(start, end, |b| {
+                b == self.0.needle1() || b == self.0.needle2()
+            });
         }
-        // SAFETY: Building a `Two` means it's safe to call both 'sse2' and
-        // 'avx2' routines. Also, we've checked that our haystack is big
-        // enough to run on the vector routine. Pointer validity is caller's
-        // responsibility.
+        // SAFETY: Building a `Two` means it's safe to call 'sse2' routines.
+        // Also, we've checked that our haystack is big enough to run on the
+        // vector routine. Pointer validity is caller's responsibility.
         //
         // See note in forward routine above for why we don't just call
-        // `self.avx2.rfind_raw` directly here.
-        self.rfind_raw_avx2(start, end)
+        // `self.0.rfind_raw` directly here.
+        self.rfind_raw_impl(start, end)
     }
 
     /// Execute a search using SSE2 vectors and routines.
@@ -758,15 +608,15 @@ impl Two {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `Two`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
+    /// when it is safe to call `sse2` routines.)
     #[target_feature(enable = "sse2")]
     #[inline]
-    unsafe fn find_raw_sse2(
+    unsafe fn find_raw_impl(
         &self,
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.sse2.find_raw(start, end)
+        self.0.find_raw(start, end)
     }
 
     /// Execute a search using SSE2 vectors and routines.
@@ -778,55 +628,15 @@ impl Two {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `Two`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
+    /// when it is safe to call `sse2` routines.)
     #[target_feature(enable = "sse2")]
     #[inline]
-    unsafe fn rfind_raw_sse2(
+    unsafe fn rfind_raw_impl(
         &self,
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.sse2.rfind_raw(start, end)
-    }
-
-    /// Execute a search using AVX2 vectors and routines.
-    ///
-    /// # Safety
-    ///
-    /// Same as [`Two::find_raw`], except the distance between `start` and
-    /// `end` must be at least the size of an AVX2 vector (in bytes).
-    ///
-    /// (The target feature safety obligation is automatically fulfilled by
-    /// virtue of being a method on `Two`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
-    #[target_feature(enable = "avx2")]
-    #[inline]
-    unsafe fn find_raw_avx2(
-        &self,
-        start: *const u8,
-        end: *const u8,
-    ) -> Option<*const u8> {
-        self.avx2.find_raw(start, end)
-    }
-
-    /// Execute a search using AVX2 vectors and routines.
-    ///
-    /// # Safety
-    ///
-    /// Same as [`Two::rfind_raw`], except the distance between `start` and
-    /// `end` must be at least the size of an AVX2 vector (in bytes).
-    ///
-    /// (The target feature safety obligation is automatically fulfilled by
-    /// virtue of being a method on `Two`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
-    #[target_feature(enable = "avx2")]
-    #[inline]
-    unsafe fn rfind_raw_avx2(
-        &self,
-        start: *const u8,
-        end: *const u8,
-    ) -> Option<*const u8> {
-        self.avx2.rfind_raw(start, end)
+        self.0.rfind_raw(start, end)
     }
 
     /// Returns an iterator over all occurrences of the needle bytes in the
@@ -892,55 +702,46 @@ impl<'a, 'h> core::iter::FusedIterator for TwoIter<'a, 'h> {}
 /// searching for `a`, `b` or `o` in `afoobar` would report matches at offsets
 /// `0`, `2`, `3`, `4` and `5`.
 #[derive(Clone, Copy, Debug)]
-pub struct Three {
-    /// Used for haystacks less than 32 bytes.
-    sse2: generic::Three<__m128i>,
-    /// Used for haystacks bigger than 32 bytes.
-    avx2: generic::Three<__m256i>,
-}
+pub struct Three(generic::Three<__m128i>);
 
 impl Three {
     /// Create a new searcher that finds occurrences of the needle bytes given.
     ///
-    /// This particular searcher is specialized to use AVX2 vector instructions
-    /// that typically make it quite fast. (SSE2 is used for haystacks that
-    /// are too short to accommodate an AVX2 vector.)
+    /// This particular searcher is specialized to use SSE2 vector instructions
+    /// that typically make it quite fast.
     ///
-    /// If either SSE2 or AVX2 is unavailable in the current environment, then
-    /// `None` is returned.
+    /// If SSE2 is unavailable in the current environment, then `None` is
+    /// returned.
     #[inline]
     pub fn new(needle1: u8, needle2: u8, needle3: u8) -> Option<Three> {
         if Three::is_available() {
-            // SAFETY: we check that sse2 and avx2 are available above.
+            // SAFETY: we check that sse2 is available above.
             unsafe { Some(Three::new_unchecked(needle1, needle2, needle3)) }
         } else {
             None
         }
     }
 
-    /// Create a new finder specific to AVX2 vectors and routines without
-    /// checking that either SSE2 or AVX2 is available.
+    /// Create a new finder specific to SSE2 vectors and routines without
+    /// checking that SSE2 is available.
     ///
     /// # Safety
     ///
-    /// Callers must guarantee that it is safe to execute both `sse2` and
-    /// `avx2` instructions in the current environment.
+    /// Callers must guarantee that it is safe to execute `sse2` instructions
+    /// in the current environment.
     ///
     /// Note that it is a common misconception that if one compiles for an
     /// `x86_64` target, then they therefore automatically have access to SSE2
     /// instructions. While this is almost always the case, it isn't true in
     /// 100% of cases.
-    #[target_feature(enable = "sse2", enable = "avx2")]
+    #[target_feature(enable = "sse2")]
     #[inline]
     pub unsafe fn new_unchecked(
         needle1: u8,
         needle2: u8,
         needle3: u8,
     ) -> Three {
-        Three {
-            sse2: generic::Three::new(needle1, needle2, needle3),
-            avx2: generic::Three::new(needle1, needle2, needle3),
-        }
+        Three(generic::Three::new(needle1, needle2, needle3))
     }
 
     /// Returns true when this implementation is available in the current
@@ -954,27 +755,13 @@ impl Three {
     /// true then it will always return true.
     #[inline]
     pub fn is_available() -> bool {
+        #[cfg(target_feature = "sse2")]
+        {
+            true
+        }
         #[cfg(not(target_feature = "sse2"))]
         {
             false
-        }
-        #[cfg(target_feature = "sse2")]
-        {
-            #[cfg(target_feature = "avx2")]
-            {
-                true
-            }
-            #[cfg(not(target_feature = "avx2"))]
-            {
-                #[cfg(feature = "std")]
-                {
-                    std::is_x86_feature_detected!("avx2")
-                }
-                #[cfg(not(feature = "std"))]
-                {
-                    false
-                }
-            }
         }
     }
 
@@ -1001,7 +788,7 @@ impl Three {
     /// value is `haystack.len() - 1`.
     #[inline]
     pub fn rfind(&self, haystack: &[u8]) -> Option<usize> {
-        // SAFETY: `find_raw` guarantees that if a pointer is returned, it
+        // SAFETY: `rfind_raw` guarantees that if a pointer is returned, it
         // falls within the bounds of the start and end pointers.
         unsafe {
             generic::search_slice_with_raw(haystack, |s, e| {
@@ -1042,40 +829,30 @@ impl Three {
         if start >= end {
             return None;
         }
-        let len = end.distance(start);
-        if len < __m256i::BYTES {
-            return if len < __m128i::BYTES {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                generic::fwd_byte_by_byte(start, end, |b| {
-                    b == self.sse2.needle1()
-                        || b == self.sse2.needle2()
-                        || b == self.sse2.needle3()
-                })
-            } else {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                self.find_raw_sse2(start, end)
-            };
+        if end.distance(start) < __m128i::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::fwd_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+                    || b == self.0.needle2()
+                    || b == self.0.needle3()
+            });
         }
-        // SAFETY: Building a `Three` means it's safe to call both 'sse2' and
-        // 'avx2' routines. Also, we've checked that our haystack is big
-        // enough to run on the vector routine. Pointer validity is caller's
-        // responsibility.
+        // SAFETY: Building a `Three` means it's safe to call 'sse2' routines.
+        // Also, we've checked that our haystack is big enough to run on the
+        // vector routine. Pointer validity is caller's responsibility.
         //
-        // Note that we could call `self.avx2.find_raw` directly here. But that
+        // Note that we could call `self.0.find_raw` directly here. But that
         // means we'd have to annotate this routine with `target_feature`.
         // Which is fine, because this routine is `unsafe` anyway and the
         // `target_feature` obligation is met by virtue of building a `Three`.
         // The real problem is that a routine with a `target_feature`
-        // annotation generally can't be inlined into caller code unless
-        // the caller code has the same target feature annotations. Namely,
-        // the common case (at time of writing) is for calling code to not
-        // have the `avx2` target feature enabled *at compile time*. Without
-        // `target_feature` on this routine, it can be inlined which will
-        // handle some of the short-haystack cases above without touching the
-        // architecture specific code.
-        self.find_raw_avx2(start, end)
+        // annotation generally can't be inlined into caller code unless the
+        // caller code has the same target feature annotations. Which is maybe
+        // okay for SSE2, but we do the same thing for AVX2 where caller code
+        // probably usually doesn't have AVX2 enabled. That means that this
+        // routine can be inlined which will handle some of the short-haystack
+        // cases above without touching the architecture specific code.
+        self.find_raw_impl(start, end)
     }
 
     /// Like `rfind`, but accepts and returns raw pointers.
@@ -1110,30 +887,21 @@ impl Three {
         if start >= end {
             return None;
         }
-        let len = end.distance(start);
-        if len < __m256i::BYTES {
-            return if len < __m128i::BYTES {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                generic::rev_byte_by_byte(start, end, |b| {
-                    b == self.sse2.needle1()
-                        || b == self.sse2.needle2()
-                        || b == self.sse2.needle3()
-                })
-            } else {
-                // SAFETY: We require the caller to pass valid start/end
-                // pointers.
-                self.rfind_raw_sse2(start, end)
-            };
+        if end.distance(start) < __m128i::BYTES {
+            // SAFETY: We require the caller to pass valid start/end pointers.
+            return generic::rev_byte_by_byte(start, end, |b| {
+                b == self.0.needle1()
+                    || b == self.0.needle2()
+                    || b == self.0.needle3()
+            });
         }
-        // SAFETY: Building a `Three` means it's safe to call both 'sse2' and
-        // 'avx2' routines. Also, we've checked that our haystack is big
-        // enough to run on the vector routine. Pointer validity is caller's
-        // responsibility.
+        // SAFETY: Building a `Three` means it's safe to call 'sse2' routines.
+        // Also, we've checked that our haystack is big enough to run on the
+        // vector routine. Pointer validity is caller's responsibility.
         //
         // See note in forward routine above for why we don't just call
-        // `self.avx2.rfind_raw` directly here.
-        self.rfind_raw_avx2(start, end)
+        // `self.0.rfind_raw` directly here.
+        self.rfind_raw_impl(start, end)
     }
 
     /// Execute a search using SSE2 vectors and routines.
@@ -1145,15 +913,15 @@ impl Three {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `Three`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
+    /// when it is safe to call `sse2` routines.)
     #[target_feature(enable = "sse2")]
     #[inline]
-    unsafe fn find_raw_sse2(
+    unsafe fn find_raw_impl(
         &self,
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.sse2.find_raw(start, end)
+        self.0.find_raw(start, end)
     }
 
     /// Execute a search using SSE2 vectors and routines.
@@ -1165,58 +933,18 @@ impl Three {
     ///
     /// (The target feature safety obligation is automatically fulfilled by
     /// virtue of being a method on `Three`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
+    /// when it is safe to call `sse2` routines.)
     #[target_feature(enable = "sse2")]
     #[inline]
-    unsafe fn rfind_raw_sse2(
+    unsafe fn rfind_raw_impl(
         &self,
         start: *const u8,
         end: *const u8,
     ) -> Option<*const u8> {
-        self.sse2.rfind_raw(start, end)
+        self.0.rfind_raw(start, end)
     }
 
-    /// Execute a search using AVX2 vectors and routines.
-    ///
-    /// # Safety
-    ///
-    /// Same as [`Three::find_raw`], except the distance between `start` and
-    /// `end` must be at least the size of an AVX2 vector (in bytes).
-    ///
-    /// (The target feature safety obligation is automatically fulfilled by
-    /// virtue of being a method on `Three`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
-    #[target_feature(enable = "avx2")]
-    #[inline]
-    unsafe fn find_raw_avx2(
-        &self,
-        start: *const u8,
-        end: *const u8,
-    ) -> Option<*const u8> {
-        self.avx2.find_raw(start, end)
-    }
-
-    /// Execute a search using AVX2 vectors and routines.
-    ///
-    /// # Safety
-    ///
-    /// Same as [`Three::rfind_raw`], except the distance between `start` and
-    /// `end` must be at least the size of an AVX2 vector (in bytes).
-    ///
-    /// (The target feature safety obligation is automatically fulfilled by
-    /// virtue of being a method on `Three`, which can only be constructed
-    /// when it is safe to call `sse2`/`avx2` routines.)
-    #[target_feature(enable = "avx2")]
-    #[inline]
-    unsafe fn rfind_raw_avx2(
-        &self,
-        start: *const u8,
-        end: *const u8,
-    ) -> Option<*const u8> {
-        self.avx2.rfind_raw(start, end)
-    }
-
-    /// Returns an iterator over all occurrences of the needle bytes in the
+    /// Returns an iterator over all occurrences of the needle byte in the
     /// given haystack.
     ///
     /// The iterator returned implements `DoubleEndedIterator`. This means it

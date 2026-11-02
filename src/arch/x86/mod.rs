@@ -1,5 +1,5 @@
 /*!
-Vector algorithms for the `x86_64` target.
+Vector algorithms for x86 targets.
 */
 
 pub mod avx2;

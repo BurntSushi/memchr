@@ -2,7 +2,7 @@
 Wrapper routines for `memchr` and friends.
 
 These routines choose the best implementation at compile time. (This is
-different from `x86_64` because it is expected that `simd128` is almost always
+different from `x86` because it is expected that `simd128` is almost always
 available for `wasm32` targets.)
 */
 
